@@ -1,0 +1,26 @@
+{
+  "mode": "live",
+  "symbols": ["BTCUSDT"],
+  "feed": {
+    "interval_seconds": 60
+  },
+  "strategy": {
+    "lookback": 5,
+    "threshold": 0.001,
+    "order_size": 0.001
+  },
+  "feature_engine": {
+    "window": 30
+  },
+  "regime": {
+    "vol_threshold": 0.004,
+    "trend_threshold": 0.0015
+  },
+  "execution": {
+    "api_key": "replace-with-api-key",
+    "api_secret": "replace-with-api-secret",
+    "testnet": true
+  },
+  "log_level": "INFO",
+  "run_seconds": 10
+}

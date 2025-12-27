@@ -1,0 +1,74 @@
+python src/core/data_manager.py
+from __future__ import annotations
+import asyncio
+import json
+import time
+import math
+import random
+import os
+import numpy as np
+from pathlib import Path
+from collections import deque
+from typing import Any, Dict, List, Optional
+
+import ccxt.async_support as ccxt
+
+from utils.helpers import now_ms, _safe_float, _sanitize_for_json, _calc_rsi, _load_env_file, _env_bool, _env_int, _env_float
+
+class DataManager:
+    def __init__(self, orchestrator, symbols):
+        self.orchestrator = orchestrator
+        self.symbols = symbols
+        self.ohlcv_buffer = {sym: deque(maxlen=1000) for sym in symbols}
+        self.orderbook = {sym: {"ready": False, "ts": 0, "bids": [], "asks": []} for sym in symbols}
+        self.market = {sym: {"price": None, "ts": 0} for sym in symbols}
+        self._last_kline_ok_ms = {sym: 0 for sym in symbols}
+        self._last_orderbook_ok_ms = {sym: 0 for sym in symbols}
+        self._last_ticker_ok_ms = {sym: 0 for sym in symbols}
+        self._last_data_update_ts = 0
+        self._initialize_data_connections()
+
+    def _initialize_data_connections(self):
+        # 데이터 소스 연결 로직
+        pass
+
+    async def fetch_ohlcv(self, symbol: str, interval: str) -> pd.DataFrame:
+        # OHLCV 데이터 수집 로직
+        pass
+
+    async def fetch_orderbook(self, symbol: str) -> pd.DataFrame:
+        # 주문장 데이터 수집 로직
+        pass
+
+    async def fetch_market_info(self, symbol: str) -> Dict:
+        # 시장 정보 수집 로직
+        pass
+
+    def update_ohlcv(self, symbol: str, data: List):
+        # OHLCV 데이터 업데이트 로직
+        pass
+
+    def update_orderbook(self, symbol: str, data: Dict):
+        # 주문장 데이터 업데이트 로직
+        pass
+
+    def update_market_info(self, symbol: str, data: Dict):
+        # 시장 정보 업데이트 로직
+        pass
+
+    def get_ohlcv(self, symbol: str):
+        return list(self.ohlcv_buffer.get(symbol, []))
+
+    def get_orderbook(self, symbol: str):
+        return self.orderbook.get(symbol, {"ready": False, "ts": 0, "bids": [], "asks": []})
+
+    def get_market(self, symbol: str):
+        return self.market.get(symbol, {"price": None, "ts": 0})
+
+    def _update_last_data_update_ts(self):
+        self._last_data_update_ts = now_ms()
+
+    def get_last_data_update_ts(self):
+        return self._last_data_update_ts
+.aider*
+.env

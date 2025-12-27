@@ -1,0 +1,33 @@
+{
+  "mode": "paper",
+  "symbols": ["BTCUSDT", "ETHUSDT"],
+  "feed": {
+    "interval_seconds": 1,
+    "seed": 123,
+    "drift": 0.0,
+    "volatility": 0.001
+  },
+  "strategy": {
+    "lookback": 5,
+    "threshold": 0.001,
+    "order_size": 0.001
+  },
+  "risk": {
+    "max_position": 0.01,
+    "max_order_notional": 5000
+  },
+  "feature_engine": {
+    "window": 20
+  },
+  "regime": {
+    "vol_threshold": 0.003,
+    "trend_threshold": 0.001
+  },
+  "execution": {
+    "fee_rate": 0.0006,
+    "slippage_bps": 5,
+    "latency_ms": 10
+  },
+  "log_level": "INFO",
+  "run_seconds": 3
+}
