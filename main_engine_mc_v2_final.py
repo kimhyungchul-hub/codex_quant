@@ -28,10 +28,3 @@ from engines.pmaker_manager import PMakerManager
 class LiveOrchestrator:
     # 클래스 정의
     pass
-
-async def main():
-    # 메인 함수 정의
-    pass
-
-if __name__ == "__main__":
-    asyncio.run(main())
