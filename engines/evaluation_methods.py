@@ -1,3 +1,5 @@
+from typing import Dict, Any, Sequence, Optional
+
 def ema(values: Sequence[float], period: int) -> Optional[float]:
     # Implementation of ema
     pass

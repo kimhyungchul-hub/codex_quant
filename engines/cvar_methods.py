@@ -1,3 +1,7 @@
+import numpy as np
+from typing import Optional, Sequence
+import jax.numpy as jnp
+
 def _cvar_empirical(pnl: np.ndarray, alpha: float = 0.05) -> float:
     # Implementation of _cvar_empirical
     pass
