@@ -22,6 +22,17 @@ def main():
     refactor_data_manager("path/to/file")
     analyze_pmaker_impact("path/to/log_file", "symbol")
     verify_payload_keys()
+
+    # Define the variables needed for build_alpha_features
+    closes = [1, 2, 3, 4, 5]
+    vols = [0.1, 0.2, 0.3, 0.4, 0.5]
+    returns = [0.01, 0.02, 0.03, 0.04, 0.05]
+    ofi_z = 1.0
+    spread_pct = 0.01
+    pmaker_entry = 0.001
+    pmaker_delay_sec = 0.1
+    regime_id = 1
+
     build_alpha_features(closes, vols, returns, ofi_z, spread_pct, pmaker_entry, pmaker_delay_sec, regime_id)
 
 if __name__ == '__main__':
