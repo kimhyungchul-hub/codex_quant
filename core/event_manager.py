@@ -25,13 +25,6 @@ from core.data_manager import DataManager
 from utils.helpers import now_ms, _safe_float, _sanitize_for_json, _calc_rsi, _load_env_file, _env_bool, _env_int, _env_float
 from engines.pmaker_manager import PMakerManager
 
-class LiveOrchestrator:
-    # 클래스 정의
+class EventManager:
+    # 이벤트 관련 로직
     pass
-
-async def main():
-    # 메인 함수 정의
-    pass
-
-if __name__ == "__main__":
-    asyncio.run(main())
