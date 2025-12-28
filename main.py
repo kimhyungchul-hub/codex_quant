@@ -1,7 +1,8 @@
-# ... rest of the code ...
+from utils.helpers import greeting
 
 def main():
-    # ... rest of the code ...
+    name = "User"
     greeting(name)
 
-# ... rest of the code ...
+if __name__ == '__main__':
+    main()
