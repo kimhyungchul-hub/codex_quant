@@ -15,6 +15,7 @@
 - `engines.probability_methods`: `_norm_cdf`, `_approx_p_pos_and_ev_hold`, `_prob_max_geq`, `_prob_min_leq`
 - `engines.exit_policy_methods`: `simulate_exit_policy_rollforward`, `simulate_exit_policy_rollforward_analytic`, `_weights_for_horizons`, `_execution_mix_from_survival`, `_sigma_per_sec`
 - `engines.alpha_features_methods`: `_extract_alpha_hit_features`, `collect_alpha_hit_sample`, `_predict_horizon_hit_probs`
+- `dashboard`: `show_dashboard`
 
 ## 실행 방법
 

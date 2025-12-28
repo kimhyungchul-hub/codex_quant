@@ -7,6 +7,7 @@ from engines.simulation_methods import _sample_noise, _mc_first_passage_tp_sl_ja
 from engines.probability_methods import _norm_cdf, _approx_p_pos_and_ev_hold, _prob_max_geq, _prob_min_leq
 from engines.exit_policy_methods import simulate_exit_policy_rollforward, simulate_exit_policy_rollforward_analytic, _weights_for_horizons, _execution_mix_from_survival, _sigma_per_sec
 from engines.alpha_features_methods import _extract_alpha_hit_features, collect_alpha_hit_sample, _predict_horizon_hit_probs
+from dashboard import show_dashboard  # 대시보드 관련 기능 임포트
 
 async def main():
     # 메인 함수 정의
