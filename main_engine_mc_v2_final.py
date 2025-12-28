@@ -27,12 +27,15 @@ from engines.pmaker_manager import PMakerManager
 
 class EventManager:
     # 이벤트 관련 로직
+    pass
 
 class LiveOrchestrator:
     # 클래스 정의
+    pass
 
 async def main():
     # 메인 함수 정의
+    pass
 
 if __name__ == "__main__":
     asyncio.run(main())
