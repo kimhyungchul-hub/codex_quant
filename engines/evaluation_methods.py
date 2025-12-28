@@ -1,5 +1,9 @@
 from typing import Dict, Any, Sequence, Optional
 
+class MCParams:
+    # Implementation of MCParams class
+    pass
+
 def ema(values: Sequence[float], period: int) -> Optional[float]:
     # Implementation of ema
     pass
