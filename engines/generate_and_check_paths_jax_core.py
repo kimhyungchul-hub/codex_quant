@@ -2,6 +2,26 @@ import jax
 import jax.numpy as jnp
 from jax import lax
 
+# _sample_noise 함수 정의
+def _sample_noise(key, shape, dist="gaussian", df=6.0, boot=None):
+    if dist == "gaussian":
+        return jax.random.normal(key, shape)
+    elif dist == "student_t":
+        return jax.random.t(key, df, shape)
+    elif dist == "bootstrap":
+        return boot
+    else:
+        raise ValueError(f"Unknown distribution: {dist}")
+
+# _cvar_jnp 함수 정의
+def _cvar_jnp(x, alpha):
+    sorted_x = jnp.sort(x)
+    index = int(jnp.ceil(alpha * len(x)))
+    return jnp.mean(sorted_x[index:])
+
+# _JAX_OK 상수 정의
+_JAX_OK = True
+
 def _generate_and_check_paths_jax_core(
     key,
     s0: float,
