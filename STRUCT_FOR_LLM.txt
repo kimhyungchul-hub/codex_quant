@@ -1,145 +1,35 @@
-### main_engine_mc_v2_final.py
-    1: from __future__ import annotations
-    2: import asyncio
-    3: import json
-    4: import time
-    5: import math
-    6: import random
-    7: import os
-    8: import numpy as np
-    9: from pathlib import Path
-   10: from collections import deque
-   11: from copy import deepcopy
-   12: from typing import Any, Dict, List, Optional
-   14: import ccxt.async_support as ccxt
-   16: from engines.engine_hub import EngineHub
-   17: from trainers.online_alpha_trainer import OnlineAlphaTrainer, AlphaTrainerConfig
-   18: from utils.alpha_features import build_alpha_features
-   38: from engines.mc_engine import mc_first_passage_tp_sl_jax
-   39: from engines.mc_risk import compute_cvar, kelly_with_cvar, PyramidTracker, ExitPolicy, should_exit_position
-   40: from regime import adjust_mu_sigma, time_regime, get_regime_mu_sigma
-   41: from engines.running_stats import RunningStats
-   42: from engines.mc_engine import MonteCarloEngine
-   50: from config import *
-   51: from core.dashboard_server import DashboardServer
-   52: from core.data_manager import DataManager
-   53: from utils.helpers import now_ms, _safe_float, _sanitize_for_json, _calc_rsi, _load_env_file, _env_bool, _env_int, _env_float
-   58: from engines.pmaker_manager import PMakerManager
-   60: class LiveOrchestrator:
+from __future__ import annotations
+import asyncio
+import json
+import time
+import math
+import random
+import os
+import numpy as np
+from pathlib import Path
+from collections import deque
+from copy import deepcopy
+from typing import Any, Dict, List, Optional
+import ccxt.async_support as ccxt
+from engines.engine_hub import EngineHub
+from trainers.online_alpha_trainer import OnlineAlphaTrainer, AlphaTrainerConfig
+from utils.alpha_features import build_alpha_features
+from engines.mc_engine import mc_first_passage_tp_sl_jax
+from engines.mc_risk import compute_cvar, kelly_with_cvar, PyramidTracker, ExitPolicy, should_exit_position
+from regime import adjust_mu_sigma, time_regime, get_regime_mu_sigma
+from engines.running_stats import RunningStats
+from engines.mc_engine import MonteCarloEngine
+from config import *
+from core.dashboard_server import DashboardServer
+from core.data_manager import DataManager
+from utils.helpers import now_ms, _safe_float, _sanitize_for_json, _calc_rsi, _load_env_file, _env_bool, _env_int, _env_float
+from engines.pmaker_manager import PMakerManager
 
-#### __main__ block excerpt
- 3830:     # If you use testnet keys, you must enable sandbox mode.
- 3831:     if _env_bool("BYBIT_TESTNET", False) or _env_bool("CCXT_SANDBOX", False):
- 3832:         try:
- 3833:             exchange.set_sandbox_mode(True)
- 3834:             print("[BYBIT] sandbox_mode enabled (testnet)")
- 3835:         except Exception as e:
- 3836:             print(f"[BYBIT] sandbox_mode enable failed: {e}")
- 3837: 
- 3838:     # Load markets once and drop symbols that don't exist (common on testnet).
- 3839:     try:
- 3840:         await exchange.load_markets()
- 3841:         global SYMBOLS
- 3842:         missing = [s for s in SYMBOLS if s not in exchange.markets]
- 3843:         if missing:
- 3844:             print(f"[BYBIT] dropping unsupported symbols: {missing}")
- 3845:         SYMBOLS = [s for s in SYMBOLS if s in exchange.markets]
- 3846:         if not SYMBOLS:
- 3847:             raise RuntimeError("No supported symbols after filtering; set SYMBOLS_CSV to valid Bybit markets.")
- 3848:     except Exception as e:
- 3849:         print(f"[BYBIT] load_markets/filter failed: {e}")
- 3850:     orchestrator = LiveOrchestrator(exchange, SYMBOLS)
- 3851: 
- 3852:     runner = None
- 3853:     site = None
- 3854:     try:
- 3855:         dashboard = DashboardServer(orchestrator)
- 3856:         orchestrator.dashboard = dashboard
- 3857:         await dashboard.start()
- 3858: 
- 3859:         # ✅ OHLCV preload를 먼저 완료한 후 decision_loop 시작 (데이터 없이 실행 방지)
- 3860:         if PRELOAD_ON_START:
- 3861:             try:
- 3862:                 print(f"⏳ Preloading OHLCV (limit={OHLCV_PRELOAD_LIMIT})...")
- 3863:                 await orchestrator.data.preload_all_ohlcv(limit=OHLCV_PRELOAD_LIMIT)
- 3864:                 orchestrator._persist_state(force=True)
- 3865:                 print("✅ OHLCV preload done")
- 3866:             except Exception as e:
- 3867:                 print(f"[ERR] preload task failed: {e}")
- 3868: 
- 3869:         # ✅ 초기 이벤트 설정: decision_loop가 실행될 수 있도록 (preload 완료 후)
- 3870:         orchestrator.data.data_updated_event.set()
- 3871: 
- 3872:         asyncio.create_task(orchestrator.data.fetch_prices_loop())
- 3873:         asyncio.create_task(orchestrator.data.fetch_ohlcv_loop())
- 3874:         asyncio.create_task(orchestrator.data.fetch_orderbook_loop())
- 3875:         asyncio.create_task(orchestrator.decision_loop())
- 3876:         asyncio.create_task(orchestrator.broadcast_loop())
- 3877:         
- 3878: 
- 3879: 
- 3880:         print(f"🚀 Dashboard: http://localhost:{PORT}")
- 3881:         print(f"📄 Serving: {DASHBOARD_FILE.name}")
- 3882:         await asyncio.Future()
- 3883:     except OSError as e:
- 3884:         print(f"[ERR] Failed to bind on port {PORT}: {e}")
- 3885:     finally:
- 3886:         # ✅ 엔진 종료 시 PMaker 모델 저장 (finally 블록에서도 저장)
- 3887:         if 'orchestrator' in locals() and orchestrator.pmaker.surv is not None and orchestrator.pmaker.enabled:
- 3888:             try:
- 3889:                 orchestrator.pmaker.surv.save(orchestrator.pmaker.model_path)
- 3890:                 print(f"[SHUTDOWN] PMaker model saved to {orchestrator.pmaker.model_path}")
- 3891:             except Exception as e:
- 3892:                 print(f"[SHUTDOWN] Failed to save PMaker model: {e}")
- 3893:         
- 3894:         try:
- 3895:             await exchange.close()
- 3896:         except Exception:
- 3897:             pass
- 3898:         if site is not None:
- 3899:             try:
- 3900:                 await site.stop()
- 3901:             except Exception:
- 3902:                 pass
- 3903:         if runner is not None:
- 3904:             try:
- 3905:                 await runner.cleanup()
- 3906:             except Exception:
- 3907:                 pass
- 3908: 
- 3909: 
- 3910: if __name__ == "__main__":
- 3911:     asyncio.run(main())
- 3912: 1
+class LiveOrchestrator:
+    # 클래스 정의
 
-### engines/mc_engine.py
-    2: import math
-    3: import time
-    4: import logging
-    5: from dataclasses import dataclass
-    6: from typing import Any, Dict, List, Optional, Sequence, Tuple
-    8: import numpy as np
-    9: from engines.base import BaseEngine
-   10: from regime import adjust_mu_sigma
-   11: from engines.mc_risk import kelly_with_cvar
-   29: from typing import Any, Dict, List, Optional, Sequence, Tuple
-   30: import os
-   53: def _jax_mc_device():
-   76: def _cvar_empirical(pnl: np.ndarray, alpha: float = 0.05) -> float:
-   82: def _cvar_bootstrap(pnl: np.ndarray, alpha: float = 0.05, n_boot: Optional[int] = None, sample_frac: float = 0.7, seed: int = 42) -> float:
-  101: def _cvar_tail_inflate(pnl: np.ndarray, alpha: float = 0.05, inflate: float = 1.15) -> float:
-  111: def cvar_ensemble(pnl: Sequence[float], alpha: float = 0.05) -> float:
-  124: def _norm_cdf(x: float) -> float:
-  129: def _approx_p_pos_and_ev_hold(
-  174: def simulate_exit_policy_rollforward(
-  435: def simulate_exit_policy_rollforward_analytic(
-  647: def _cvar_jnp(x: "jnp.ndarray", alpha: float) -> "jnp.ndarray":  # type: ignore[name-defined]
-  654: def _sample_noise(key, shape, dist="gaussian", df=6.0, boot=None):
-  670: def _mc_first_passage_tp_sl_jax_core(
-  747: def _generate_and_check_paths_jax_core(
-  825: def mc_first_passage_tp_sl_jax(
-  902: def ema(values: Sequence[float], period: int) -> Optional[float]:
-  915: class MCParams:
-  932: class MonteCarloEngine(BaseEngine):
- 4767: def _simulate_paths_price_jax_core(
+async def main():
+    # 메인 함수 정의
 
+if __name__ == "__main__":
+    asyncio.run(main())
