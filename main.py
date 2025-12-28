@@ -11,7 +11,7 @@ from dashboard import show_dashboard  # 대시보드 관련 기능 임포트
 
 async def main():
     # 메인 함수 정의
-    pass
+    await show_dashboard()
 
 if __name__ == "__main__":
     asyncio.run(main())
