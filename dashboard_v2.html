@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Trading Dashboard v4 (Light, Table, Charts)</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root {
       --bg: #f6f8fb;
@@ -159,7 +158,7 @@
 
     .tableWrap {
       overflow: auto;
-      max-height: 520px
+      max-height: 1200px
     }
 
     table {
@@ -200,6 +199,27 @@
       background: #eff6ff
     }
 
+    tbody tr.pos-flash-enter {
+      outline: 2px solid rgba(22, 163, 74, .22);
+      background: rgba(22, 163, 74, .06);
+      box-shadow: inset 0 0 0 1px rgba(22, 163, 74, .10);
+      animation: posFlashEnter 800ms ease-in-out infinite;
+    }
+
+    @keyframes posFlashEnter {
+      0% {
+        background: rgba(22, 163, 74, .04);
+      }
+
+      50% {
+        background: rgba(22, 163, 74, .12);
+      }
+
+      100% {
+        background: rgba(22, 163, 74, .04);
+      }
+    }
+
     .mono {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
     }
@@ -230,6 +250,42 @@
 
     .muted {
       color: var(--muted)
+    }
+
+    .pill.g1 {
+      background: #dbeafe;
+      color: #1e40af;
+      border-color: #bfdbfe;
+    }
+
+    .pill.g2 {
+      background: #f3e8ff;
+      color: #6b21a8;
+      border-color: #e9d5ff;
+    }
+
+    .pill.other {
+      background: #f3f4f6;
+      color: #374151;
+      border-color: #e5e7eb;
+    }
+
+    .pill.new {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
+    .pill.warn {
+      background: #ffedd5;
+      color: #9a3412;
+      border-color: #fed7aa;
+    }
+
+    .pill.outside {
+      background: #eef2ff;
+      color: #3730a3;
+      border-color: #c7d2fe;
     }
 
     .right {
@@ -265,7 +321,7 @@
     }
 
     .tableWrap.small {
-      max-height: 280px
+      max-height: none;
     }
 
     details {
@@ -299,36 +355,182 @@
     .kpi .pill {
       background: #f8fafc
     }
+
+    /* Toast notification */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      padding: 14px 18px;
+      min-width: 280px;
+      max-width: 400px;
+      pointer-events: auto;
+      animation: toastSlideIn 0.3s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .toast.toast-hide {
+      animation: toastSlideOut 0.3s ease-out forwards;
+    }
+
+    @keyframes toastSlideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes toastSlideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+
+    .toast-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .toast-content {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .toast-message {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .toast.mode-paper .toast-icon {
+      color: var(--accent);
+    }
+
+    .toast.mode-live .toast-icon {
+      color: var(--bad);
+    }
+
+    .kpi {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px
+    }
+
+    .kpi .pill {
+      background: #f8fafc
+    }
   </style>
 </head>
 
 <body>
+  <!-- Toast notification container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+
   <div class="wrap">
     <div class="topbar">
       <div class="chip"><b>KillSwitch</b><span id="ks" class="v off">OFF</span></div>
       <div class="chip"><b>Equity</b><span id="eq" class="v">-</span></div>
       <div class="chip"><b>WS</b><span id="ws" class="v">-</span></div>
       <div class="chip"><b>Feed</b><span id="feed" class="v">-</span></div>
+      <div class="chip"><b>Sync</b><span id="sync" class="v">-</span></div>
+      <div class="chip"><b>REC</b><span id="rec" class="v">-</span></div>
       <div class="chip"><b>Loop</b><span id="loopms" class="v">-</span></div>
       <div class="chip"><b>Util</b><span id="util" class="v">-</span></div>
       <div class="chip"><b>Alpha</b><span id="alpha" class="v">-</span></div>
       <div class="chip"><b>Brier</b><span id="brier" class="v">-</span></div>
       <div class="chip"><b>Hit%</b><span id="hit" class="v">-</span></div>
       <div class="chip"><b>Selected</b><span id="selSym" class="v">-</span></div>
+      <div class="chip"><b>Why</b><span id="why" class="v">-</span></div>
       <div class="spacer"></div>
       <div class="controls">
         <input id="search" class="input" placeholder="심볼/상태/레짐 검색 (예: BTC, LONG, chop)" />
         <button id="toggleSparks" class="btn">스파크라인: ON</button>
         <button id="clearTrades" class="btn">트레이드 테이프 비우기</button>
-        <label style="font-size:12px;color:#475569;">분봉</label>
-        <select id="tfSel" class="input" style="min-width:90px;">
-          <option value="1">1m</option>
-          <option value="5">5m</option>
-          <option value="15">15m</option>
-          <option value="60">1h</option>
-          <option value="240">4h</option>
-          <option value="1440">1d</option>
-        </select>
+        <button id="toggleTuner" class="btn">런타임 튜닝</button>
+      </div>
+    </div>
+
+    <div id="tunerPanel" class="panel" style="margin-top:12px; display:none">
+      <h3>런타임 튜닝 <span class="sub">서버에 즉시 반영 (Live 주문 토글 포함)</span></h3>
+      <div class="body">
+        <div class="controls" style="gap:10px">
+          <label class="chip" style="min-width:unset"><b>Paper</b>
+            <input id="tPaper" type="checkbox" style="margin-left:8px" />
+          </label>
+          <label class="chip" style="min-width:unset"><b>Live Orders</b>
+            <input id="tLiveOrders" type="checkbox" style="margin-left:8px" />
+          </label>
+          <label class="chip" style="min-width:unset"><b>WAIT→FLAT</b>
+            <input id="tFlatOnWait" type="checkbox" style="margin-left:8px" />
+          </label>
+          <label class="chip" style="min-width:unset"><b>EngSize</b>
+            <input id="tEngSize" type="checkbox" style="margin-left:8px" />
+          </label>
+          <input id="tEngMin" class="input" style="min-width:150px" placeholder="eng min cap(0~1)" />
+          <input id="tEngMult" class="input" style="min-width:150px" placeholder="eng size mult" />
+          <label class="chip" style="min-width:unset"><b>ExitPolicy</b>
+            <input id="tExitPolicyOnly" type="checkbox" style="margin-left:8px" />
+          </label>
+
+          <input id="tRefresh" class="input" style="min-width:140px" placeholder="refresh(sec)" />
+          <input id="tPathsLive" class="input" style="min-width:160px" placeholder="MC paths (live)" />
+          <input id="tStudentDf" class="input" style="min-width:160px" placeholder="student_t df" />
+
+          <select id="tTailMode" class="input" style="min-width:150px">
+            <option value="student_t">student_t</option>
+            <option value="gaussian">gaussian</option>
+            <option value="bootstrap">bootstrap</option>
+          </select>
+          <label class="chip" style="min-width:unset"><b>JAX</b>
+            <input id="tUseJax" type="checkbox" style="margin-left:8px" />
+          </label>
+          <select id="tExecMode" class="input" style="min-width:180px">
+            <option value="market">exec: market</option>
+            <option value="maker_then_market">exec: maker_then_market</option>
+          </select>
+          <label class="chip" style="min-width:unset"><b>PMaker</b>
+            <input id="tPMaker" type="checkbox" style="margin-left:8px" />
+          </label>
+          <label class="chip" style="min-width:unset"><b>AlphaHit</b>
+            <input id="tAlphaHit" type="checkbox" style="margin-left:8px" />
+          </label>
+
+          <button id="tApply" class="btn">적용</button>
+          <button id="tReload" class="btn">새로고침</button>
+          <span id="tStatus" class="chip" style="min-width:unset"><b>Status</b><span class="v">-</span></span>
+        </div>
       </div>
     </div>
 
@@ -337,26 +539,35 @@
       <div class="tableWrap" id="mktWrap">
         <table id="mktTable">
           <thead>
-            <tr>
-              <th data-k="symbol">SYM</th>
-              <th data-k="price">PRICE</th>
-              <th data-k="status">STATUS</th>
-              <th data-k="regime">REGIME</th>
-              <th data-k="action_type">ACTION</th>
-              <th data-k="evp">EV%</th>
-              <th data-k="ev_raw_p">EV_RAW%</th>
-              <th data-k="confp">CONF%</th>
-              <th data-k="event_p_tp">EventWin%</th>
-              <th data-k="event_p_timeout">Timeout%</th>
-              <th data-k="event_t_median">Tmed</th>
-              <th data-k="mc_win_rate">WIN%</th>
-              <th data-k="mc_cvar">CVaR</th>
-              <th data-k="kelly">KELLY</th>
-              <th data-k="pos_roe">ROE%</th>
-              <th data-k="pos_leverage">LEV</th>
-              <th data-k="pos_cap_frac">CAP%</th>
-              <th data-k="pos_pnl">PNL</th>
-              <th data-k="spark">TREND</th>
+            <th data-k="symbol">SYMBOL</th>
+            <th data-k="group">GP</th>
+            <th data-k="rank">RK</th>
+            <th data-k="ev_score_p" title="Entry/Allocation Score (smoothed EV)">SCORE%</th>
+            <th data-k="napv_p" title="Exit NAPV (Economic Value after costs)">NAPV%</th>
+            <th data-k="evp" title="Raw EV% (No Costs)">EV%</th>
+            <th data-k="optimal_horizon_sec">T*</th>
+            <th data-k="entry_block_reason">WHY</th>
+            <th data-k="status">STATUS</th>
+            <th data-k="regime">REGIME</th>
+            <th data-k="pos_roe">ROE%</th>
+            <th data-k="pos_pnl">PNL</th>
+            <th data-k="price">PRICE</th>
+            <th data-k="action_type">ACTION</th>
+            <th data-k="cost_bp">COST(bp)</th>
+            <th data-k="confp">CONF%</th>
+            <th data-k="mu_alpha">μ</th>
+            <th data-k="pm_boost">PM</th>
+            <th data-k="event_p_tp">EventWin%</th>
+            <th data-k="event_p_timeout">Timeout%</th>
+            <th data-k="event_t_median">Tmed</th>
+            <th data-k="mc_win_rate">WIN%</th>
+            <th data-k="mc_cvar">CVaR</th>
+            <th data-k="kelly">KELLY</th>
+            <th data-k="optimal_leverage">OPTLEV</th>
+            <th data-k="pos_leverage">LEV</th>
+            <th title="실질 점유율 (계좌 잔고 대비, 100% = 1x)">UTIL%</th>
+            <th data-k="allowed_cap" class="accent">ALLOWED UTIL</th>
+            <th data-k="spark">TREND</th>
             </tr>
           </thead>
           <tbody id="mktBody"></tbody>
@@ -368,28 +579,70 @@
       <h3>포트폴리오 그래프 <span class="sub">Equity (미실현 포함 실시간)</span></h3>
       <div class="body">
         <canvas id="equityChart"></canvas>
+        <div style="margin-top:10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <!-- Timeframe selector -->
+          <div style="display: flex; gap: 4px;">
+            <button class="tfBtn" data-tf="60"
+              style="padding:4px 10px; border:1px solid var(--line); background:var(--chip); border-radius:6px; cursor:pointer; font-size:11px; font-weight:600;">1분</button>
+            <button class="tfBtn" data-tf="300"
+              style="padding:4px 10px; border:1px solid var(--line); background:var(--chip); border-radius:6px; cursor:pointer; font-size:11px; font-weight:600;">5분</button>
+            <button class="tfBtn" data-tf="1800"
+              style="padding:4px 10px; border:1px solid var(--line); background:var(--chip); border-radius:6px; cursor:pointer; font-size:11px; font-weight:600;">30분</button>
+            <button class="tfBtn" data-tf="3600"
+              style="padding:4px 10px; border:1px solid var(--line); background:var(--chip); border-radius:6px; cursor:pointer; font-size:11px; font-weight:600;">1시간</button>
+            <button class="tfBtn" data-tf="86400"
+              style="padding:4px 10px; border:1px solid var(--line); background:var(--chip); border-radius:6px; cursor:pointer; font-size:11px; font-weight:600;">1일</button>
+            <button class="tfBtn active" data-tf="0"
+              style="padding:4px 10px; border:1px solid var(--accent); background:var(--accent); color:white; border-radius:6px; cursor:pointer; font-size:11px; font-weight:600;">전체</button>
+          </div>
+          <button id="equityModeBtn"
+            style="padding:4px 10px; border:1px solid var(--line); background:var(--chip); border-radius:6px; cursor:pointer; font-size:11px; font-weight:700;">차트:
+            라인</button>
+          <span style="font-size:11px; color:var(--muted); white-space:nowrap;">Scroll</span>
+          <input type="range" id="equityScroll" style="flex:1; cursor:pointer;" min="0" max="0" value="0">
+          <select id="zoomSel" class="input" style="min-width:80px; padding:4px 8px; font-size:11px;">
+            <option value="100">Zoom: 100</option>
+            <option value="300">Zoom: 300</option>
+            <option value="1000">Zoom: 1k</option>
+            <option value="3000">Zoom: 3k</option>
+            <option value="99999" selected>All</option>
+          </select>
+        </div>
         <div class="kpi">
           <span class="pill">Balance <span class="mono" id="balKpi">-</span></span>
           <span class="pill">Equity <span class="mono" id="eqKpi">-</span></span>
           <span class="pill">DD <span class="mono" id="ddKpi">-</span></span>
+          <span class="spacer"></span>
+          <span class="muted" style="font-size:11px;">⌨️ 좌우: 이동 | Home: 최신 | -/+: 확대/축소</span>
         </div>
       </div>
     </div>
 
     <div class="panel tight" style="margin-top:12px">
-      <h3>현재 포지션 <span class="sub">실시간 수익률/방향/레버리지/진입가/현재가</span></h3>
+      <h3>
+        현재 포지션 <span class="sub">실시간 수익률/방향/레버리지/진입가/현재가</span>
+        <span class="spacer"></span>
+        <button class="btn" id="liquidateAll"
+          style="color:var(--bad); border-color:rgba(220,38,38,0.3); background:rgba(220,38,38,0.02)">모든 포지션 청산 (EXIT
+          ALL)</button>
+      </h3>
       <div class="tableWrap small">
         <table>
           <thead>
             <tr>
               <th>SYM</th>
+              <th>GRP</th>
+              <th>RK</th>
               <th>SIDE</th>
               <th>ENTRY</th>
               <th>CUR</th>
+              <th title="Base Assets Price Change (Unleveraged)">PRC%</th>
               <th>PNL</th>
-              <th>PNL%</th>
+              <th title="ROE% (PnL/Margin). 대략 PRC% × 레버리지">ROE%</th>
               <th>LEV</th>
-              <th>CAP%</th>
+              <th title="포지션 노출(Notional) / Balance(지갑잔고) 비율">UTIL%</th>
+              <th title="Kelly 목표 활용도">TGT UTIL%</th>
+              <th title="누적 최적 보유 시간 (보유 시간 + 현재 T*)">누적최적보유시간</th>
               <th>AGE(s)</th>
             </tr>
           </thead>
@@ -404,15 +657,16 @@
         <table>
           <thead>
             <tr>
-              <th>TIME</th>
-              <th>SYM</th>
-              <th>TYPE</th>
-              <th>SIDE</th>
-              <th>PRICE</th>
-              <th>PNL</th>
+              <th>시간</th>
+              <th>종목</th>
+              <th>이벤트</th>
+              <th>방향</th>
+              <th>수량</th>
+              <th>진입가</th>
+              <th>가격</th>
+              <th>손익</th>
               <th>ROE%</th>
-              <th>LEV</th>
-              <th>NOTE</th>
+              <th>사유</th>
             </tr>
           </thead>
           <tbody id="tradeBody"></tbody>
@@ -479,11 +733,38 @@
     }
 
     const $ = (id) => document.getElementById(id);
-    const ksEl = $('ks'), eqEl = $('eq'), wsEl = $('ws'), feedEl = $('feed'), utilEl = $('util'), alphaEl = $('alpha'), brierEl = $('brier'), hitEl = $('hit');
+    const ksEl = $('ks'), eqEl = $('eq'), wsEl = $('ws'), feedEl = $('feed'), syncEl = $('sync'), recEl = $('rec'), utilEl = $('util'), alphaEl = $('alpha'), brierEl = $('brier'), hitEl = $('hit'), whyEl = $('why');
     const loopEl = $('loopms');
-    const selSymEl = $('selSym'), searchEl = $('search'), tfSel = $('tfSel');
+    const selSymEl = $('selSym'), searchEl = $('search'), equityScroll = $('equityScroll'), zoomSel = $('zoomSel');
+
+    // Virtual tfSel object (dropdown was removed, now controlled by timeframe buttons)
+    const tfSel = {
+      _value: localStorage.getItem('dashboard_tf') || '1',
+      get value() { return this._value; },
+      set value(v) {
+        this._value = String(v);
+        localStorage.setItem('dashboard_tf', this._value);
+      },
+      addEventListener: () => { } // no-op
+    };
+
     const mktBody = $('mktBody'), posBody = $('posBody'), tradeBody = $('tradeBody'), logsEl = $('logs');
     const balKpi = $('balKpi'), eqKpi = $('eqKpi'), ddKpi = $('ddKpi');
+
+    // Restore settings from localStorage
+    if (localStorage.getItem('dashboard_tf')) tfSel.value = localStorage.getItem('dashboard_tf');
+    if (localStorage.getItem('dashboard_zoom')) zoomSel.value = localStorage.getItem('dashboard_zoom');
+
+    zoomSel.addEventListener('change', () => {
+      localStorage.setItem('dashboard_zoom', zoomSel.value);
+      VIEW_BUCKETS = Number(zoomSel.value);
+      updateEquityChart();
+    });
+
+    equityScroll.addEventListener('input', () => {
+      viewScrollOffset = Number(equityScroll.value);
+      updateEquityChart();
+    });
 
     connectWs();
 
@@ -494,11 +775,197 @@
       if (latestPayload && latestPayload.market) renderMarketTable(latestPayload.market);
     };
 
-    $('clearTrades').onclick = () => {
-      tradeTape.length = 0;
-      seenTradeMsg.clear();
-      renderTradeTape();
+    $('clearTrades').onclick = async () => {
+      const mode = (latestPayload && latestPayload.engine && latestPayload.engine.record_mode) ? String(latestPayload.engine.record_mode) : null;
+      const isLive = mode === 'live';
+      const msg = isLive
+        ? '라이브 모드: 기록창(테이프/커브)만 초기화합니다.\n(거래소 잔고/포지션은 변경하지 않음)\n계속할까요?'
+        : '정말로 모든 거래 내역과 자본금을 초기화하시겠습니까? (10,000 USDT로 리셋)';
+      if (!confirm(msg)) return;
+      try {
+        const res = await fetch('/api/reset_tape', { method: 'POST' });
+        if (!res.ok) throw new Error(res.status);
+        await res.json();
+        // Client-side clear
+        tradeTape.length = 0;
+        seenTradeMsg.clear();
+        tradeTapeSeeded = false;
+        renderTradeTape();
+        equityHist.length = 0;
+        equitySeeded = false;
+        updateEquityChart();
+      } catch (e) {
+        console.error('Reset failed:', e);
+        alert('Reset failed: ' + e);
+      }
     };
+
+    $('liquidateAll').onclick = async () => {
+      const mode = (latestPayload && latestPayload.engine && latestPayload.engine.record_mode) ? String(latestPayload.engine.record_mode) : null;
+      const isLive = mode === 'live';
+      const msg = isLive
+        ? '정말로 모든 오픈 포지션을 즉시 청산(시장가 reduceOnly)하시겠습니까?\n(라이브 모드에서는 청산 주문을 전송한 뒤, 거래소 반영/동기화까지 약간의 시간이 걸릴 수 있습니다.)'
+        : '정말로 모든 오픈 포지션을 즉시 청산(EXIT)하시겠습니까?\n(자동 매매(Paper Trading)는 청산 중 잠시 멈췄다가 다시 재개됩니다. 중지를 원하면 [런타임 튜닝]에서 Paper를 꺼주세요.)';
+      if (!confirm(msg)) return;
+      const btn = $('liquidateAll');
+      const originalText = btn.textContent;
+      try {
+        btn.textContent = '청산 중...';
+        btn.disabled = true;
+        const res = await fetch('/api/liquidate_all', { method: 'POST' });
+        if (!res.ok) throw new Error(res.status);
+        await res.json();
+
+        if (isLive) {
+          alert('✅ 청산 주문을 전송했습니다.\n거래소 반영/동기화까지 잠시 기다려 주세요.');
+        } else {
+          alert('✅ 모든 포지션이 청산되었습니다.\n자동 매매(Paper Trading)는 계속 실행됩니다. 중지를 원하면 [런타임 튜닝]에서 Paper를 끄고 [적용]을 눌러주세요.');
+        }
+
+        // Local clear for instant visual feedback
+        posBody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding:20px; color:var(--muted)">' + (isLive ? '청산 주문 전송됨. 동기화 대기 중...' : '모든 포지션이 청산되었습니다.') + '</td></tr>';
+      } catch (e) {
+        console.error('Liquidation failed:', e);
+        alert('Liquidation failed: ' + e);
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    };
+
+    // ---------- runtime tuner ----------
+    const tunerBtn = $('toggleTuner');
+    const tunerPanel = $('tunerPanel');
+    const tPaper = $('tPaper');
+    const tFlatOnWait = $('tFlatOnWait');
+    const tEngSize = $('tEngSize');
+    const tEngMin = $('tEngMin');
+    const tEngMult = $('tEngMult');
+    const tExitPolicyOnly = $('tExitPolicyOnly');
+    const tRefresh = $('tRefresh');
+    const tPathsLive = $('tPathsLive');
+    const tStudentDf = $('tStudentDf');
+    const tTailMode = $('tTailMode');
+    const tUseJax = $('tUseJax');
+    const tExecMode = $('tExecMode');
+    const tLiveOrders = $('tLiveOrders');
+    const tPMaker = $('tPMaker');
+    const tAlphaHit = $('tAlphaHit');
+    const tApply = $('tApply');
+    const tReload = $('tReload');
+    const tStatus = $('tStatus');
+    const tStatusV = tStatus ? tStatus.querySelector('.v') : null;
+
+    function setTunerStatus(text) {
+      if (!tStatusV) return;
+      tStatusV.textContent = text || '-';
+    }
+
+    async function loadRuntimeConfig() {
+      try {
+        setTunerStatus('loading...');
+        const res = await fetch('/api/runtime', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const cfg = await res.json();
+
+        if (tPaper) tPaper.checked = !!cfg.paper_trading_enabled;
+        if (tFlatOnWait) tFlatOnWait.checked = !!cfg.paper_flat_on_wait;
+        if (tEngSize) tEngSize.checked = !!cfg.paper_use_engine_sizing;
+        if (tEngMin) tEngMin.value = (cfg.paper_engine_size_min_frac ?? '').toString();
+        if (tEngMult) tEngMult.value = (cfg.paper_engine_size_mult ?? '').toString();
+        if (tExitPolicyOnly) tExitPolicyOnly.checked = !!cfg.paper_exit_policy_only;
+        if (tRefresh) tRefresh.value = (cfg.decision_refresh_sec ?? '').toString();
+        if (tPathsLive) tPathsLive.value = (cfg.mc_n_paths_live ?? '').toString();
+        if (tStudentDf) tStudentDf.value = (cfg.mc_student_t_df ?? '').toString();
+        if (tTailMode && cfg.mc_tail_mode) tTailMode.value = cfg.mc_tail_mode;
+        if (tUseJax) tUseJax.checked = !!cfg.mc_use_jax;
+        if (tExecMode && cfg.exec_mode) tExecMode.value = cfg.exec_mode;
+        if (tLiveOrders) tLiveOrders.checked = !!cfg.enable_orders;
+        if (tPMaker) tPMaker.checked = !!cfg.pmaker_enabled;
+        if (tAlphaHit) tAlphaHit.checked = !!cfg.alpha_hit_enabled;
+
+        setTunerStatus('ready');
+      } catch (e) {
+        console.error('loadRuntimeConfig failed:', e);
+        setTunerStatus('ERR');
+      }
+    }
+
+    async function applyRuntimeConfig() {
+      try {
+        setTunerStatus('applying...');
+        const payload = {};
+
+        if (tPaper) payload.paper_trading_enabled = !!tPaper.checked;
+        if (tFlatOnWait) payload.paper_flat_on_wait = !!tFlatOnWait.checked;
+        if (tEngSize) payload.paper_use_engine_sizing = !!tEngSize.checked;
+        if (tEngMin && tEngMin.value.trim() !== '') {
+          const v = Number(tEngMin.value);
+          if (!Number.isNaN(v)) payload.paper_engine_size_min_frac = v;
+        }
+        if (tEngMult && tEngMult.value.trim() !== '') {
+          const v = Number(tEngMult.value);
+          if (!Number.isNaN(v)) payload.paper_engine_size_mult = v;
+        }
+        if (tExitPolicyOnly) payload.paper_exit_policy_only = !!tExitPolicyOnly.checked;
+
+        if (tRefresh && tRefresh.value.trim() !== '') {
+          const v = Number(tRefresh.value);
+          if (!Number.isNaN(v)) payload.decision_refresh_sec = v;
+        }
+        if (tPathsLive && tPathsLive.value.trim() !== '') {
+          const v = parseInt(tPathsLive.value, 10);
+          if (!Number.isNaN(v)) payload.mc_n_paths_live = v;
+        }
+        if (tStudentDf && tStudentDf.value.trim() !== '') {
+          const v = Number(tStudentDf.value);
+          if (!Number.isNaN(v)) payload.mc_student_t_df = v;
+        }
+
+        if (tTailMode && tTailMode.value) payload.mc_tail_mode = tTailMode.value;
+        if (tUseJax) payload.mc_use_jax = !!tUseJax.checked;
+        if (tExecMode && tExecMode.value) payload.exec_mode = tExecMode.value;
+        if (tLiveOrders) payload.enable_orders = !!tLiveOrders.checked;
+        if (tPMaker) payload.pmaker_enabled = !!tPMaker.checked;
+        if (tAlphaHit) payload.alpha_hit_enabled = !!tAlphaHit.checked;
+
+        const res = await fetch('/api/runtime', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        await res.json();
+        setTunerStatus('applied');
+        // re-sync UI from server values (clamps applied server-side)
+        await loadRuntimeConfig();
+      } catch (e) {
+        console.error('applyRuntimeConfig failed:', e);
+        setTunerStatus('ERR');
+      }
+    }
+
+    if (tunerBtn && tunerPanel) {
+      tunerBtn.onclick = async () => {
+        const open = tunerPanel.style.display !== 'none';
+        tunerPanel.style.display = open ? 'none' : 'block';
+        if (!open) await loadRuntimeConfig();
+      };
+    }
+    if (tReload) tReload.onclick = loadRuntimeConfig;
+    if (tApply) tApply.onclick = applyRuntimeConfig;
+    if (tLiveOrders && tPaper) {
+      tLiveOrders.addEventListener('change', () => {
+        if (tLiveOrders.checked) {
+          tPaper.checked = false;
+        }
+      });
+      tPaper.addEventListener('change', () => {
+        if (tPaper.checked) {
+          tLiveOrders.checked = false;
+        }
+      });
+    }
 
     // ---------- state ----------
     let selectedSym = null;
@@ -506,14 +973,113 @@
     let sortAsc = true;
 
     // history for charts
-    const maxPoints = 20000;
-    const equityHist = []; // {t, equity}
+    const maxPoints = 50000; // Increase history buffer to match server
     const sparkHist = new Map(); // sym -> [price...]
+    const modeState = new Map(); // paper/live 별로 기록창(커브/테이프) 분리
+    let lastRunId = null;
+    let recordMode = null;
+    let equityHist = []; // {t, equity}
+
+    // visualization state
+    let viewScrollOffset = 0; // how many buckets to shift left (back in time)
+    let VIEW_BUCKETS = Number(localStorage.getItem('dashboard_zoom') || 300); // Dynamic from zoomSel
 
     // trade tape
-    const tradeTape = []; // {time,sym,type,side,price,pnl,roe,leverage,tag,reason,note}
-    const seenTradeMsg = new Set();
+    let tradeTape = []; // {time,sym,type,side,price,pnl,roe,leverage,tag,reason,note}
+    let seenTradeMsg = new Set();
+    let tradeTapeSeeded = false;
+    let lastLogs = [];
     let equitySeeded = false;
+
+    // positions: highlight recent ENTER
+    const POS_ENTER_FLASH_MS = 5000;
+    let recentPosEnterUntil = new Map(); // sym -> expiry_ts_ms
+    let positionsSeeded = false;
+    let prevOpenSyms = new Set();
+    let posFlashTimer = null;
+
+    function normRecordMode(m) {
+      const s = String(m || '').trim().toLowerCase();
+      return (s === 'live') ? 'live' : 'paper';
+    }
+
+    function saveRecordState() {
+      if (!recordMode) return;
+      modeState.set(recordMode, {
+        equityHist,
+        tradeTape,
+        seenTradeMsg,
+        tradeTapeSeeded,
+        equitySeeded,
+        positionsSeeded,
+        prevOpenSyms,
+        recentPosEnterUntil,
+      });
+    }
+
+    function loadRecordState(mode) {
+      const m = normRecordMode(mode);
+      let st = modeState.get(m);
+      if (!st) {
+        st = {
+          equityHist: [],
+          tradeTape: [],
+          seenTradeMsg: new Set(),
+          tradeTapeSeeded: false,
+          equitySeeded: false,
+          positionsSeeded: false,
+          prevOpenSyms: new Set(),
+          recentPosEnterUntil: new Map(),
+        };
+        modeState.set(m, st);
+      }
+      equityHist = st.equityHist;
+      tradeTape = st.tradeTape;
+      seenTradeMsg = st.seenTradeMsg;
+      tradeTapeSeeded = !!st.tradeTapeSeeded;
+      equitySeeded = !!st.equitySeeded;
+      positionsSeeded = !!st.positionsSeeded;
+      prevOpenSyms = st.prevOpenSyms || new Set();
+      recentPosEnterUntil = st.recentPosEnterUntil || new Map();
+      recordMode = m;
+      if (recEl) {
+        recEl.textContent = m.toUpperCase();
+        recEl.className = `v ${m === 'live' ? 'on' : 'off'}`;
+        recEl.title = (m === 'live') ? 'LIVE 기록창 (Bybit Testnet)' : 'PAPER 기록창 (시뮬레이션)';
+      }
+    }
+
+    function switchRecordMode(mode) {
+      const next = normRecordMode(mode);
+      if (recordMode === next) return;
+      saveRecordState();
+      loadRecordState(next);
+      try { updateEquityChart(); } catch (e) { }
+      try { renderTradeTape(); } catch (e) { }
+    }
+
+    function resetForNewRun(runId) {
+      modeState.clear();
+      try { sparkHist.clear(); } catch (e) { }
+      try { rowCache.clear(); } catch (e) { }
+      try { posRowCache.clear(); } catch (e) { }
+      lastLogs = [];
+      recordMode = null;
+      equityHist = [];
+      tradeTape = [];
+      seenTradeMsg = new Set();
+      tradeTapeSeeded = false;
+      equitySeeded = false;
+      positionsSeeded = false;
+      prevOpenSyms = new Set();
+      recentPosEnterUntil = new Map();
+      lastRunId = runId ? String(runId) : null;
+      if (recEl) {
+        recEl.textContent = '-';
+        recEl.className = 'v';
+        recEl.title = '';
+      }
+    }
 
     // ✅ smoother rendering
     let latestPayload = null;
@@ -521,12 +1087,73 @@
 
     // ✅ market row cache for smooth update
     const rowCache = new Map(); // symbol -> {tr, cells[]}
+    const posRowCache = new Map(); // symbol -> {tr, cells[]}
 
     // ---------- helpers ----------
     const f2 = (x) => (x === null || x === undefined || isNaN(x)) ? '-' : Number(x).toFixed(2);
+    const fmtTs = (t) => {
+      if (t === null || t === undefined) return '-';
+      if (typeof t === 'string') return t;
+      const n = Number(t);
+      if (!isFinite(n)) return '-';
+      // epoch ms -> HH:MM:SS
+      if (n > 1e11) {
+        try { return new Date(n).toLocaleTimeString(undefined, { hour12: false }); } catch (e) { return String(n); }
+      }
+      return String(n);
+    };
+    const fmtPnl = (x) => {
+      if (x === null || x === undefined || isNaN(x)) return '-';
+      const v = Number(x);
+      const a = Math.abs(v);
+      if (a >= 1) return v.toFixed(2);
+      if (a >= 0.01) return v.toFixed(4);
+      if (a >= 0.0001) return v.toFixed(6);
+      return v.toExponential(2);
+    };
+    const fmtQty = (x) => {
+      if (x === null || x === undefined || isNaN(x)) return '-';
+      const v = Number(x);
+      const a = Math.abs(v);
+      if (a >= 10) return v.toFixed(2);
+      if (a >= 1) return v.toFixed(4);
+      return v.toFixed(6);
+    };
     const clamp = (a, lo, hi) => Math.max(lo, Math.min(hi, a));
+    const escHtml = (s) => String(s ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
 
     function isNum(x) { return x !== null && x !== undefined && !isNaN(Number(x)); }
+
+    function schedulePosFlashRefresh() {
+      if (posFlashTimer) return;
+      let soonest = null;
+      const now = Date.now();
+      for (const until of recentPosEnterUntil.values()) {
+        if (!until || until <= now) continue;
+        soonest = soonest === null ? until : Math.min(soonest, until);
+      }
+      if (soonest === null) return;
+      posFlashTimer = setTimeout(() => {
+        posFlashTimer = null;
+        const now2 = Date.now();
+        for (const [sym, until] of recentPosEnterUntil.entries()) {
+          if (!until || until <= now2) recentPosEnterUntil.delete(sym);
+        }
+        try {
+          if (latestPayload && latestPayload.type === 'full_update') {
+            const rows = latestPayload.market || [];
+            const positions = (latestPayload.portfolio && latestPayload.portfolio.positions) ? latestPayload.portfolio.positions : [];
+            renderPositions(positions, rows);
+          }
+        } catch (e) { }
+        schedulePosFlashRefresh();
+      }, Math.max(0, soonest - now + 20));
+    }
 
     // ✅ smooth number update (no design change)
     function smoothSetText(el, target, fmt = (v) => String(v), durMs = 260) {
@@ -594,28 +1221,122 @@
     }
 
     // ---------- charts ----------
+    // Chart.js is loaded lazily (after page load) so dashboard refresh is fast even if CDN is slow/offline.
+    const CHARTJS_SRC = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
+    let chartJsPromise = null;
+    let equityChart = null;
+
+    // Equity chart mode: 'line' (Chart.js) or 'candle' (exchange-style OHLC rendering).
+    let equityChartMode = localStorage.getItem('dashboard_equity_chart_mode') || 'line';
+
+    // Timeframe feature: window-based display
+    let timeframeWindowSeconds = 0;  // 0 = all data, 60 = 1min window, 300 = 5min, etc.
+    let scrollOffsetSeconds = 0;     // How many seconds to scroll back from latest
+
+    function loadChartJs() {
+      if (typeof Chart !== 'undefined') return Promise.resolve(true);
+      if (chartJsPromise) return chartJsPromise;
+      chartJsPromise = new Promise((resolve) => {
+        const s = document.createElement('script');
+        s.src = CHARTJS_SRC;
+        s.async = true;
+        s.onload = () => resolve(true);
+        s.onerror = () => resolve(false);
+        document.head.appendChild(s);
+      });
+      return chartJsPromise;
+    }
+
     const equityCanvas = $('equityChart');
-    const equityChart = (typeof Chart !== 'undefined' && equityCanvas) ? new Chart(equityCanvas, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [
-          { label: 'Equity', data: [], pointRadius: 0, borderWidth: 2, tension: .25, borderColor: '#2563eb' },
-        ]
-      },
-      options: {
-        animation: false,
-        responsive: true,
-        plugins: { legend: { display: true } },
-        scales: {
-          x: {
-            display: true,
-            ticks: { autoSkip: true, maxTicksLimit: 14 }
-          },
-          y: { ticks: { callback: (v) => v } }
+    function ensureEquityChart() {
+      if (equityChart || !equityCanvas) return;
+      if (equityChartMode !== 'line') return;
+      if (typeof Chart === 'undefined') return;
+      equityChart = new Chart(equityCanvas, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [
+            { label: 'Equity', data: [], pointRadius: 0, borderWidth: 2, tension: .25, borderColor: '#2563eb' },
+          ]
+        },
+        options: {
+          animation: false,
+          responsive: true,
+          plugins: { legend: { display: true } },
+          scales: {
+            x: {
+              display: true,
+              ticks: { autoSkip: true, maxTicksLimit: 14 }
+            },
+            y: {
+              beginAtZero: false,
+              ticks: {
+                callback: (v) => v.toLocaleString()
+              }
+            }
+          }
         }
+      });
+    }
+
+    function updateEquityModeBtn() {
+      const btn = $('equityModeBtn');
+      if (!btn) return;
+      btn.textContent = (equityChartMode === 'candle') ? '차트: 봉' : '차트: 라인';
+      if (equityChartMode === 'candle') {
+        btn.style.border = '1px solid var(--accent)';
+      } else {
+        btn.style.border = '1px solid var(--line)';
       }
-    }) : null;
+    }
+
+    function setEquityChartMode(mode) {
+      const m = (mode === 'candle') ? 'candle' : 'line';
+      equityChartMode = m;
+      localStorage.setItem('dashboard_equity_chart_mode', equityChartMode);
+      updateEquityModeBtn();
+
+      // Switching modes requires changing renderer.
+      try {
+        if (equityChart) {
+          equityChart.destroy();
+          equityChart = null;
+        }
+      } catch (e) { }
+
+      if (equityChartMode === 'line') {
+        loadChartJs().then((ok) => {
+          if (ok) ensureEquityChart();
+          updateEquityChart();
+        });
+      } else {
+        updateEquityChart();
+      }
+    }
+
+    // Initialize chart mode button + toggle
+    document.addEventListener('DOMContentLoaded', () => {
+      updateEquityModeBtn();
+      const btn = $('equityModeBtn');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          setEquityChartMode(equityChartMode === 'line' ? 'candle' : 'line');
+        });
+      }
+    });
+
+    // Load Chart.js after window load so it doesn't block refresh (line mode only).
+    window.addEventListener('load', () => {
+      if (equityChartMode === 'line') {
+        loadChartJs().then((ok) => {
+          if (ok) ensureEquityChart();
+          updateEquityChart();
+        });
+      } else {
+        updateEquityChart();
+      }
+    });
 
     function formatTimeLabel(ts, tfMin) {
       const d = new Date(ts);
@@ -625,38 +1346,310 @@
       if (tfMin >= 60) {
         return d.toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
       }
-      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      // Exchange-style: minute buckets don't need seconds on the x-axis.
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
     function buildEquitySeries() {
       const tfMin = Number(tfSel.value || 1);
       const bucketMs = tfMin * 60 * 1000;
-      if (!equityHist.length) return { labels: [], values: [] };
+      if (!equityHist.length) {
+        return {
+          labels: [],
+          values: [],
+          candles: [],
+          offset: 0,
+          total: 0,
+          viewStart: 0,
+          viewEnd: 0,
+          tfMin,
+        };
+      }
+
+      // 1. Group into buckets (OHLC on equity per timeframe)
       const buckets = new Map();
       equityHist.forEach(p => {
         const b = Math.floor(p.t / bucketMs);
-        buckets.set(b, p);
+        const eq = Number(p.equity);
+        if (!Number.isFinite(eq)) return;
+        let agg = buckets.get(b);
+        if (!agg) {
+          agg = {
+            b,
+            firstT: p.t,
+            lastT: p.t,
+            o: eq,
+            h: eq,
+            l: eq,
+            c: eq,
+          };
+          buckets.set(b, agg);
+          return;
+        }
+        // Open/close by time ordering (equity points are irregular)
+        if (p.t < agg.firstT) {
+          agg.firstT = p.t;
+          agg.o = eq;
+        }
+        if (p.t >= agg.lastT) {
+          agg.lastT = p.t;
+          agg.c = eq;
+        }
+        if (eq > agg.h) agg.h = eq;
+        if (eq < agg.l) agg.l = eq;
       });
-      const sorted = Array.from(buckets.entries()).sort((a, b) => a[0] - b[0]).map(e => e[1]);
+      const sortedBuckets = Array.from(buckets.entries()).sort((a, b) => a[0] - b[0]).map(e => e[1]);
+
+      // 2. Apply timeframe window filter
+      let filteredBuckets = sortedBuckets;
+
+      if (timeframeWindowSeconds > 0) {
+        // Calculate the time range to display
+        const latestTime = sortedBuckets[sortedBuckets.length - 1].lastT;
+        const windowEndTime = latestTime - (scrollOffsetSeconds * 1000);
+        const windowStartTime = windowEndTime - (timeframeWindowSeconds * 1000);
+
+        // Filter buckets within the window
+        filteredBuckets = sortedBuckets.filter(p =>
+          p.lastT >= windowStartTime && p.lastT <= windowEndTime
+        );
+      }
+
+      // If no timeframe filter, apply VIEW_BUCKETS-based scrolling (original logic)
+      if (timeframeWindowSeconds === 0) {
+        const totalAvailable = sortedBuckets.length;
+
+        // Clamp viewScrollOffset
+        if (viewScrollOffset < 0) viewScrollOffset = 0;
+        const maxOffset = Math.max(0, totalAvailable - 20);
+        if (viewScrollOffset > maxOffset) viewScrollOffset = maxOffset;
+
+        let endIdx = totalAvailable - viewScrollOffset;
+        let startIdx = endIdx - VIEW_BUCKETS;
+
+        if (startIdx < 0) startIdx = 0;
+        if (endIdx < startIdx) {
+          endIdx = startIdx;
+        }
+
+        filteredBuckets = sortedBuckets.slice(startIdx, endIdx);
+      }
+
+      const labels = filteredBuckets.map(p => formatTimeLabel(p.lastT, tfMin));
+      const values = filteredBuckets.map(p => p.c);
+      const candles = filteredBuckets.map(p => ({ o: p.o, h: p.h, l: p.l, c: p.c }));
       return {
-        labels: sorted.map(p => formatTimeLabel(p.t, tfMin)),
-        values: sorted.map(p => p.equity),
+        labels,
+        values,
+        candles,
+        offset: timeframeWindowSeconds > 0 ? scrollOffsetSeconds : viewScrollOffset,
+        total: sortedBuckets.length,
+        viewStart: 0,
+        viewEnd: filteredBuckets.length,
+        tfMin,
       };
     }
 
+    function drawEquityCandles(canvas, labels, candles, titleText) {
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const cw = Math.max(1, Math.floor(rect.width));
+      const ch = Math.max(1, Math.floor(rect.height));
+      const pw = Math.floor(cw * dpr);
+      const ph = Math.floor(ch * dpr);
+      if (canvas.width !== pw || canvas.height !== ph) {
+        canvas.width = pw;
+        canvas.height = ph;
+      }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Clear
+      ctx.clearRect(0, 0, cw, ch);
+
+      // Background (match dark-ish theme)
+      ctx.fillStyle = '#0b1220';
+      ctx.fillRect(0, 0, cw, ch);
+
+      if (!candles || !candles.length) {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '12px ui-monospace, monospace';
+        ctx.fillText('No equity data', 12, 20);
+        return;
+      }
+
+      const padL = 60, padR = 16, padT = 26, padB = 28;
+      const plotW = cw - padL - padR;
+      const plotH = ch - padT - padB;
+      if (plotW <= 10 || plotH <= 10) return;
+
+      let minV = Infinity, maxV = -Infinity;
+      for (const c of candles) {
+        if (Number.isFinite(c.l)) minV = Math.min(minV, c.l);
+        if (Number.isFinite(c.h)) maxV = Math.max(maxV, c.h);
+      }
+      if (!Number.isFinite(minV) || !Number.isFinite(maxV) || minV === maxV) {
+        minV = minV || 0;
+        maxV = minV + 1;
+      }
+      const pad = (maxV - minV) * 0.06;
+      minV -= pad;
+      maxV += pad;
+
+      const yOf = (v) => padT + (maxV - v) / (maxV - minV) * plotH;
+      const x0 = padL;
+      const y0 = padT;
+      const x1 = padL + plotW;
+      const y1 = padT + plotH;
+
+      // Grid + Y labels
+      ctx.strokeStyle = 'rgba(148,163,184,0.18)';
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px ui-monospace, monospace';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      const yTicks = 5;
+      for (let i = 0; i < yTicks; i++) {
+        const t = i / (yTicks - 1);
+        const v = maxV - (maxV - minV) * t;
+        const y = yOf(v);
+        ctx.beginPath();
+        ctx.moveTo(x0, y);
+        ctx.lineTo(x1, y);
+        ctx.stroke();
+        ctx.fillText(v.toFixed(2), padL - 8, y);
+      }
+
+      // Title
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '13px ui-monospace, monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText(titleText || 'Equity (OHLC)', padL, 18);
+
+      // Candles
+      const n = candles.length;
+      const candleW = plotW / n;
+      const bodyW = Math.max(2, Math.min(14, candleW * 0.6));
+      ctx.lineWidth = 1;
+      for (let i = 0; i < n; i++) {
+        const c = candles[i];
+        const o = Number(c.o), h = Number(c.h), l = Number(c.l), cl = Number(c.c);
+        if (![o, h, l, cl].every(Number.isFinite)) continue;
+        const up = cl >= o;
+        const color = up ? '#16a34a' : '#dc2626';
+        const x = padL + (i + 0.5) * candleW;
+        const yH = yOf(h);
+        const yL = yOf(l);
+        const yO = yOf(o);
+        const yC = yOf(cl);
+
+        // Wick
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(x, yH);
+        ctx.lineTo(x, yL);
+        ctx.stroke();
+
+        // Body
+        const top = Math.min(yO, yC);
+        const bot = Math.max(yO, yC);
+        const hBody = Math.max(1, bot - top);
+        ctx.fillStyle = up ? 'rgba(22,163,74,0.55)' : 'rgba(220,38,38,0.55)';
+        ctx.fillRect(x - bodyW / 2, top, bodyW, hBody);
+        ctx.strokeStyle = color;
+        ctx.strokeRect(x - bodyW / 2, top, bodyW, hBody);
+      }
+
+      // X labels (sparse)
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px ui-monospace, monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      const maxXTicks = 6;
+      const step = Math.max(1, Math.ceil(n / maxXTicks));
+      for (let i = 0; i < n; i += step) {
+        const x = padL + (i + 0.5) * candleW;
+        const lab = labels[i] || '';
+        ctx.fillText(lab, x, y1 + 6);
+      }
+
+      // Border
+      ctx.strokeStyle = 'rgba(148,163,184,0.22)';
+      ctx.strokeRect(x0, y0, plotW, plotH);
+    }
+
     function updateEquityChart() {
-      if (!equityChart) return;
-      const { labels, values } = buildEquitySeries();
+      const series = buildEquitySeries();
+      const { labels, values, candles, offset, total, viewStart, viewEnd } = series;
+
+      let title = (equityChartMode === 'candle') ? 'Equity (봉, OHLC)' : 'Equity (Real-time)';
+      if (offset > 0) {
+        title = `Equity (Historical: ${viewStart + 1}~${viewEnd} / ${total} buckets)`;
+      }
+
+      // Sync scrollbar
+      if (equityScroll) {
+        const maxOffset = Math.max(0, total - 10);
+        equityScroll.max = maxOffset;
+        equityScroll.value = offset;
+      }
+
+      if (equityChartMode === 'candle') {
+        try {
+          if (equityChart) {
+            equityChart.destroy();
+            equityChart = null;
+          }
+        } catch (e) { }
+        drawEquityCandles(equityCanvas, labels, candles || [], title);
+        return;
+      }
+
+      if (!equityChart) {
+        ensureEquityChart();
+        if (!equityChart) return;
+      }
+
+      // In Chart.js v4, plugins.legend.title might need to be enabled
+      if (!equityChart.options.plugins.legend) equityChart.options.plugins.legend = {};
+      equityChart.options.plugins.legend.title = {
+        display: true,
+        text: title,
+        font: { size: 14, weight: 'bold' },
+        padding: { bottom: 10 }
+      };
+
       equityChart.data.labels = labels;
       equityChart.data.datasets[0].data = values;
-      equityChart.update('none');
+
+      // Dynamic scaling with padding
+      if (values.length > 0) {
+        const minVal = Math.min(...values);
+        const maxVal = Math.max(...values);
+        const padding = (maxVal - minVal) * 0.1 || Math.abs(maxVal) * 0.01 || 10;
+
+        equityChart.options.scales.y.min = minVal - padding;
+        equityChart.options.scales.y.max = maxVal + padding;
+      }
+
+      equityChart.update();
     }
 
     function pushEquityPoint(t, equity) {
       equityHist.push({ t, equity });
       if (equityHist.length > maxPoints) equityHist.shift();
+      console.log('pushEquityPoint: equityHist length =', equityHist.length);
       updateEquityChart();
     }
+
+    // Log equityHist length on page load (in case data already present)
+    window.addEventListener('load', () => {
+      console.log('Page loaded, equityHist length =', equityHist.length);
+    });
 
     function pushSymPoint(sym, t, price) {
       if (!sparkHist.has(sym)) sparkHist.set(sym, []);
@@ -692,10 +1685,92 @@
       const data = (rows || []).map(x => {
         const sym = normSym(x.symbol);
         const evp = (x.ev || 0) * 100;
-        const ev_raw_p = (x.ev_raw || 0) * 100;
+        const ev_raw = isNum(x.ev_raw) ? Number(x.ev_raw) : null;
+        const ev_raw_p = (ev_raw || 0) * 100;
         const confp = (x.conf || 0) * 100;
         const mc_win = (x.mc_win_rate || 0) * 100;
         const pos_roe = (x.pos_roe || 0) * 100;
+        const funnel_reason = x.funnel_reason || (x.details && x.details[0] && x.details[0].meta && x.details[0].meta.funnel_reason) || '';
+        const mu_alpha = (x.mu_alpha !== null && x.mu_alpha !== undefined && !isNaN(Number(x.mu_alpha))) ? Number(x.mu_alpha) : null;
+        const mu_alpha_raw = (x.mu_alpha_raw !== null && x.mu_alpha_raw !== undefined && !isNaN(Number(x.mu_alpha_raw))) ? Number(x.mu_alpha_raw) : null;
+        const pm_fill = (x.mu_alpha_pmaker_fill_rate !== null && x.mu_alpha_pmaker_fill_rate !== undefined && !isNaN(Number(x.mu_alpha_pmaker_fill_rate))) ? Number(x.mu_alpha_pmaker_fill_rate) : null;
+        const pm_boost = (x.mu_alpha_pmaker_boost !== null && x.mu_alpha_pmaker_boost !== undefined && !isNaN(Number(x.mu_alpha_pmaker_boost))) ? Number(x.mu_alpha_pmaker_boost) : null;
+        const execution_cost = (x.execution_cost !== null && x.execution_cost !== undefined && !isNaN(Number(x.execution_cost))) ? Number(x.execution_cost) : null;
+        const expected_spread_cost = (x.expected_spread_cost !== null && x.expected_spread_cost !== undefined && !isNaN(Number(x.expected_spread_cost))) ? Number(x.expected_spread_cost) : null;
+        const slippage_dyn = (x.slippage_dyn !== null && x.slippage_dyn !== undefined && !isNaN(Number(x.slippage_dyn))) ? Number(x.slippage_dyn) : null;
+        const fee_mix = (x.fee_roundtrip_fee_mix !== null && x.fee_roundtrip_fee_mix !== undefined && !isNaN(Number(x.fee_roundtrip_fee_mix))) ? Number(x.fee_roundtrip_fee_mix) : null;
+        const spread_pct_used = (x.spread_pct_used !== null && x.spread_pct_used !== undefined && !isNaN(Number(x.spread_pct_used))) ? Number(x.spread_pct_used) : null;
+        const p_maker = (x.p_maker !== null && x.p_maker !== undefined && !isNaN(Number(x.p_maker))) ? Number(x.p_maker) : null;
+        const exec_mode = (x.exec_mode || '').toString();
+        const cost_bp = (execution_cost === null ? null : execution_cost * 10000);
+        const policy_ev_target = isNum(x.policy_ev_target) ? Number(x.policy_ev_target) : null;
+        const policy_ev_bonus = isNum(x.policy_ev_bonus) ? Number(x.policy_ev_bonus) : null;
+        const policy_ev_penalty = isNum(x.policy_ev_penalty) ? Number(x.policy_ev_penalty) : null;
+        const policy_ev_adjust = isNum(x.policy_ev_adjust) ? Number(x.policy_ev_adjust) : null;
+        const policy_ev_score_long = isNum(x.policy_ev_score_long) ? Number(x.policy_ev_score_long) : null;
+        const policy_ev_score_short = isNum(x.policy_ev_score_short) ? Number(x.policy_ev_score_short) : null;
+        const policy_ev_mix_long = isNum(x.policy_ev_mix_long) ? Number(x.policy_ev_mix_long) : null;
+        const policy_ev_mix_short = isNum(x.policy_ev_mix_short) ? Number(x.policy_ev_mix_short) : null;
+        const policy_best_ev_gap = isNum(x.policy_best_ev_gap) ? Number(x.policy_best_ev_gap) : null;
+        const policy_ev_gap = isNum(x.policy_ev_gap) ? Number(x.policy_ev_gap) : null;
+        const policy_ev_neighbor_veto_abs = isNum(x.policy_ev_neighbor_veto_abs) ? Number(x.policy_ev_neighbor_veto_abs) : null;
+
+        // Diff: Parse per-horizon MC metrics for tooltip
+        const policy_ev_per_h = x.policy_ev_per_h || {};
+        const policy_p_pos_per_h = x.policy_p_pos_per_h || {};
+        const policy_cvar_per_h = x.policy_cvar_per_h || {};
+
+        let mc_breakdown = '';
+        try {
+          const h_keys = Object.keys(policy_ev_per_h).map(Number).sort((a, b) => a - b);
+          if (h_keys.length > 0) {
+            mc_breakdown = '\n[Horizons]\n';
+            mc_breakdown += h_keys.map(h => {
+              const ev = policy_ev_per_h[h];
+              const p = policy_p_pos_per_h[h];
+              const cvar = policy_cvar_per_h[h];
+              // h is seconds -> convert to min/hour
+              let h_lbl = `${h}s`;
+              if (h >= 3600) h_lbl = `${(h / 3600).toFixed(1)}h`;
+              else if (h >= 60) h_lbl = `${(h / 60).toFixed(0)}m`;
+
+              const ev_s = (ev !== null && ev !== undefined) ? (ev * 100).toFixed(2) : '-';
+              const p_s = (p !== null && p !== undefined) ? (p * 100).toFixed(0) : '-';
+              // cvar usually negative
+              const c_s = (cvar !== null && cvar !== undefined) ? cvar.toFixed(3) : '-';
+              return `${h_lbl}: EV${ev_s}% Win${p_s}% CVaR${c_s}`;
+            }).join('\n');
+          }
+        } catch (e) { }
+
+        const fmtEvPct = (v) => (v === null ? '-' : `${(Number(v) * 100).toFixed(2)}%`);
+        const ev_title =
+          ((policy_ev_score_long === null && policy_ev_score_short === null && policy_ev_target === null)
+            ? ''
+            : `scoreL ${fmtEvPct(policy_ev_score_long)} · scoreS ${fmtEvPct(policy_ev_score_short)} · gap ${fmtEvPct(policy_ev_gap)} (bestGap ${fmtEvPct(policy_best_ev_gap)})\n` +
+            `target ${fmtEvPct(policy_ev_target)} · bonus ${fmtEvPct(policy_ev_bonus)} · pen ${fmtEvPct(policy_ev_penalty)} · adj ${fmtEvPct(policy_ev_adjust)} · veto ${fmtEvPct(policy_ev_neighbor_veto_abs)}\n` +
+            `raw ${fmtEvPct(ev_raw)} · net ${fmtEvPct(isNum(x.ev) ? Number(x.ev) : null)}`)
+          + mc_breakdown;
+
+        // ✅ HYBRID: ev_score_p (SCORE%) uses policy_ev_score_long/short
+        let ev_score_p = 0;
+        let ev_score_label = null;
+        if (policy_ev_score_long !== null || policy_ev_score_short !== null) {
+          const sL = policy_ev_score_long;
+          const sS = policy_ev_score_short;
+          if (sL !== null && sS !== null) {
+            if (Number(sL) >= Number(sS)) { ev_score_p = Number(sL) * 100; ev_score_label = `L${ev_score_p.toFixed(2)}`; }
+            else { ev_score_p = Number(sS) * 100; ev_score_label = `S${ev_score_p.toFixed(2)}`; }
+          } else if (sL !== null) {
+            ev_score_p = Number(sL) * 100; ev_score_label = `L${ev_score_p.toFixed(2)}`;
+          } else if (sS !== null) {
+            ev_score_p = Number(sS) * 100; ev_score_label = `S${ev_score_p.toFixed(2)}`;
+          }
+        }
+
+        // ✅ HYBRID: napv_p (NAPV%) uses actual napv from backend
+        let napv_p = isNum(x.napv) ? Number(x.napv) * 100 : 0;
+        let napv_title = `NAPV: ${(napv_p / 100).toFixed(6)}`;
 
         const action_type =
           x.action_type ||
@@ -707,29 +1782,73 @@
           symbol: sym,
           price: x.price ?? null,
           status: x.status || 'WAIT',
+          funnel_reason,
           regime: x.regime || '-',
           action_type: action_type || '-',
           evp,
           ev_raw_p,
+          ev_score_p,
+          ev_score_label,
+          napv_p,
+          napv_title,
+          cost_bp,
+          ev_title,
+          cost_title:
+            (execution_cost === null && expected_spread_cost === null && slippage_dyn === null && fee_mix === null)
+              ? ''
+              : `fee ${(fee_mix === null ? '-' : (fee_mix * 10000).toFixed(1))}bp · ` +
+              `spr ${(expected_spread_cost === null ? '-' : (expected_spread_cost * 10000).toFixed(1))}bp · ` +
+              `slip ${(slippage_dyn === null ? '-' : (slippage_dyn * 10000).toFixed(1))}bp · ` +
+              `sp ${(spread_pct_used === null ? '-' : (spread_pct_used * 10000).toFixed(1))}bp · ` +
+              `exec ${exec_mode || '-'} · p_maker ${(p_maker === null ? '-' : p_maker.toFixed(2))}`,
           confp,
+          mu_alpha,
+          mu_alpha_raw,
+          pm_fill,
+          pm_boost,
           event_p_tp: x.event_p_tp === null || x.event_p_tp === undefined ? null : Number(x.event_p_tp * 100),
           event_p_timeout: x.event_p_timeout === null || x.event_p_timeout === undefined ? null : Number(x.event_p_timeout * 100),
           event_t_median: x.event_t_median === null || x.event_t_median === undefined ? null : Number(x.event_t_median),
           mc_win_rate: mc_win,
           mc_cvar: x.mc_cvar ?? x.mc_cvar_pct ?? null,
           kelly: x.kelly ?? x.kelly_frac ?? null,
+          optimal_leverage: (x.optimal_leverage !== null && x.optimal_leverage !== undefined && !isNaN(Number(x.optimal_leverage))) ? Number(x.optimal_leverage) : null,
           pos_roe,
           pos_leverage: x.pos_leverage ?? null,
-          pos_cap_frac: x.pos_cap_frac === null || x.pos_cap_frac === undefined ? null : Number(x.pos_cap_frac * 100),
+          pos_cap_frac: (() => {
+            const cap_frac = x.pos_cap_frac;
+            const lev = x.pos_leverage ?? x.optimal_leverage ?? 1.0;
+            if (cap_frac !== null && cap_frac !== undefined && lev) {
+              // (notional/balance) / 10 * 100 -> relative to 10x cap
+              return Number((cap_frac * lev) / 10 * 100);
+            }
+            return cap_frac === null || cap_frac === undefined ? null : Number(cap_frac * 10);
+          })(),
+          allowed_cap: x.allowed_cap === null || x.allowed_cap === undefined ? null : Number(x.allowed_cap / 10 * 100),
+          rank: x.rank ?? null,
+          group: x.group || '-',
           pos_pnl: x.pos_pnl ?? null,
+          optimal_horizon_sec: x.optimal_horizon_sec ?? x.best_h ?? null,
+          entry_block_reason: x.entry_block_reason || x.funnel_reason || '-'
         };
       }).filter(r => {
         if (!q) return true;
-        const hay = `${r.symbol} ${r.status} ${r.regime} ${r.action_type}`.toLowerCase();
+        const hay = `${r.symbol} ${r.status} ${r.regime} ${r.action_type} ${r.group}`.toLowerCase();
         return hay.includes(q);
       });
 
       data.sort((a, b) => {
+        // First sort by group priority (TOP10 > OTHER)
+        const groupOrder = { 'TOP10': 0, 'OTHER': 1 };
+        const gDiff = (groupOrder[a.group] || 99) - (groupOrder[b.group] || 99);
+        if (gDiff !== 0) return gDiff;
+
+        // Then by rank within group
+        const rA = a.rank !== null && a.rank !== undefined ? a.rank : 999;
+        const rB = b.rank !== null && b.rank !== undefined ? b.rank : 999;
+        if (rA !== rB) return rA - rB;
+
+        // Finally by sort key if specified
         const va = a[sortKey], vb = b[sortKey];
         const na = (va === null || va === undefined) ? -Infinity : va;
         const nb = (vb === null || vb === undefined) ? -Infinity : vb;
@@ -740,13 +1859,33 @@
 
       // ✅ smooth: reuse <tr> nodes, reorder with fragment
       const frag = document.createDocumentFragment();
+      let lastGroup = null;
 
       data.forEach(r => {
+        // Add group separator row
+        if (r.group !== lastGroup) {
+          const sepTr = document.createElement('tr');
+          sepTr.style.background = '#f3f4f6';
+          sepTr.style.fontWeight = '700';
+          sepTr.style.fontSize = '11px';
+          sepTr.style.color = '#374151';
+          const sepTd = document.createElement('td');
+          sepTd.colSpan = 29;
+          sepTd.style.padding = '6px 10px';
+          let groupLabel = r.group;
+          if (r.group === 'TOP10') groupLabel = '🔵 TOP10 (Kelly Allocation)';
+          else groupLabel = '⚪ OTHER (No Allocation)';
+          sepTd.textContent = groupLabel;
+          sepTr.appendChild(sepTd);
+          frag.appendChild(sepTr);
+          lastGroup = r.group;
+        }
+
         let cached = rowCache.get(r.symbol);
         if (!cached) {
           const tr = document.createElement('tr');
           const cells = [];
-          for (let i = 0; i < 19; i++) {
+          for (let i = 0; i < 29; i++) {
             const td = document.createElement('td');
             cells.push(td);
             tr.appendChild(td);
@@ -767,31 +1906,78 @@
         else tr.classList.remove('sel');
 
         const cls = statusClass(r.status);
+        const whyTitle = r.funnel_reason ? ` title="${escHtml(r.funnel_reason)}"` : '';
 
         c[0].className = 'mono'; c[0].innerHTML = `<b>${r.symbol}</b>`;
-        c[1].className = 'mono'; c[1].textContent = (r.price !== null ? f2(r.price) : '-');
-        c[2].className = ''; c[2].innerHTML = `<span class="pill ${cls}">${r.status}</span>`;
-        c[3].className = 'mono'; c[3].textContent = r.regime;
-        c[4].className = 'mono'; c[4].textContent = r.action_type;
 
+        let gClass = 'mono';
+        let gHtml = r.group;
+        if (r.group === 'TOP10') gHtml = `<span class="pill g1">TOP10</span>`;
+        else if (r.group === 'OTHER') gHtml = `<span class="pill other">OTHER</span>`;
+        c[1].className = gClass; c[1].innerHTML = gHtml;
+        c[2].className = 'mono'; c[2].textContent = (r.rank !== null ? r.rank : '-');
+
+        // New Col 3: SCORE% (Entry/Allocation)
+        c[3].className = `mono ${(r.ev_score_p >= 0) ? 'up' : 'down'}`; c[3].textContent = (r.ev_score_label ? r.ev_score_label : r.ev_score_p.toFixed(2));
+        if (r.ev_title) c[3].title = r.ev_title; else c[3].removeAttribute('title');
+
+        // New Col 4: NAPV% (Exit Decision)
+        c[4].className = `mono ${(r.napv_p >= 0) ? 'up' : 'down'}`; c[4].textContent = r.napv_p.toFixed(2);
+        c[4].title = r.napv_title || '';
+
+        // New Col 5: EV% (Raw/Engine)
         c[5].className = `mono ${(r.evp >= 0) ? 'up' : 'down'}`; c[5].textContent = r.evp.toFixed(2);
-        c[6].className = `mono ${(r.ev_raw_p >= 0) ? 'up' : 'down'}`; c[6].textContent = r.ev_raw_p.toFixed(2);
-        c[7].className = 'mono'; c[7].textContent = r.confp.toFixed(1);
+        c[5].title = "Pure Engine EV (No Costs)";
 
-        c[8].className = 'mono'; c[8].textContent = (r.event_p_tp === null ? '-' : r.event_p_tp.toFixed(1));
-        c[9].className = 'mono'; c[9].textContent = (r.event_p_timeout === null ? '-' : r.event_p_timeout.toFixed(1));
-        c[10].className = 'mono'; c[10].textContent = (r.event_t_median === null ? '-' : r.event_t_median.toFixed(0));
+        // New Col 6: T* (Optimal Horizon)
+        c[6].className = 'mono'; c[6].textContent = (r.optimal_horizon_sec === null ? '-' : r.optimal_horizon_sec.toFixed(0) + 's');
 
-        c[11].className = 'mono'; c[11].textContent = r.mc_win_rate.toFixed(1);
-        c[12].className = 'mono'; c[12].textContent = (r.mc_cvar === null ? '-' : f2(r.mc_cvar));
-        c[13].className = 'mono'; c[13].textContent = (r.kelly === null ? '-' : f2(r.kelly));
+        // New Col 7: WHY
+        c[7].className = 'mono muted'; c[7].style.fontSize = '11px'; c[7].textContent = (r.entry_block_reason || '-').substring(0, 20);
+        c[7].title = r.entry_block_reason || '';
 
-        c[14].className = `mono ${(r.pos_roe >= 0) ? 'up' : 'down'}`; c[14].textContent = r.pos_roe.toFixed(2);
-        c[15].className = 'mono'; c[15].textContent = (r.pos_leverage === null ? '-' : r.pos_leverage);
-        c[16].className = 'mono'; c[16].textContent = (r.pos_cap_frac === null ? '-' : r.pos_cap_frac.toFixed(2));
-        c[17].className = `mono ${((r.pos_pnl || 0) >= 0) ? 'up' : 'down'}`; c[17].textContent = (r.pos_pnl === null ? '-' : f2(r.pos_pnl));
+        // New Col 8: STATUS
+        c[8].className = ''; c[8].innerHTML = `<span class="pill ${cls}"${whyTitle}>${r.status}</span>`;
 
-        c[18].className = ''; c[18].innerHTML = sparkSvg(r.symbol);
+        // New Col 9: REGIME
+        c[9].className = 'mono'; c[9].textContent = r.regime;
+
+        // New Col 10: ROE
+        c[10].className = `mono ${(r.pos_roe >= 0) ? 'up' : 'down'}`; c[10].textContent = r.pos_roe.toFixed(2);
+
+        // New Col 11: PNL
+        c[11].className = `mono ${((r.pos_pnl || 0) >= 0) ? 'up' : 'down'}`; c[11].textContent = (r.pos_pnl === null ? '-' : fmtPnl(r.pos_pnl));
+
+        // New Col 12: PRICE
+        c[12].className = 'mono'; c[12].textContent = (r.price !== null ? f2(r.price) : '-');
+
+        // New Col 13: ACTION
+        c[13].className = 'mono'; c[13].textContent = r.action_type;
+
+        c[14].className = 'mono'; c[14].textContent = (r.cost_bp === null ? '-' : r.cost_bp.toFixed(1));
+        if (r.cost_title) c[14].title = r.cost_title; else c[14].removeAttribute('title');
+
+        c[15].className = 'mono'; c[15].textContent = r.confp.toFixed(1);
+        c[16].className = 'mono'; c[16].textContent = (r.mu_alpha === null ? '-' : r.mu_alpha.toFixed(2));
+        c[17].className = 'mono';
+        if (r.pm_fill === null && r.pm_boost === null) {
+          c[17].textContent = '-';
+        } else {
+          const fr = (r.pm_fill === null ? '-' : `${(r.pm_fill * 100).toFixed(1)}%`);
+          const b = (r.pm_boost === null ? '-' : `${r.pm_boost >= 0 ? '+' : ''}${r.pm_boost.toFixed(2)}`);
+          c[17].textContent = `FR ${fr} ${b}`;
+        }
+        c[18].className = 'mono'; c[18].textContent = (r.event_p_tp === null ? '-' : r.event_p_tp.toFixed(1));
+        c[19].className = 'mono'; c[19].textContent = (r.event_p_timeout === null ? '-' : r.event_p_timeout.toFixed(1));
+        c[20].className = 'mono'; c[20].textContent = (r.event_t_median === null ? '-' : r.event_t_median.toFixed(0));
+        c[21].className = 'mono'; c[21].textContent = r.mc_win_rate.toFixed(1);
+        c[22].className = 'mono'; c[22].textContent = (r.mc_cvar === null ? '-' : f2(r.mc_cvar));
+        c[23].className = 'mono'; c[23].textContent = (r.kelly === null ? '-' : f2(r.kelly));
+        c[24].className = 'mono'; c[24].textContent = (r.optimal_leverage === null ? '-' : r.optimal_leverage.toFixed(1));
+        c[25].className = 'mono'; c[25].textContent = (r.pos_leverage === null ? '-' : r.pos_leverage);
+        c[26].className = 'mono'; c[26].textContent = (r.pos_cap_frac === null ? '-' : r.pos_cap_frac.toFixed(2));
+        c[27].className = 'mono accent'; c[27].textContent = (r.allowed_cap === null ? '-' : r.allowed_cap.toFixed(1));
+        c[28].className = ''; c[28].innerHTML = sparkSvg(r.symbol);
 
         frag.appendChild(tr);
       });
@@ -805,66 +1991,243 @@
     }
 
     function renderPositions(positions, marketRows) {
-      const bySym = new Map((marketRows || []).map(r => [normSym(r.symbol), r]));
+      if (!Array.isArray(positions)) positions = [];
 
-      posBody.innerHTML = '';
-      (positions || []).forEach(p => {
-        const sym = normSym(p.symbol);
-        const m = bySym.get(sym) || {};
-        const side = p.side || m.status || '-';
-        const entry = p.entry_price ?? p.entry ?? null;
-        const cur = p.current ?? p.price ?? null;
-        const pnl = p.pnl ?? null;
-
-        const lev = p.leverage ?? (m.pos_leverage ?? 1.0);
-        const pnlPctRaw = (entry && cur) ? ((side === 'LONG' ? (cur - entry) : (entry - cur)) / entry) * 100 : null;
-        const pnlPct = pnlPctRaw === null ? null : (pnlPctRaw * (lev ?? 1.0));
-        const cap = p.cap_frac !== undefined && p.cap_frac !== null ? Number(p.cap_frac) * 100 : null;
-        const age = p.age_sec ?? (p.time ? Math.max(0, (Date.now() - p.time) / 1000) : null);
-
-        const cls = (side === 'LONG') ? 'up' : (side === 'SHORT') ? 'down' : 'muted';
-        const pnlCls = (pnl !== null && pnl < 0) ? 'down' : 'up';
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-        <td class="mono"><b>${sym}</b></td>
-        <td><span class="pill ${cls}">${side}</span></td>
-        <td class="mono">${entry === null ? '-' : f2(entry)}</td>
-        <td class="mono">${cur === null ? '-' : f2(cur)}</td>
-        <td class="mono ${pnlCls}">${pnl === null ? '-' : f2(pnl)}</td>
-        <td class="mono ${pnlPct !== null && pnlPct < 0 ? 'down' : 'up'}">${pnlPct === null ? '-' : pnlPct.toFixed(2)}</td>
-        <td class="mono">${lev === null ? '-' : lev}</td>
-        <td class="mono">${cap === null ? '-' : cap.toFixed(1)}</td>
-        <td class="mono">${age === null ? '-' : Number(age).toFixed(0)}</td>
-      `;
-        posBody.appendChild(tr);
+      // Sort by (rank, entry_order) to ensure unique ordering even when ranks duplicate
+      positions.sort((a, b) => {
+        const rankA = a.rank ?? 999;
+        const rankB = b.rank ?? 999;
+        if (rankA !== rankB) return rankA - rankB;
+        // Tie-breaker: use entry_order for unique sorting
+        const orderA = a.entry_order ?? 999;
+        const orderB = b.entry_order ?? 999;
+        return orderA - orderB;
       });
 
-      if (!(positions || []).length) {
-        posBody.innerHTML = `<tr><td class="muted" colspan="9">열려있는 포지션 없음</td></tr>`;
+      const bySym = new Map((marketRows || []).map(r => [normSym(r.symbol), r]));
+
+      const items = Array.isArray(positions) ? positions : [];
+      if (!items.length) {
+        posBody.innerHTML = `<tr><td class="muted" colspan="13">열려있는 포지션 없음</td></tr>`;
+        return;
       }
+
+      // Enrich positions with entry group (not current group)
+      const enriched = items.map(p => {
+        const sym = normSym(p.symbol);
+        const m = bySym.get(sym) || {};
+        // Use ENTRY group from position data (preferred), fallback to current group
+        const entryGroup = p.entry_group || p.group || m.group || 'OTHER';
+        const entryRank = p.entry_rank !== null && p.entry_rank !== undefined ? p.entry_rank : (m.rank !== null && m.rank !== undefined ? m.rank : '-');
+        return { ...p, entryGroup, entryRank, marketData: m };
+      });
+
+      // Sort by group priority (TOP10 > OTHER), then by rank
+      const groupOrder = { 'TOP10': 0, 'OTHER': 1 };
+      enriched.sort((a, b) => {
+        const gDiff = (groupOrder[a.entryGroup] || 99) - (groupOrder[b.entryGroup] || 99);
+        if (gDiff !== 0) return gDiff;
+        const rA = typeof a.entryRank === 'number' ? a.entryRank : 999;
+        const rB = typeof b.entryRank === 'number' ? b.entryRank : 999;
+        return rA - rB;
+      });
+
+      const frag = document.createDocumentFragment();
+      let lastGroup = null;
+
+      enriched.forEach(p => {
+        const sym = normSym(p.symbol);
+        const m = p.marketData;
+
+        // Add group separator row
+        if (p.entryGroup !== lastGroup) {
+          const sepTr = document.createElement('tr');
+          sepTr.style.background = '#f3f4f6';
+          sepTr.style.fontWeight = '700';
+          sepTr.style.fontSize = '11px';
+          sepTr.style.color = '#374151';
+          const sepTd = document.createElement('td');
+          sepTd.colSpan = 13;
+          sepTd.style.padding = '6px 10px';
+          let groupLabel = p.entryGroup;
+          if (p.entryGroup === 'TOP10') groupLabel = '🔵 TOP10 (Entry)';
+          else groupLabel = '⚪ OTHER (Entry)';
+          sepTd.textContent = groupLabel;
+          sepTr.appendChild(sepTd);
+          frag.appendChild(sepTr);
+          lastGroup = p.entryGroup;
+        }
+
+        const isLiveRec = (recordMode === 'live');
+        const side = (isLiveRec ? (p.side ?? '-') : (p.side ?? m.status ?? '-') || '-').toString().toUpperCase();
+        const cls = (side === 'LONG') ? 'up' : (side === 'SHORT') ? 'down' : 'muted';
+
+        const entry = isNum(p.entry_price) ? Number(p.entry_price) : (isNum(p.entry) ? Number(p.entry) : null);
+        // Live 모드에서는 포지션의 가격/마크를 거래소 sync 값으로만 표시 (시장 last price fallback 금지)
+        const cur = isNum(p.current)
+          ? Number(p.current)
+          : (isNum(p.price) ? Number(p.price) : (isLiveRec ? null : (isNum(m.price) ? Number(m.price) : null)));
+        const pnl = isNum(p.pnl) ? Number(p.pnl) : (isNum(p.unrealized_pnl) ? Number(p.unrealized_pnl) : null);
+
+        // Applied leverage: prefer position notional/margin (source of truth), then stored leverage fields.
+        let lev = null;
+        try {
+          if (isNum(p.notional) && isNum(p.margin) && Number(p.margin) > 0) {
+            lev = Number(p.notional) / Number(p.margin);
+          }
+        } catch (e) { }
+        if (lev === null) lev = isNum(p.leverage) ? Number(p.leverage) : null;
+        if (lev === null) lev = isNum(p.leverage_used) ? Number(p.leverage_used) : null;
+        if (lev === null) lev = isNum(m.pos_leverage) ? Number(m.pos_leverage) : null;
+        if (lev === null) lev = isNum(m.optimal_leverage) ? Number(m.optimal_leverage) : null;
+        if (lev === null) lev = 1.0;
+        const pnlPctRaw = (entry !== null && cur !== null && entry !== 0)
+          ? ((side === 'LONG' ? (cur - entry) : (entry - cur)) / entry) * 100
+          : null;
+        const prcChange = pnlPctRaw; // Raw price change %
+        const pnlPct = pnlPctRaw === null ? null : (pnlPctRaw * (lev ?? 1.0));
+        // Calculate actual capital utilization (notional / balance) including leverage
+        let cap = null;
+        try {
+          // Get balance from latest payload
+          const balance = (latestPayload && latestPayload.portfolio && latestPayload.portfolio.balance)
+            ? Number(latestPayload.portfolio.balance)
+            : 10000.0;
+
+          // Prefer notional from position data
+          if (isNum(p.notional) && balance > 0) {
+            cap = (Number(p.notional) / balance) * 100;
+          } else if (isNum(p.margin) && isNum(lev) && balance > 0) {
+            // Calculate notional from margin * leverage
+            const notional = Number(p.margin) * lev;
+            cap = (notional / balance) * 100;
+          } else if (isNum(p.cap_frac) && isNum(lev)) {
+            // Fallback: cap_frac * leverage
+            cap = Number(p.cap_frac) * lev * 100;
+          }
+        } catch (e) {
+          // Fallback to old method if calculation fails
+          cap = isNum(m.pos_cap_frac) ? Number(m.pos_cap_frac) * 100 : (isNum(p.cap_frac) ? Number(p.cap_frac) * 100 : null);
+        }
+
+        const t0 = isNum(p.time) ? Number(p.time) : null;
+        const age = t0 !== null ? Math.max(0, (Date.now() - t0) / 1000) : (isNum(p.age_sec) ? Number(p.age_sec) : null);
+
+        const pnlCls = (pnl !== null && pnl < 0) ? 'down' : 'up';
+
+        let cached = posRowCache.get(sym);
+        if (cached && cached.cells.length < 14) {
+          posRowCache.delete(sym);
+          cached = null;
+        }
+        if (!cached) {
+          const tr = document.createElement('tr');
+          const cells = [];
+          for (let i = 0; i < 14; i++) {
+            const td = document.createElement('td');
+            cells.push(td);
+            tr.appendChild(td);
+          }
+          cached = { tr, cells };
+          posRowCache.set(sym, cached);
+        }
+
+        const tr = cached.tr;
+        const c = cached.cells;
+
+        const until = recentPosEnterUntil.get(sym) || 0;
+        const isNew = until > Date.now();
+        tr.classList.toggle('pos-flash-enter', !!isNew);
+
+        c[0].className = 'mono';
+        const isLegacy = !!p.legacy;
+        const isOutside = !!p.outside_universe;
+        const closePending = !!p.close_pending;
+        let closeTitle = '';
+        try {
+          const note = (p.close_pending_note || '').toString();
+          const px = isNum(p.close_pending_price) ? Number(p.close_pending_price) : null;
+          closeTitle = escHtml(note + (px !== null ? ` @${f2(px)}` : ''));
+        } catch (e) { closeTitle = ''; }
+        c[0].innerHTML = `<b>${sym}</b>`
+          + (isNew ? ' <span class="pill new">NEW</span>' : '')
+          + (isLegacy ? ' <span class="pill muted">LEGACY</span>' : '')
+          + (isOutside ? ' <span class="pill outside">UNIV밖</span>' : '')
+          + (closePending ? ` <span class="pill warn"${closeTitle ? ` title="${closeTitle}"` : ''}>청산대기</span>` : '');
+
+        let gpClass = 'mono';
+        let gpHtml = p.entryGroup;
+        if (p.entryGroup === 'TOP10') gpHtml = `<span class="pill g1">TOP10</span>`;
+        else if (p.entryGroup === 'OTHER') gpHtml = `<span class="pill other">OTHER</span>`;
+        c[1].className = gpClass; c[1].innerHTML = gpHtml;
+        c[2].className = 'mono'; c[2].textContent = p.entryRank;
+        c[3].className = ''; c[3].innerHTML = `<span class="pill ${cls}">${side}</span>`;
+        c[4].className = 'mono'; c[4].textContent = entry === null ? '-' : f2(entry);
+        c[5].className = 'mono'; c[5].textContent = cur === null ? '-' : f2(cur);
+
+        c[6].className = 'mono ' + (prcChange === null ? '' : (prcChange < 0 ? 'down' : 'up'));
+        c[6].textContent = prcChange === null ? '-' : prcChange.toFixed(2) + '%';
+
+        c[7].className = 'mono ' + pnlCls;
+        c[7].textContent = pnl === null ? '-' : pnl.toFixed(2);
+
+        c[8].className = 'mono ' + (pnlPct === null ? '' : (pnlPct < 0 ? 'down' : 'up'));
+        c[8].textContent = pnlPct === null ? '-' : pnlPct.toFixed(2) + '%';
+
+        c[9].className = 'mono';
+        c[9].textContent = lev === null ? '-' : lev.toFixed(1) + 'x';
+
+        c[10].className = 'mono'; c[10].textContent = (cap === null ? '-' : cap.toFixed(1) + '%');
+
+        const targetCapFrac = isNum(p.rebalance_target_cap_frac) ? Number(p.rebalance_target_cap_frac) : null;
+        const targetUtil = (targetCapFrac !== null && isNum(lev)) ? (targetCapFrac * lev) / 10 * 100 : null;
+        c[11].className = 'mono';
+        c[11].textContent = targetUtil === null ? '-' : targetUtil.toFixed(1) + '%';
+
+        // Cumulative T*: Age + Current T*
+        let cur_t_star = p.current_optimal_horizon_sec || (m && m.optimal_horizon_sec) || 3600;
+        let cum_t_star = (age || 0) + cur_t_star;
+        c[12].className = 'mono';
+        c[12].textContent = cum_t_star.toFixed(0) + 's';
+        c[12].title = `보유시간(${(age || 0).toFixed(0)}s) + 현재T*(${cur_t_star.toFixed(0)}s)`;
+
+        c[13].className = 'mono'; c[13].textContent = (age === null ? '-' : age.toFixed(0) + 's');
+
+        frag.appendChild(tr);
+      });
+
+      posBody.replaceChildren(frag);
     }
 
     function renderTradeTape() {
-      tradeBody.innerHTML = '';
-      tradeTape.slice(-200).reverse().forEach(t => {
+      const items = tradeTape.slice(-200).reverse();
+      if (!items.length) {
+        tradeBody.innerHTML = `<tr><td class="muted" colspan="10">아직 트레이드 이벤트 없음 (ENTER/EXIT가 발생하면 여기에 PnL/사유가 표시됩니다)</td></tr>`;
+        return;
+      }
+
+      const findType = (txt) => {
+        const m = (txt || '').match(/\\b(ENTER|EXIT|REBAL|REBALANCE|SPREAD|PYRAMID|KILL)\\b/i);
+        return m ? m[1].toUpperCase() : null;
+      };
+      const findPnl = (txt) => { const pm = (txt || '').match(/pnl=([-0-9.]+)/i); return pm ? Number(pm[1]) : null; };
+      const findRoe = (txt) => { const rm = (txt || '').match(/roe=([-0-9.]+)/i); return rm ? Number(rm[1]) : null; };
+
+      tradeBody.innerHTML = items.map(t => {
         const sym = t.sym || t.symbol;
 
-        // ✅ TYPE 확정 로직: payload 우선 → 없으면 문자열 파싱 fallback
-        const findType = (txt) => { const m = (txt || '').match(/\\b(ENTER|EXIT|REBAL|REBALANCE|SPREAD|PYRAMID|KILL)\\b/i); return m ? m[1].toUpperCase() : null; };
         let ttype = (t.action_type || t.ttype || t.type || t.event || '').toString().toUpperCase();
         if (ttype === 'REBALANCE') ttype = 'REBAL';
-        if (!ttype || ttype === '-') {
-          ttype = findType(t.reason) || findType(t.note) || "-";
-        }
+        if (!ttype || ttype === '-') ttype = findType(t.reason) || findType(t.note) || "-";
 
         const side = (t.side || '').toUpperCase();
         const cls = (side === 'LONG') ? 'up' : (side === 'SHORT') ? 'down' : 'muted';
 
-        const findPnl = (txt) => { const pm = (txt || '').match(/pnl=([-0-9.]+)/i); return pm ? Number(pm[1]) : null; };
-        const findRoe = (txt) => { const rm = (txt || '').match(/roe=([-0-9.]+)/i); return rm ? Number(rm[1]) : null; };
+        const qty = (t.qty !== undefined) ? t.qty : (t.size !== undefined ? t.size : (t.quantity !== undefined ? t.quantity : null));
+        const entry = (t.entry_price !== undefined && t.entry_price !== null) ? Number(t.entry_price)
+          : ((t.entry !== undefined && t.entry !== null) ? Number(t.entry) : null);
 
-        let pnl = (t.pnl !== undefined) ? t.pnl : null;
+        let pnl = (t.pnl !== undefined) ? t.pnl : ((t.realized_pnl !== undefined) ? t.realized_pnl : null);
         let roe = (t.roe !== undefined) ? t.roe : null;
 
         if ((pnl === null || pnl === undefined)) pnl = findPnl(t.note) ?? findPnl(t.reason);
@@ -877,24 +2240,45 @@
           try { roe = Number(t.realized_r); } catch (e) { }
         }
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-        <td class="mono">${t.time || '-'}</td>
-        <td class="mono"><b>${normSym(sym)}</b></td>
-        <td>${tradeTypeBadge(ttype)}</td>
-        <td><span class="pill ${cls}">${side || '-'}</span></td>
-        <td class="mono">${t.price === null || t.price === undefined ? '-' : f2(t.price)}</td>
-        <td class="mono ${(pnl !== null && pnl < 0) ? 'down' : 'up'}">${pnl === null || pnl === undefined ? '-' : f2(pnl)}</td>
-        <td class="mono">${roe === null || roe === undefined ? '-' : (roe * 100).toFixed(2)}</td>
-        <td class="mono">${t.leverage === null || t.leverage === undefined ? '-' : t.leverage}</td>
-        <td class="muted">${t.tag || ''} ${t.reason || t.note || ''}</td>
-      `;
-        tradeBody.appendChild(tr);
-      });
+        // Apply formatting for ROE (usually given as absolute decimal like 0.01 for 1%)
+        const roeDisplay = (roe === null || roe === undefined) ? '-' : (Number(roe) * 100).toFixed(2);
 
-      if (!tradeTape.length) {
-        tradeBody.innerHTML = `<tr><td class="muted" colspan="9">아직 트레이드 이벤트 없음 (logs에서 ENTER/EXIT가 찍히면 자동으로 들어옴)</td></tr>`;
-      }
+        // Format PnL with better handling for very small values
+        const pnlDisplay = (pnl === null || pnl === undefined) ? '-' : (() => {
+          const v = Number(pnl);
+          if (isNaN(v)) return '-';
+          if (v === 0) return '0.00';  // Show 0.00 instead of ~0
+          const a = Math.abs(v);
+          if (a >= 1) return v.toFixed(2);
+          if (a >= 0.01) return v.toFixed(4);
+          if (a >= 0.0001) return v.toFixed(6);
+          if (a < 0.000001) return '~0';
+          return v.toFixed(8);
+        })();
+
+        let why = (t.reason || t.exit_reason || t.note || '').toString();
+        if (t.pnl_estimated) {
+          why = (why ? (why + ' ') : '') + '(est)';
+        }
+        if (t.cost && ttype === 'REBAL') {
+          why = (why ? (why + ' | ') : '') + `cost: ${fmtPnl(t.cost)}`;
+        }
+
+        return `
+        <tr>
+          <td class="mono">${fmtTs(t.time)}</td>
+          <td class="mono"><b>${normSym(sym)}</b></td>
+          <td>${tradeTypeBadge(ttype)}</td>
+          <td><span class="pill ${cls}">${side || '-'}</span></td>
+          <td class="mono">${qty === null ? '-' : fmtQty(qty)}</td>
+          <td class="mono">${entry === null || isNaN(entry) ? '-' : f2(entry)}</td>
+          <td class="mono">${t.price === null || t.price === undefined ? '-' : f2(t.price)}</td>
+          <td class="mono ${(pnl !== null && pnl < 0) ? 'down' : 'up'}">${pnlDisplay}</td>
+          <td class="mono ${(roe !== null && roe < 0) ? 'down' : (roe !== null && roe > 0) ? 'up' : ''}">${roeDisplay}</td>
+          <td class="muted">${escHtml(why)}</td>
+        </tr>
+        `;
+      }).join('');
     }
 
     function updateTradeTapeFromLogs(logs) {
@@ -911,11 +2295,15 @@
     }
 
     function renderLogs(logs) {
-      logsEl.innerHTML = '';
-      (logs || []).slice(-250).forEach(l => {
+      const items = (logs || []).slice(-250);
+      if (!items.length) {
+        logsEl.innerHTML = '';
+        return;
+      }
+      logsEl.innerHTML = items.map(l => {
         const lvl = (l.level || 'INFO').toUpperCase();
-        logsEl.innerHTML += `<div>[${l.time}] <span class="muted">${lvl}</span> ${l.msg}</div>`;
-      });
+        return `<div>[${l.time}] <span class="muted">${lvl}</span> ${l.msg}</div>`;
+      }).join('');
     }
 
     // Sorting
@@ -932,10 +2320,24 @@
     searchEl.addEventListener('input', () => {
       if (latestPayload && latestPayload.market) renderMarketTable(latestPayload.market);
     });
-    tfSel.addEventListener('change', () => { updateEquityChart(); });
 
     function applyUpdate(d) {
       if (d.type !== 'full_update') return;
+
+      const logs = Array.isArray(d.logs) ? d.logs : lastLogs;
+      if (Array.isArray(d.logs)) lastLogs = d.logs;
+
+      // 엔진 재시작/모드 전환 시: 기록창(커브/테이프)을 섞지 않도록 분리/리셋
+      try {
+        const rid = (d.engine && (d.engine.run_id || d.engine.start_ms)) ? String(d.engine.run_id || d.engine.start_ms) : null;
+        if (rid && lastRunId !== rid) {
+          resetForNewRun(rid);
+        } else if (rid && !lastRunId) {
+          lastRunId = rid;
+        }
+        const mode = (d.engine && d.engine.record_mode) ? d.engine.record_mode : ((d.engine && d.engine.enable_orders) ? 'live' : 'paper');
+        if (mode) switchRecordMode(mode);
+      } catch (e) { }
 
       // topbar
       const ksOn = !!d.kill_switch;
@@ -947,14 +2349,36 @@
 
       wsEl.textContent = (d.engine && d.engine.ws_clients !== undefined) ? d.engine.ws_clients : '-';
       feedEl.textContent = (d.feed && d.feed.connected) ? 'OK' : 'STALE';
+      try {
+        const ageMs = (d.engine && d.engine.live_sync_age_ms !== undefined && d.engine.live_sync_age_ms !== null) ? Number(d.engine.live_sync_age_ms) : null;
+        const err = (d.engine && d.engine.live_sync_err) ? String(d.engine.live_sync_err) : '';
+        if (!syncEl) { /* noop */ }
+        else if (err) {
+          syncEl.textContent = 'ERR';
+          syncEl.title = err;
+        } else if (ageMs === null || isNaN(ageMs)) {
+          syncEl.textContent = '-';
+          syncEl.title = '';
+        } else if (ageMs < 2000) {
+          syncEl.textContent = 'OK';
+          syncEl.title = `last sync ${(ageMs / 1000).toFixed(1)}s ago`;
+        } else {
+          syncEl.textContent = (ageMs / 1000).toFixed(1) + 's';
+          syncEl.title = `last sync ${(ageMs / 1000).toFixed(1)}s ago`;
+        }
+      } catch (e) { }
       loopEl.textContent = (d.engine && d.engine.loop_ms !== undefined && d.engine.loop_ms !== null) ? `${Number(d.engine.loop_ms).toFixed(0)}ms` : '-';
 
       const utilVal = (d.portfolio && d.portfolio.utilization !== undefined) ? d.portfolio.utilization : null;
-      const utilCap = d.portfolio ? d.portfolio.utilization_cap : null;
-      utilEl.textContent = utilVal === null ? '-' : (utilVal * 100).toFixed(1) + '%' + (utilCap ? `/${(utilCap * 100).toFixed(0)}%` : '');
+      const utilCap = d.portfolio ? d.portfolio.utilization_cap : 10.0;
+      // Rescale to 0-100% based on utilCap (10.0x)
+      const utilPct = utilVal === null ? null : (utilVal * 100);
+      utilEl.textContent = utilPct === null ? '-' : utilPct.toFixed(1) + '%';
+      utilEl.title = `Leverage: ${utilVal ? utilVal.toFixed(2) : '-'}x / Max: ${utilCap}x`;
 
       // Alpha 값 표시 (선택된 심볼의 데이터에서 가져오기)
       let alphaText = '-';
+      let whyText = '-';
       if (selectedSym && d.market && Array.isArray(d.market)) {
         const symRow = d.market.find(r => normSym(r.symbol) === selectedSym);
         if (symRow) {
@@ -974,14 +2398,23 @@
             if (fillRate !== null) {
               parts.push(`FR=${(fillRate * 100).toFixed(1)}%`);
             }
-            if (boost !== null && Math.abs(boost) > 0.01) {
-              parts.push(`boost=${boost > 0 ? '+' : ''}${boost.toFixed(2)}`);
+            if (boost !== null) {
+              parts.push(`boost=${boost >= 0 ? '+' : ''}${boost.toFixed(2)}`);
             }
             alphaText = parts.join(' ');
+          }
+          const fr = symRow.funnel_reason;
+          if (fr !== null && fr !== undefined) {
+            const s = String(fr).trim();
+            if (s) whyText = s;
           }
         }
       }
       alphaEl.textContent = alphaText;
+      if (whyEl) {
+        whyEl.textContent = whyText;
+        try { whyEl.title = (whyText && whyText !== '-') ? whyText : ''; } catch (e) { }
+      }
 
       const evalm = d.eval_metrics || {};
       brierEl.textContent = evalm.brier === null || evalm.brier === undefined ? '-' : evalm.brier.toFixed(4);
@@ -1022,18 +2455,70 @@
 
       // positions
       const positions = (d.portfolio && d.portfolio.positions) ? d.portfolio.positions : [];
+      // Detect newly opened positions (avoid flashing on first seed)
+      try {
+        const openNow = new Set((positions || []).map(p => normSym(p.symbol)));
+        if (positionsSeeded) {
+          const now = Date.now();
+          for (const sym of openNow) {
+            if (!prevOpenSyms.has(sym)) {
+              recentPosEnterUntil.set(sym, now + POS_ENTER_FLASH_MS);
+            }
+          }
+          schedulePosFlashRefresh();
+        } else {
+          positionsSeeded = true;
+        }
+        prevOpenSyms = openNow;
+        // Prune expired markers
+        const now2 = Date.now();
+        for (const [sym, until] of recentPosEnterUntil.entries()) {
+          if (!until || until <= now2) recentPosEnterUntil.delete(sym);
+        }
+      } catch (e) { }
       renderPositions(positions, rows);
 
       // trade tape: payload 우선 → logs fallback
       if (Array.isArray(d.trade_tape) && d.trade_tape.length) {
+        tradeTapeSeeded = true;
         tradeTape.length = 0;
         d.trade_tape.slice(-500).forEach(t => tradeTape.push(t));
         renderTradeTape();
-      } else {
-        updateTradeTapeFromLogs(d.logs || []);
+      } else if (!tradeTapeSeeded) {
+        updateTradeTapeFromLogs(logs || []);
       }
 
-      renderLogs(d.logs || []);
+      renderLogs(logs || []);
+    }
+
+    // Toast notification
+    const toastContainer = $('toastContainer');
+    function showModeToast(mode, message) {
+      if (!toastContainer) return;
+      const toast = document.createElement('div');
+      toast.className = `toast mode-${mode}`;
+
+      const icon = mode === 'paper' ? '🟢' : '🔴';
+      const title = mode === 'paper' ? 'Paper Trading 모드 활성화' : 'Live Trading 모드 활성화';
+
+      toast.innerHTML = `
+        <div class="toast-icon">${icon}</div>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message || ''}</div>
+        </div>
+      `;
+
+      toastContainer.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('toast-hide');
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+          }
+        }, 300);
+      }, 3000);
     }
 
     function handleWsMessage(e) {
@@ -1053,6 +2538,116 @@
         });
       }
     }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+
+      // Determine scroll step based on mode
+      let step;
+      if (timeframeWindowSeconds > 0) {
+        // In timeframe mode: scroll by 10% of window size
+        step = Math.max(1, timeframeWindowSeconds / 10);  // seconds
+      } else {
+        // In normal mode: scroll by bucket count
+        step = Math.ceil(VIEW_BUCKETS / 10);
+      }
+
+      if (e.key === 'ArrowLeft') {
+        // Scroll backward in time
+        if (timeframeWindowSeconds > 0) {
+          scrollOffsetSeconds += step;
+        } else {
+          viewScrollOffset += step;
+        }
+        updateEquityChart();
+      } else if (e.key === 'ArrowRight') {
+        // Scroll forward in time
+        if (timeframeWindowSeconds > 0) {
+          scrollOffsetSeconds -= step;
+          if (scrollOffsetSeconds < 0) scrollOffsetSeconds = 0;
+        } else {
+          viewScrollOffset -= step;
+          if (viewScrollOffset < 0) viewScrollOffset = 0;
+        }
+        updateEquityChart();
+      } else if (e.key === 'Home') {
+        // Jump to latest data
+        if (timeframeWindowSeconds > 0) {
+          scrollOffsetSeconds = 0;
+        } else {
+          viewScrollOffset = 0;
+        }
+        updateEquityChart();
+      } else if (e.key === '-' || e.key === '_') {
+        // Zoom out (only in normal mode)
+        if (timeframeWindowSeconds === 0) {
+          const options = [100, 300, 1000, 3000, 10000, 50000];
+          let idx = options.indexOf(VIEW_BUCKETS);
+          if (idx < options.length - 1) {
+            zoomSel.value = options[idx + 1];
+            zoomSel.dispatchEvent(new Event('change'));
+          }
+        }
+      } else if (e.key === '=' || e.key === '+') {
+        // Zoom in (only in normal mode)
+        if (timeframeWindowSeconds === 0) {
+          const options = [100, 300, 1000, 3000, 10000, 50000];
+          let idx = options.indexOf(VIEW_BUCKETS);
+          if (idx > 0) {
+            zoomSel.value = options[idx - 1];
+            zoomSel.dispatchEvent(new Event('change'));
+          }
+        }
+      }
+    });
+
+    // Timeframe button click handlers
+    document.addEventListener('DOMContentLoaded', () => {
+      const tfBtns = document.querySelectorAll('.tfBtn');
+      tfBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tf = parseInt(btn.dataset.tf);  // seconds (60 = 1min, 300 = 5min, etc.)
+
+          if (tf === 0) {
+            // "All" button: use default settings
+            zoomSel.value = 300;  // Default 300 buckets
+            tfSel.value = 1;      // 1 minute buckets
+          } else {
+            // Convert seconds to minutes for tfSel
+            const tfMinutes = tf / 60;
+            tfSel.value = tfMinutes;
+
+            // Set VIEW_BUCKETS to show ~60 data points
+            VIEW_BUCKETS = 60;
+          }
+
+          // Reset scroll to latest
+          viewScrollOffset = 0;
+          scrollOffsetSeconds = 0;
+          timeframeWindowSeconds = 0;  // Disable timeframe window mode
+
+          // Update button styles
+          tfBtns.forEach(b => {
+            if (b === btn) {
+              b.style.border = '1px solid var(--accent)';
+              b.style.background = 'var(--accent)';
+              b.style.color = 'white';
+              b.classList.add('active');
+            } else {
+              b.style.border = '1px solid var(--line)';
+              b.style.background = 'var(--chip)';
+              b.style.color = '';
+              b.classList.remove('active');
+            }
+          });
+
+          // Update chart
+          updateEquityChart();
+        });
+      });
+    });
+
   </script>
 </body>
 

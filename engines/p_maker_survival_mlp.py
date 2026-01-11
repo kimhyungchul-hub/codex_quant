@@ -5,7 +5,7 @@ import math
 import random
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Tuple, List, Any
-
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -179,6 +179,26 @@ class PMakerSurvivalMLP:
         return -(torch.sum(log_surv[:k]) + self._safe_log(h[k]))
 
     # -------- predict --------
+    @torch.no_grad()
+    def predict(self, x: np.ndarray | torch.Tensor) -> np.ndarray:
+        """
+        Return logits for a single input x (feat_dim,).
+        Returns numpy array (T,).
+        """
+        self.model.eval()
+        
+        # Convert numpy to tensor if needed
+        if isinstance(x, np.ndarray):
+            x = torch.from_numpy(x).float()
+            
+        # Ensure input is on correct device and has batch dim if needed
+        x_in = x.to(self._dev)
+        if x_in.dim() == 1:
+            x_in = x_in.unsqueeze(0)
+        
+        logits = self.model(x_in).squeeze(0) # (T,)
+        return logits.cpu().numpy()
+
     @torch.no_grad()
     def predict_F_Emin(self, x: torch.Tensor, timeout_ms: int) -> Tuple[float, float]:
         """

@@ -1,6 +1,7 @@
 import os
 import time
 import random
+import threading
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -40,6 +41,7 @@ class OnlineAlphaTrainer:
         mcfg = AlphaHitConfig(horizons_sec=cfg.horizons_sec, n_features=cfg.n_features)
         self.model = AlphaHitMLP(mcfg).to(self.device)
         self.opt = torch.optim.AdamW(self.model.parameters(), lr=cfg.lr, weight_decay=1e-4)
+        self._lock = threading.Lock()
 
         self.buffer = []  # list of dicts
         self.last_train_ms = 0
@@ -71,10 +73,11 @@ class OnlineAlphaTrainer:
     ):
         if not self.cfg.enable:
             return
-        self.buffer.append({"x": x.astype(np.float32), "y": y, "ts_ms": ts_ms, "sym": symbol})
-        if len(self.buffer) > self.cfg.max_buffer:
-            # drop oldest
-            self.buffer = self.buffer[-self.cfg.max_buffer :]
+        with self._lock:
+            self.buffer.append({"x": x.astype(np.float32), "y": y, "ts_ms": ts_ms, "sym": symbol})
+            if len(self.buffer) > self.cfg.max_buffer:
+                # drop oldest
+                self.buffer = self.buffer[-self.cfg.max_buffer :]
 
     def _sample_batch(self) -> Optional[Dict[str, torch.Tensor]]:
         if len(self.buffer) < self.cfg.batch_size:
@@ -109,28 +112,30 @@ class OnlineAlphaTrainer:
             return {"enabled": False}
 
         out = {"enabled": True, "buffer_n": len(self.buffer), "loss": None}
-        self.model.train()
-        last_loss = None
-        for _ in range(self.cfg.steps_per_tick):
-            batch = self._sample_batch()
-            if batch is None:
-                break
-            pred = self.model(batch["x"])
-            loss = alpha_hit_loss(
-                pred,
-                batch["y_tp_long"], batch["y_sl_long"],
-                batch["y_tp_short"], batch["y_sl_short"],
-                label_smoothing=self.model.cfg.label_smoothing,
-                sample_weight=batch["w"],
-            )
-            self.opt.zero_grad(set_to_none=True)
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(self.model.parameters(), 5.0)
-            self.opt.step()
-            last_loss = float(loss.detach().cpu().item())
+        
+        with self._lock:
+            self.model.train()
+            last_loss = None
+            for _ in range(self.cfg.steps_per_tick):
+                batch = self._sample_batch()
+                if batch is None:
+                    break
+                pred = self.model(batch["x"])
+                loss = alpha_hit_loss(
+                    pred,
+                    batch["y_tp_long"], batch["y_sl_long"],
+                    batch["y_tp_short"], batch["y_sl_short"],
+                    label_smoothing=self.model.cfg.label_smoothing,
+                    sample_weight=batch["w"],
+                )
+                self.opt.zero_grad(set_to_none=True)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), 5.0)
+                self.opt.step()
+                last_loss = float(loss.detach().cpu().item())
 
-        out["loss"] = last_loss
-        return out
+            out["loss"] = last_loss
+            return out
 
     @torch.no_grad()
     def predict(self, x: np.ndarray) -> Dict[str, np.ndarray]:
@@ -140,13 +145,14 @@ class OnlineAlphaTrainer:
         """
         if not self.cfg.enable:
             return {}
-        self.model.eval()
-        X = torch.from_numpy(x.astype(np.float32)).to(self.device).unsqueeze(0)  # [1,F]
-        pred = self.model.predict(X)
-        return {
-            "p_tp_long": pred["p_tp_long"][0].detach().cpu().numpy(),
-            "p_sl_long": pred["p_sl_long"][0].detach().cpu().numpy(),
-            "p_tp_short": pred["p_tp_short"][0].detach().cpu().numpy(),
-            "p_sl_short": pred["p_sl_short"][0].detach().cpu().numpy(),
-        }
+        with self._lock:
+            self.model.eval()
+            X = torch.from_numpy(x.astype(np.float32)).to(self.device).unsqueeze(0)  # [1,F]
+            pred = self.model.predict(X)
+            return {
+                "p_tp_long": pred["p_tp_long"][0].detach().cpu().numpy(),
+                "p_sl_long": pred["p_sl_long"][0].detach().cpu().numpy(),
+                "p_tp_short": pred["p_tp_short"][0].detach().cpu().numpy(),
+                "p_sl_short": pred["p_sl_short"][0].detach().cpu().numpy(),
+            }
 

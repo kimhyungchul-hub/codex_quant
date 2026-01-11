@@ -55,6 +55,34 @@ def _load_env_file(path: str) -> bool:
     except Exception:
         return False
 
+def _load_env_file_override(path: str) -> bool:
+    """
+    Same as `_load_env_file`, but always overrides existing env vars.
+    Intended for `state/bybit.env` so live/paper runtime can be controlled
+    without being blocked by `.env` defaults.
+    """
+    try:
+        p = Path(path).expanduser()
+        if not p.exists() or not p.is_file():
+            return False
+        for raw in p.read_text(encoding="utf-8").splitlines():
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            key = k.strip()
+            if not key:
+                continue
+            val = v.strip()
+            if len(val) >= 2 and ((val[0] == val[-1] == '"') or (val[0] == val[-1] == "'")):
+                val = val[1:-1]
+            os.environ[key] = val
+        return True
+    except Exception:
+        return False
+
 def now_ms() -> int:
     return int(time.time() * 1000)
 

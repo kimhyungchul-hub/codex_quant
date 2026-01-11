@@ -12,10 +12,12 @@ import numpy as np
 import sys
 import os
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Ensure repo root is on sys.path so `import engines` works when run as a script.
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
 
-from engines.mc_engine import MonteCarloEngine
+from engines.mc.monte_carlo_engine import MonteCarloEngine
 
 
 def test_diff2_validation():
@@ -156,4 +158,3 @@ def test_diff2_validation():
 if __name__ == "__main__":
     exit_code = test_diff2_validation()
     sys.exit(exit_code)
-

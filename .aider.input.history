@@ -1,0 +1,3315 @@
+
+# 2025-12-28 00:11:18.626102
++y
+
+# 2025-12-28 00:13:35.670052
++n
+
+# 2025-12-28 00:20:25.584799
++지금 프로젝트에서 메인 파일이뭐야?
+
+# 2025-12-28 00:22:53.020548
++n
+
+# 2025-12-28 00:23:07.735882
++지금 내 프로젝트에서 가장 메인 파일이 뭐야?
+
+# 2025-12-28 00:23:40.782698
++y
+
+# 2025-12-28 00:23:54.455438
++n
+
+# 2025-12-28 00:24:36.950831
++지금 내 프로젝트의 가장 핵심 파일 2개가 뭐야?
+
+# 2025-12-28 00:25:47.443855
++n
+
+# 2025-12-28 00:27:20.794536
++지금 내 프로젝트에서 크기가 가장 크고 핵심 내용을 담고 있는 파일 두개가 뭐야?
+
+# 2025-12-28 00:31:52.321923
++n
+
+# 2025-12-28 00:32:10.865804
++지금 내 프로젝트에서 가장 중요한 핵심 파일 두개가 뭐야?
+
+# 2025-12-28 00:33:03.102128
++n
+
+# 2025-12-28 00:33:13.074525
++지금 내 프로젝트에서 가장 중요한 파일 두개가 뭐야?
+
+# 2025-12-28 00:35:57.423885
++n
+
+# 2025-12-28 00:36:18.747197
++지금 내 프로젝트에서 가장 중요한 파일 2개가 뭐야?
+
+# 2025-12-28 00:44:53.088973
++y
+
+# 2025-12-28 00:53:04.276989
++n
+
+# 2025-12-28 00:53:34.778214
++이제 이 두 파일을 리팩토링해서 더 작은 파일들도 나누어줄 수 있어?
+
+# 2025-12-28 00:53:41.916316
++y
+
+# 2025-12-28 01:02:59.876209
++a
+
+# 2025-12-28 01:03:04.956652
++y
+
+# 2025-12-28 01:15:58.868188
++n
+
+# 2025-12-28 02:13:30.234690
++main_engine_mc_v2_final.py와 engines/mc_engine.py를 리팩토링할 계획을 세우고 그대로 진행해줘
+
+# 2025-12-28 02:13:52.509738
++y
+
+# 2025-12-28 02:27:25.825305
++n
+
+# 2025-12-28 02:27:40.189718
++engines/mc_engine.py
+
+# 2025-12-28 02:27:43.934529
++y
+
+# 2025-12-28 02:28:31.427586
++n
+
+# 2025-12-28 02:28:38.342978
++engines/mc_engine.py
+
+# 2025-12-28 02:28:40.491082
++y
+
+# 2025-12-28 02:48:29.358998
++continue_brief.md라는 파일 읽어보고 거기 나온 두 파일의 리팩토링을 한 단계씩 진행해줘
+
+# 2025-12-28 02:53:23.321454
++n
+
+# 2025-12-28 02:54:07.866697
++continue_brief.md라는 파일을 보고 거기의 두 파일을 리팩토링할 계획을 세워줘
+
+# 2025-12-28 02:54:33.513424
++n
+
+# 2025-12-28 02:54:41.596301
++continue_brief.md라는 파일을 보고 거기의 두 파일을 리팩토링할 계획을 세워줘
+
+# 2025-12-28 02:57:52.563249
++  Wrote CONTINUE_BRIEF.md
++  �� 요약 자료
++  [리팩토링 목표/문제점]
++  - 가장 큰 목표: (예: 메인 2개 파일을 모듈로 분리하고 테스트 가능하게)
++  - 현재 고통 포인트(최대 8개):
++    1)각 파일의 기능과 함수간의 연결 관계가 파악이 안됨
++    2)기능 하나만 수정해도 같은 오류가 계속 발생
++    3)LLM이 코드를 수정할 때 context길이의 한계로 인해 수정이 안됨
++  - 절대 바꾸면 안 되는 것(회귀 금지)
++    - 예: 전략 결과/EV 계산 결과는 동일해야 함
++    - 예: 로그 포맷, state/*.json 키 구조 유지
++  - 성능 요구:
++    - 예: 실시간 매매라 레이턴시 중요 / 백테스트라 처리량 중요
++
++  ## main_engine_mc_v2_final.py
++
++  ### 주요 import(요약)
++
++  - __future__
++  - aiohttp.tcp_helpers
++  - asyncio
++  - ccxt.async_support
++  - collections
++  - config
++  - copy
++  - core.dashboard_server
++  - core.data_manager
++  - engines.engine_hub
++  - engines.mc_engine
++  - engines.mc_risk
++  - engines.pmaker_manager
++  - engines.running_stats
++  - json
++  - math
++  - numpy
++  - os
++  - pathlib
++  - random
++  - regime
++  - time
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++  - utils.alpha_features
++  - utils.helpers
++
++  ### 클래스/함수 목록(라인)
++
++  -    29: def _tcp_keepalive_safe
++  -    60: class LiveOrchestrator
++  -    61: def LiveOrchestrator.__init__
++  -   282: def LiveOrchestrator._compute_atr_proxy
++  -   304: def LiveOrchestrator._exec_stats_for
++  -   330: def LiveOrchestrator._rows_snapshot
++  -   343: def LiveOrchestrator.broadcast_loop
++  -   360: def LiveOrchestrator.analyze_symbol
++  -  1250: def LiveOrchestrator._compute_decision_task
++  -  1324: def LiveOrchestrator._log
++  -  1330: def LiveOrchestrator._log_err
++  -  1336: def LiveOrchestrator._pmaker_status
++  -  1340: def LiveOrchestrator._ccxt_call
++  -  1375: def LiveOrchestrator._load_json
++  -  1384: def LiveOrchestrator._load_persistent_state
++  -  1435: def LiveOrchestrator._persist_state
++  -  1454: def LiveOrchestrator._compute_returns_and_vol
++  -  1473: def LiveOrchestrator._annualize_mu_sigma
++  -  1480: def LiveOrchestrator._safe_float
++  -  1487: def LiveOrchestrator._sanitize_for_json
++  -  1542: def LiveOrchestrator._row
++  -  1966: def LiveOrchestrator._total_open_notional
++  -  1969: def LiveOrchestrator._can_enter_position
++  -  1976: def LiveOrchestrator._entry_permit
++  -  2022: def LiveOrchestrator._calc_position_size
++  -  2038: def LiveOrchestrator._dynamic_leverage_risk
++  -  2074: def LiveOrchestrator._direction_bias
++  -  2108: def LiveOrchestrator._infer_regime
++  -  2129: def LiveOrchestrator._compute_ofi_score
++  -  2144: def LiveOrchestrator._liquidity_score
++  -  2153: def LiveOrchestrator._enter_position
++  -  2250: def LiveOrchestrator._close_position
++  -  2295: def LiveOrchestrator._pmaker_update_attempt
++  -  2339: def LiveOrchestrator._maybe_place_order
++  -  2351: def LiveOrchestrator._execute_order
++  -  2604: def LiveOrchestrator._execute_close_order
++  -  2657: def LiveOrchestrator._best_bid_ask
++  -  2682: def LiveOrchestrator._infer_tick_size
++  -  2720: def LiveOrchestrator._infer_tick_size_from_ladders
++  -  2748: def LiveOrchestrator._round_price_to_tick
++  -  2753: def LiveOrchestrator._extract_order_stats
++  -  2810: def LiveOrchestrator._fetch_order_trades_any
++  -  2846: def LiveOrchestrator._pmaker_probe_price
++  -  2863: def LiveOrchestrator._rebalance_position
++  -  2931: def LiveOrchestrator._update_pos_pred_snapshot_from_decision
++  -  2974: def LiveOrchestrator._maybe_exit_position_unified
++  -  3123: def LiveOrchestrator._maybe_exit_position
++  -  3158: def LiveOrchestrator._record_trade
++  -  3236: def LiveOrchestrator._consensus_used_flag
++  -  3246: def LiveOrchestrator._ema_update
++  -  3259: def LiveOrchestrator._calc_rsi
++  -  3277: def LiveOrchestrator._consensus_action
++  -  3367: def LiveOrchestrator._spread_signal
++  -  3390: def LiveOrchestrator._manage_spreads
++  -  3442: def LiveOrchestrator._decide_v3
++  -  3641: def LiveOrchestrator._mark_exit_and_cooldown
++  -  3659: def LiveOrchestrator.decision_loop
++  -  3796: def main
++
++  ### __main__ 주변(발췌)
++
++  ```text
++  3830:     # If you use testnet keys, you must enable sandbox mode.
++  3831:     if _env_bool("BYBIT_TESTNET", False) or _env_bool("CCXT_SANDBOX", False):
++  3832:         try:
++  3833:             exchange.set_sandbox_mode(True)
++  3834:             print("[BYBIT] sandbox_mode enabled (testnet)")
++  3835:         except Exception as e:
++  3836:             print(f"[BYBIT] sandbox_mode enable failed: {e}")
++  3837: 
++  3838:     # Load markets once and drop symbols that don't exist (common on testnet).
++  3839:     try:
++  3840:         await exchange.load_markets()
++  3841:         global SYMBOLS
++  3842:         missing = [s for s in SYMBOLS if s not in exchange.markets]
++  3843:         if missing:
++  3844:             print(f"[BYBIT] dropping unsupported symbols: {missing}")
++  3845:         SYMBOLS = [s for s in SYMBOLS if s in exchange.markets]
++  3846:         if not SYMBOLS:
++  3847:             raise RuntimeError("No supported symbols after filtering; set SYMBOLS_CSV to valid Bybit markets.")
++  3848:     except Exception as e:
++  3849:         print(f"[BYBIT] load_markets/filter failed: {e}")
++  3850:     orchestrator = LiveOrchestrator(exchange, SYMBOLS)
++  3851: 
++  3852:     runner = None
++  3853:     site = None
++  3854:     try:
++  3855:         dashboard = DashboardServer(orchestrator)
++  3856:         orchestrator.dashboard = dashboard
++  3857:         await dashboard.start()
++  3858: 
++  3859:         # ✅ OHLCV preload를 먼저 완료한 후 decision_loop 시작 (데이터 없이 실행 방지)
++  3860:         if PRELOAD_ON_START:
++  3861:             try:
++  3862:                 print(f"⏳ Preloading OHLCV (limit={OHLCV_PRELOAD_LIMIT})...")
++  3863:                 await orchestrator.data.preload_all_ohlcv(limit=OHLCV_PRELOAD_LIMIT)
++  3864:                 orchestrator._persist_state(force=True)
++  3865:                 print("✅ OHLCV preload done")
++  3866:             except Exception as e:
++  3867:                 print(f"[ERR] preload task failed: {e}")
++  3868: 
++  3869:         # ✅ 초기 이벤트 설정: decision_loop가 실행될 수 있도록 (preload 완료 후)
++  3870:         orchestrator.data.data_updated_event.set()
++  3871: 
++  3872:         asyncio.create_task(orchestrator.data.fetch_prices_loop())
++  3873:         asyncio.create_task(orchestrator.data.fetch_ohlcv_loop())
++  3874:         asyncio.create_task(orchestrator.data.fetch_orderbook_loop())
++  3875:         asyncio.create_task(orchestrator.decision_loop())
++  3876:         asyncio.create_task(orchestrator.broadcast_loop())
++  3877:         
++  3878: 
++  3879: 
++  3880:         print(f"🚀 Dashboard: http://localhost:{PORT}")
++  3881:         print(f"📄 Serving: {DASHBOARD_FILE.name}")
++  3882:         await asyncio.Future()
++  3883:     except OSError as e:
++  3884:         print(f"[ERR] Failed to bind on port {PORT}: {e}")
++  3885:     finally:
++  3886:         # ✅ 엔진 종료 시 PMaker 모델 저장 (finally 블록에서도 저장)
++  3887:         if 'orchestrator' in locals() and orchestrator.pmaker.surv is not None and orchestrator.pmaker.enabled:
++  3888:             try:
++  3889:                 orchestrator.pmaker.surv.save(orchestrator.pmaker.model_path)
++  3890:                 print(f"[SHUTDOWN] PMaker model saved to {orchestrator.pmaker.model_path}")
++  3891:             except Exception as e:
++  3892:                 print(f"[SHUTDOWN] Failed to save PMaker model: {e}")
++  3893:         
++  3894:         try:
++  3895:             await exchange.close()
++  3896:         except Exception:
++  3897:             pass
++  3898:         if site is not None:
++  3899:             try:
++  3900:                 await site.stop()
++  3901:             except Exception:
++  3902:                 pass
++  3903:         if runner is not None:
++  3904:             try:
++  3905:                 await runner.cleanup()
++  3906:             except Exception:
++  3907:                 pass
++  3908: 
++  3909: 
++  3910: if __name__ == "__main__":
++  3911:     asyncio.run(main())
++  3912: 1
++  ```
++
++  ### 내부 호출 관계(근사, 상위 80)
++
++  - _tcp_keepalive_safe -> _orig_tcp_keepalive
++  - LiveOrchestrator.__init__ -> AlphaTrainerConfig
++  - LiveOrchestrator.__init__ -> DataManager
++  - LiveOrchestrator.__init__ -> EngineHub
++  - LiveOrchestrator.__init__ -> ExitPolicy
++  - LiveOrchestrator.__init__ -> OnlineAlphaTrainer
++  - LiveOrchestrator.__init__ -> PMakerManager
++  - LiveOrchestrator.__init__ -> RunningStats
++  - LiveOrchestrator.__init__ -> _env_bool
++  - LiveOrchestrator.__init__ -> _env_float
++  - LiveOrchestrator.__init__ -> _env_int
++  - LiveOrchestrator.__init__ -> asyncio.Semaphore
++  - LiveOrchestrator.__init__ -> deque
++  - LiveOrchestrator.__init__ -> float
++  - LiveOrchestrator.__init__ -> int
++  - LiveOrchestrator.__init__ -> k.strip
++  - LiveOrchestrator.__init__ -> kv.split
++  - LiveOrchestrator.__init__ -> len
++  - LiveOrchestrator.__init__ -> lower
++  - LiveOrchestrator.__init__ -> max
++  - LiveOrchestrator.__init__ -> os.environ.get
++  - LiveOrchestrator.__init__ -> os.getenv
++  - LiveOrchestrator.__init__ -> print
++  - LiveOrchestrator.__init__ -> s.split
++  - LiveOrchestrator.__init__ -> self._load_persistent_state
++  - LiveOrchestrator.__init__ -> self.state_dir.mkdir
++  - LiveOrchestrator.__init__ -> set
++  - LiveOrchestrator.__init__ -> str
++  - LiveOrchestrator.__init__ -> strip
++  - LiveOrchestrator.__init__ -> v.strip
++  - LiveOrchestrator._compute_atr_proxy -> float
++  - LiveOrchestrator._compute_atr_proxy -> len
++  - LiveOrchestrator._compute_atr_proxy -> np.abs
++  - LiveOrchestrator._compute_atr_proxy -> np.diff
++  - LiveOrchestrator._compute_atr_proxy -> np.mean
++  - LiveOrchestrator._exec_stats_for -> deque
++  - LiveOrchestrator._exec_stats_for -> now_ms
++  - LiveOrchestrator._exec_stats_for -> self._exec_stats.get
++  - LiveOrchestrator._rows_snapshot -> get
++  - LiveOrchestrator._rows_snapshot -> len
++  - LiveOrchestrator._rows_snapshot -> list
++  - LiveOrchestrator._rows_snapshot -> rows.append
++  - LiveOrchestrator._rows_snapshot -> self._decision_cache.get
++  - LiveOrchestrator._rows_snapshot -> self._row
++  - LiveOrchestrator._rows_snapshot -> self.data.market.get
++  - LiveOrchestrator._rows_snapshot -> self.data.ohlcv_buffer.get
++  - LiveOrchestrator.broadcast_loop -> asyncio.sleep
++  - LiveOrchestrator.broadcast_loop -> now_ms
++  - LiveOrchestrator.broadcast_loop -> print
++  - LiveOrchestrator.broadcast_loop -> self._log_err
++  - LiveOrchestrator.broadcast_loop -> self._rows_snapshot
++  - LiveOrchestrator.broadcast_loop -> self.dashboard.broadcast
++  - LiveOrchestrator.analyze_symbol -> EV_DROP.get
++  - LiveOrchestrator.analyze_symbol -> EV_EXIT_FLOOR.get
++  - LiveOrchestrator.analyze_symbol -> PSL_RISE.get
++  - LiveOrchestrator.analyze_symbol -> _s
++  - LiveOrchestrator.analyze_symbol -> adjust_mu_sigma
++  - LiveOrchestrator.analyze_symbol -> append
++  - LiveOrchestrator.analyze_symbol -> astype
++  - LiveOrchestrator.analyze_symbol -> asyncio.create_task
++  - LiveOrchestrator.analyze_symbol -> bool
++  - LiveOrchestrator.analyze_symbol -> build_alpha_features
++  - LiveOrchestrator.analyze_symbol -> c.get
++  - LiveOrchestrator.analyze_symbol -> cached_decision.get
++  - LiveOrchestrator.analyze_symbol -> cap_map.get
++  - LiveOrchestrator.analyze_symbol -> ctx.get
++  - LiveOrchestrator.analyze_symbol -> ctx.keys
++  - LiveOrchestrator.analyze_symbol -> ctx.setdefault
++  - LiveOrchestrator.analyze_symbol -> cvar_floor_map.get
++  - LiveOrchestrator.analyze_symbol -> d.get
++  - LiveOrchestrator.analyze_symbol -> decision.get
++  - LiveOrchestrator.analyze_symbol -> decision_meta.get
++  - LiveOrchestrator.analyze_symbol -> decision_meta.update
++  - LiveOrchestrator.analyze_symbol -> deque
++  - LiveOrchestrator.analyze_symbol -> dict
++  - LiveOrchestrator.analyze_symbol -> float
++  - LiveOrchestrator.analyze_symbol -> get
++  - LiveOrchestrator.analyze_symbol -> get_regime_mu_sigma
++  - LiveOrchestrator.analyze_symbol -> getattr
++  - LiveOrchestrator.analyze_symbol -> hasattr
++
++
++  ## engines/mc_engine.py
++
++  ### 주요 import(요약)
++
++  - dataclasses
++  - engines.base
++  - engines.mc_risk
++  - jax
++  - jax.numpy
++  - logging
++  - math
++  - models.alpha_hit_mlp
++  - numpy
++  - os
++  - regime
++  - time
++  - torch
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++
++  ### 클래스/함수 목록(라인)
++
++  -    53: def _jax_mc_device
++  -    76: def _cvar_empirical
++  -    82: def _cvar_bootstrap
++  -   101: def _cvar_tail_inflate
++  -   111: def cvar_ensemble
++  -   124: def _norm_cdf
++  -   129: def _approx_p_pos_and_ev_hold
++  -   174: def simulate_exit_policy_rollforward
++  -   435: def simulate_exit_policy_rollforward_analytic
++  -   647: def _cvar_jnp
++  -   654: def _sample_noise
++  -   670: def _mc_first_passage_tp_sl_jax_core
++  -   747: def _generate_and_check_paths_jax_core
++  -   825: def mc_first_passage_tp_sl_jax
++  -   902: def ema
++  -   915: class MCParams
++  -   932: class MonteCarloEngine
++  -   965: def MonteCarloEngine.__init__
++  -  1033: def MonteCarloEngine.mc_first_passage_tp_sl
++  -  1187: def MonteCarloEngine._annualize
++  -  1194: def MonteCarloEngine._trend_direction
++  -  1205: def MonteCarloEngine._signal_alpha_mu_annual
++  -  1218: def MonteCarloEngine._signal_alpha_mu_annual_parts
++  -  1337: def MonteCarloEngine._get_params
++  -  1378: def MonteCarloEngine._cluster_regime
++  -  1413: def MonteCarloEngine._estimate_slippage
++  -  1430: def MonteCarloEngine._estimate_p_maker
++  -  1462: def MonteCarloEngine._sample_increments_np
++  -  1473: def MonteCarloEngine._sample_increments_jax
++  -  1493: def MonteCarloEngine.simulate_paths_price
++  -  1546: def MonteCarloEngine.evaluate_entry_metrics
++  -  3716: def MonteCarloEngine.decide
++  -  4268: def MonteCarloEngine._weights_for_horizons
++  -  4282: def MonteCarloEngine._execution_mix_from_survival
++  -  4313: def MonteCarloEngine._sigma_per_sec
++  -  4322: def MonteCarloEngine.compute_exit_policy_metrics
++  -  4586: def MonteCarloEngine._compress_reason_counts
++  -  4614: def MonteCarloEngine._extract_alpha_hit_features
++  -  4668: def MonteCarloEngine.collect_alpha_hit_sample
++  -  4722: def MonteCarloEngine._predict_horizon_hit_probs
++  -  4767: def _simulate_paths_price_jax_core
++  -  4823: def _extract_alpha_hit_features
++  -  4874: def collect_alpha_hit_sample
++  -  4931: def _predict_horizon_hit_probs
++  -  4981: def _compute_ev_based_weights
++  -  5026: def simulate_paths_netpnl
++
++  ### 내부 호출 관계(근사, 상위 80)
++
++  - _jax_mc_device -> jax.devices
++  - _jax_mc_device -> lower
++  - _jax_mc_device -> os.environ.get
++  - _jax_mc_device -> strip
++  - _cvar_empirical -> float
++  - _cvar_empirical -> int
++  - _cvar_empirical -> len
++  - _cvar_empirical -> max
++  - _cvar_empirical -> mean
++  - _cvar_empirical -> np.asarray
++  - _cvar_empirical -> np.sort
++  - _cvar_bootstrap -> _cvar_empirical
++  - _cvar_bootstrap -> float
++  - _cvar_bootstrap -> int
++  - _cvar_bootstrap -> len
++  - _cvar_bootstrap -> max
++  - _cvar_bootstrap -> np.asarray
++  - _cvar_bootstrap -> np.median
++  - _cvar_bootstrap -> np.random.default_rng
++  - _cvar_bootstrap -> os.environ.get
++  - _cvar_bootstrap -> range
++  - _cvar_bootstrap -> rng.choice
++  - _cvar_bootstrap -> vals.append
++  - _cvar_tail_inflate -> float
++  - _cvar_tail_inflate -> np.asarray
++  - _cvar_tail_inflate -> np.quantile
++  - _cvar_tail_inflate -> tail.mean
++  - cvar_ensemble -> _cvar_bootstrap
++  - cvar_ensemble -> _cvar_empirical
++  - cvar_ensemble -> _cvar_tail_inflate
++  - cvar_ensemble -> float
++  - cvar_ensemble -> np.asarray
++  - _norm_cdf -> float
++  - _norm_cdf -> math.erf
++  - _norm_cdf -> math.sqrt
++  - _approx_p_pos_and_ev_hold -> _norm_cdf
++  - _approx_p_pos_and_ev_hold -> float
++  - _approx_p_pos_and_ev_hold -> int
++  - _approx_p_pos_and_ev_hold -> math.sqrt
++  - _approx_p_pos_and_ev_hold -> max
++  - simulate_exit_policy_rollforward -> ValueError
++  - simulate_exit_policy_rollforward -> _meta_default
++  - simulate_exit_policy_rollforward -> counts.get
++  - simulate_exit_policy_rollforward -> float
++  - simulate_exit_policy_rollforward -> int
++  - simulate_exit_policy_rollforward -> len
++  - simulate_exit_policy_rollforward -> m.get
++  - simulate_exit_policy_rollforward -> max
++  - simulate_exit_policy_rollforward -> min
++  - simulate_exit_policy_rollforward -> np.any
++  - simulate_exit_policy_rollforward -> np.arange
++  - simulate_exit_policy_rollforward -> np.argmax
++  - simulate_exit_policy_rollforward -> np.asarray
++  - simulate_exit_policy_rollforward -> np.full
++  - simulate_exit_policy_rollforward -> np.mean
++  - simulate_exit_policy_rollforward -> np.median
++  - simulate_exit_policy_rollforward -> np.sum
++  - simulate_exit_policy_rollforward -> np.zeros
++  - simulate_exit_policy_rollforward -> range
++  - _meta_default -> _approx_p_pos_and_ev_hold
++  - _meta_default -> _prob_max_geq
++  - _meta_default -> _prob_min_leq
++  - _meta_default -> bool
++  - _meta_default -> float
++  - _meta_default -> math.isfinite
++  - _meta_default -> max
++  - simulate_exit_policy_rollforward_analytic -> _approx_p_pos_and_ev_hold
++  - simulate_exit_policy_rollforward_analytic -> _meta_default
++  - simulate_exit_policy_rollforward_analytic -> bool
++  - simulate_exit_policy_rollforward_analytic -> float
++  - simulate_exit_policy_rollforward_analytic -> int
++  - simulate_exit_policy_rollforward_analytic -> m.get
++  - simulate_exit_policy_rollforward_analytic -> math.isfinite
++  - simulate_exit_policy_rollforward_analytic -> max
++  - simulate_exit_policy_rollforward_analytic -> min
++  - simulate_exit_policy_rollforward_analytic -> range
++  - simulate_exit_policy_rollforward_analytic -> str
++  - _prob_max_geq -> _norm_cdf
++  - _prob_max_geq -> float
++  - _prob_max_geq -> math.exp
++
++
++  ## 프로젝트 전체 외부 의존성(합집합)
++
++  - __future__
++  - aiohttp.tcp_helpers
++  - asyncio
++  - ccxt.async_support
++  - collections
++  - config
++  - copy
++  - core.dashboard_server
++  - core.data_manager
++  - dataclasses
++  - engines.base
++  - engines.engine_hub
++  - engines.mc_engine
++  - engines.mc_risk
++  - engines.pmaker_manager
++  - engines.running_stats
++  - jax
++  - jax.numpy
++  - json
++  - logging
++  - math
++  - models.alpha_hit_mlp
++  - numpy
++  - os
++  - pathlib
++  - random
++  - regime
++  - time
++  - torch
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++  - utils.alpha_features
++  - utils.helpers
++
+
+# 2025-12-28 02:57:57.161092
++n
+
+# 2025-12-28 02:58:04.259195
++y
+
+# 2025-12-28 03:00:16.994818
++그대로 1단계부터 리팩토링 진행해줘
+
+# 2025-12-28 03:01:13.330528
++그 두 파일이 너무 커서 너가 못읽어. continue_breif.md의 내용을 보고 계획부터 세워봐
+
+# 2025-12-28 03:01:41.998611
++그래 진행해
+
+# 2025-12-28 03:05:06.202010
++y
+
+# 2025-12-28 03:08:18.991939
++n
+
+# 2025-12-28 03:09:09.071633
++아래는 continue_brief.md의 내용이야. 내용을 읽고 두 파일에 대한 리팩토링 계획을 세워줘.  Wrote CONTINUE_BRIEF.md
++  �� 요약 자료
++  [리팩토링 목표/문제점]
++  - 가장 큰 목표: (예: 메인 2개 파일을 모듈로 분리하고 테스트 가능하게)
++  - 현재 고통 포인트(최대 8개):
++    1)각 파일의 기능과 함수간의 연결 관계가 파악이 안됨
++    2)기능 하나만 수정해도 같은 오류가 계속 발생
++    3)LLM이 코드를 수정할 때 context길이의 한계로 인해 수정이 안됨
++  - 절대 바꾸면 안 되는 것(회귀 금지)
++    - 예: 전략 결과/EV 계산 결과는 동일해야 함
++    - 예: 로그 포맷, state/*.json 키 구조 유지
++  - 성능 요구:
++    - 예: 실시간 매매라 레이턴시 중요 / 백테스트라 처리량 중요
++
++  ## main_engine_mc_v2_final.py
++
++  ### 주요 import(요약)
++
++  - __future__
++  - aiohttp.tcp_helpers
++  - asyncio
++  - ccxt.async_support
++  - collections
++  - config
++  - copy
++  - core.dashboard_server
++  - core.data_manager
++  - engines.engine_hub
++  - engines.mc_engine
++  - engines.mc_risk
++  - engines.pmaker_manager
++  - engines.running_stats
++  - json
++  - math
++  - numpy
++  - os
++  - pathlib
++  - random
++  - regime
++  - time
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++  - utils.alpha_features
++  - utils.helpers
++
++  ### 클래스/함수 목록(라인)
++
++  -    29: def _tcp_keepalive_safe
++  -    60: class LiveOrchestrator
++  -    61: def LiveOrchestrator.__init__
++  -   282: def LiveOrchestrator._compute_atr_proxy
++  -   304: def LiveOrchestrator._exec_stats_for
++  -   330: def LiveOrchestrator._rows_snapshot
++  -   343: def LiveOrchestrator.broadcast_loop
++  -   360: def LiveOrchestrator.analyze_symbol
++  -  1250: def LiveOrchestrator._compute_decision_task
++  -  1324: def LiveOrchestrator._log
++  -  1330: def LiveOrchestrator._log_err
++  -  1336: def LiveOrchestrator._pmaker_status
++  -  1340: def LiveOrchestrator._ccxt_call
++  -  1375: def LiveOrchestrator._load_json
++  -  1384: def LiveOrchestrator._load_persistent_state
++  -  1435: def LiveOrchestrator._persist_state
++  -  1454: def LiveOrchestrator._compute_returns_and_vol
++  -  1473: def LiveOrchestrator._annualize_mu_sigma
++  -  1480: def LiveOrchestrator._safe_float
++  -  1487: def LiveOrchestrator._sanitize_for_json
++  -  1542: def LiveOrchestrator._row
++  -  1966: def LiveOrchestrator._total_open_notional
++  -  1969: def LiveOrchestrator._can_enter_position
++  -  1976: def LiveOrchestrator._entry_permit
++  -  2022: def LiveOrchestrator._calc_position_size
++  -  2038: def LiveOrchestrator._dynamic_leverage_risk
++  -  2074: def LiveOrchestrator._direction_bias
++  -  2108: def LiveOrchestrator._infer_regime
++  -  2129: def LiveOrchestrator._compute_ofi_score
++  -  2144: def LiveOrchestrator._liquidity_score
++  -  2153: def LiveOrchestrator._enter_position
++  -  2250: def LiveOrchestrator._close_position
++  -  2295: def LiveOrchestrator._pmaker_update_attempt
++  -  2339: def LiveOrchestrator._maybe_place_order
++  -  2351: def LiveOrchestrator._execute_order
++  -  2604: def LiveOrchestrator._execute_close_order
++  -  2657: def LiveOrchestrator._best_bid_ask
++  -  2682: def LiveOrchestrator._infer_tick_size
++  -  2720: def LiveOrchestrator._infer_tick_size_from_ladders
++  -  2748: def LiveOrchestrator._round_price_to_tick
++  -  2753: def LiveOrchestrator._extract_order_stats
++  -  2810: def LiveOrchestrator._fetch_order_trades_any
++  -  2846: def LiveOrchestrator._pmaker_probe_price
++  -  2863: def LiveOrchestrator._rebalance_position
++  -  2931: def LiveOrchestrator._update_pos_pred_snapshot_from_decision
++  -  2974: def LiveOrchestrator._maybe_exit_position_unified
++  -  3123: def LiveOrchestrator._maybe_exit_position
++  -  3158: def LiveOrchestrator._record_trade
++  -  3236: def LiveOrchestrator._consensus_used_flag
++  -  3246: def LiveOrchestrator._ema_update
++  -  3259: def LiveOrchestrator._calc_rsi
++  -  3277: def LiveOrchestrator._consensus_action
++  -  3367: def LiveOrchestrator._spread_signal
++  -  3390: def LiveOrchestrator._manage_spreads
++  -  3442: def LiveOrchestrator._decide_v3
++  -  3641: def LiveOrchestrator._mark_exit_and_cooldown
++  -  3659: def LiveOrchestrator.decision_loop
++  -  3796: def main
++
++  ### __main__ 주변(발췌)
++
++  ```text
++  3830:     # If you use testnet keys, you must enable sandbox mode.
++  3831:     if _env_bool("BYBIT_TESTNET", False) or _env_bool("CCXT_SANDBOX", False):
++  3832:         try:
++  3833:             exchange.set_sandbox_mode(True)
++  3834:             print("[BYBIT] sandbox_mode enabled (testnet)")
++  3835:         except Exception as e:
++  3836:             print(f"[BYBIT] sandbox_mode enable failed: {e}")
++  3837: 
++  3838:     # Load markets once and drop symbols that don't exist (common on testnet).
++  3839:     try:
++  3840:         await exchange.load_markets()
++  3841:         global SYMBOLS
++  3842:         missing = [s for s in SYMBOLS if s not in exchange.markets]
++  3843:         if missing:
++  3844:             print(f"[BYBIT] dropping unsupported symbols: {missing}")
++  3845:         SYMBOLS = [s for s in SYMBOLS if s in exchange.markets]
++  3846:         if not SYMBOLS:
++  3847:             raise RuntimeError("No supported symbols after filtering; set SYMBOLS_CSV to valid Bybit markets.")
++  3848:     except Exception as e:
++  3849:         print(f"[BYBIT] load_markets/filter failed: {e}")
++  3850:     orchestrator = LiveOrchestrator(exchange, SYMBOLS)
++  3851: 
++  3852:     runner = None
++  3853:     site = None
++  3854:     try:
++  3855:         dashboard = DashboardServer(orchestrator)
++  3856:         orchestrator.dashboard = dashboard
++  3857:         await dashboard.start()
++  3858: 
++  3859:         # ✅ OHLCV preload를 먼저 완료한 후 decision_loop 시작 (데이터 없이 실행 방지)
++  3860:         if PRELOAD_ON_START:
++  3861:             try:
++  3862:                 print(f"⏳ Preloading OHLCV (limit={OHLCV_PRELOAD_LIMIT})...")
++  3863:                 await orchestrator.data.preload_all_ohlcv(limit=OHLCV_PRELOAD_LIMIT)
++  3864:                 orchestrator._persist_state(force=True)
++  3865:                 print("✅ OHLCV preload done")
++  3866:             except Exception as e:
++  3867:                 print(f"[ERR] preload task failed: {e}")
++  3868: 
++  3869:         # ✅ 초기 이벤트 설정: decision_loop가 실행될 수 있도록 (preload 완료 후)
++  3870:         orchestrator.data.data_updated_event.set()
++  3871: 
++  3872:         asyncio.create_task(orchestrator.data.fetch_prices_loop())
++  3873:         asyncio.create_task(orchestrator.data.fetch_ohlcv_loop())
++  3874:         asyncio.create_task(orchestrator.data.fetch_orderbook_loop())
++  3875:         asyncio.create_task(orchestrator.decision_loop())
++  3876:         asyncio.create_task(orchestrator.broadcast_loop())
++  3877:         
++  3878: 
++  3879: 
++  3880:         print(f"🚀 Dashboard: http://localhost:{PORT}")
++  3881:         print(f"📄 Serving: {DASHBOARD_FILE.name}")
++  3882:         await asyncio.Future()
++  3883:     except OSError as e:
++  3884:         print(f"[ERR] Failed to bind on port {PORT}: {e}")
++  3885:     finally:
++  3886:         # ✅ 엔진 종료 시 PMaker 모델 저장 (finally 블록에서도 저장)
++  3887:         if 'orchestrator' in locals() and orchestrator.pmaker.surv is not None and orchestrator.pmaker.enabled:
++  3888:             try:
++  3889:                 orchestrator.pmaker.surv.save(orchestrator.pmaker.model_path)
++  3890:                 print(f"[SHUTDOWN] PMaker model saved to {orchestrator.pmaker.model_path}")
++  3891:             except Exception as e:
++  3892:                 print(f"[SHUTDOWN] Failed to save PMaker model: {e}")
++  3893:         
++  3894:         try:
++  3895:             await exchange.close()
++  3896:         except Exception:
++  3897:             pass
++  3898:         if site is not None:
++  3899:             try:
++  3900:                 await site.stop()
++  3901:             except Exception:
++  3902:                 pass
++  3903:         if runner is not None:
++  3904:             try:
++  3905:                 await runner.cleanup()
++  3906:             except Exception:
++  3907:                 pass
++  3908: 
++  3909: 
++  3910: if __name__ == "__main__":
++  3911:     asyncio.run(main())
++  3912: 1
++  ```
++
++  ### 내부 호출 관계(근사, 상위 80)
++
++  - _tcp_keepalive_safe -> _orig_tcp_keepalive
++  - LiveOrchestrator.__init__ -> AlphaTrainerConfig
++  - LiveOrchestrator.__init__ -> DataManager
++  - LiveOrchestrator.__init__ -> EngineHub
++  - LiveOrchestrator.__init__ -> ExitPolicy
++  - LiveOrchestrator.__init__ -> OnlineAlphaTrainer
++  - LiveOrchestrator.__init__ -> PMakerManager
++  - LiveOrchestrator.__init__ -> RunningStats
++  - LiveOrchestrator.__init__ -> _env_bool
++  - LiveOrchestrator.__init__ -> _env_float
++  - LiveOrchestrator.__init__ -> _env_int
++  - LiveOrchestrator.__init__ -> asyncio.Semaphore
++  - LiveOrchestrator.__init__ -> deque
++  - LiveOrchestrator.__init__ -> float
++  - LiveOrchestrator.__init__ -> int
++  - LiveOrchestrator.__init__ -> k.strip
++  - LiveOrchestrator.__init__ -> kv.split
++  - LiveOrchestrator.__init__ -> len
++  - LiveOrchestrator.__init__ -> lower
++  - LiveOrchestrator.__init__ -> max
++  - LiveOrchestrator.__init__ -> os.environ.get
++  - LiveOrchestrator.__init__ -> os.getenv
++  - LiveOrchestrator.__init__ -> print
++  - LiveOrchestrator.__init__ -> s.split
++  - LiveOrchestrator.__init__ -> self._load_persistent_state
++  - LiveOrchestrator.__init__ -> self.state_dir.mkdir
++  - LiveOrchestrator.__init__ -> set
++  - LiveOrchestrator.__init__ -> str
++  - LiveOrchestrator.__init__ -> strip
++  - LiveOrchestrator.__init__ -> v.strip
++  - LiveOrchestrator._compute_atr_proxy -> float
++  - LiveOrchestrator._compute_atr_proxy -> len
++  - LiveOrchestrator._compute_atr_proxy -> np.abs
++  - LiveOrchestrator._compute_atr_proxy -> np.diff
++  - LiveOrchestrator._compute_atr_proxy -> np.mean
++  - LiveOrchestrator._exec_stats_for -> deque
++  - LiveOrchestrator._exec_stats_for -> now_ms
++  - LiveOrchestrator._exec_stats_for -> self._exec_stats.get
++  - LiveOrchestrator._rows_snapshot -> get
++  - LiveOrchestrator._rows_snapshot -> len
++  - LiveOrchestrator._rows_snapshot -> list
++  - LiveOrchestrator._rows_snapshot -> rows.append
++  - LiveOrchestrator._rows_snapshot -> self._decision_cache.get
++  - LiveOrchestrator._rows_snapshot -> self._row
++  - LiveOrchestrator._rows_snapshot -> self.data.market.get
++  - LiveOrchestrator._rows_snapshot -> self.data.ohlcv_buffer.get
++  - LiveOrchestrator.broadcast_loop -> asyncio.sleep
++  - LiveOrchestrator.broadcast_loop -> now_ms
++  - LiveOrchestrator.broadcast_loop -> print
++  - LiveOrchestrator.broadcast_loop -> self._log_err
++  - LiveOrchestrator.broadcast_loop -> self._rows_snapshot
++  - LiveOrchestrator.broadcast_loop -> self.dashboard.broadcast
++  - LiveOrchestrator.analyze_symbol -> EV_DROP.get
++  - LiveOrchestrator.analyze_symbol -> EV_EXIT_FLOOR.get
++  - LiveOrchestrator.analyze_symbol -> PSL_RISE.get
++  - LiveOrchestrator.analyze_symbol -> _s
++  - LiveOrchestrator.analyze_symbol -> adjust_mu_sigma
++  - LiveOrchestrator.analyze_symbol -> append
++  - LiveOrchestrator.analyze_symbol -> astype
++  - LiveOrchestrator.analyze_symbol -> asyncio.create_task
++  - LiveOrchestrator.analyze_symbol -> bool
++  - LiveOrchestrator.analyze_symbol -> build_alpha_features
++  - LiveOrchestrator.analyze_symbol -> c.get
++  - LiveOrchestrator.analyze_symbol -> cached_decision.get
++  - LiveOrchestrator.analyze_symbol -> cap_map.get
++  - LiveOrchestrator.analyze_symbol -> ctx.get
++  - LiveOrchestrator.analyze_symbol -> ctx.keys
++  - LiveOrchestrator.analyze_symbol -> ctx.setdefault
++  - LiveOrchestrator.analyze_symbol -> cvar_floor_map.get
++  - LiveOrchestrator.analyze_symbol -> d.get
++  - LiveOrchestrator.analyze_symbol -> decision.get
++  - LiveOrchestrator.analyze_symbol -> decision_meta.get
++  - LiveOrchestrator.analyze_symbol -> decision_meta.update
++  - LiveOrchestrator.analyze_symbol -> deque
++  - LiveOrchestrator.analyze_symbol -> dict
++  - LiveOrchestrator.analyze_symbol -> float
++  - LiveOrchestrator.analyze_symbol -> get
++  - LiveOrchestrator.analyze_symbol -> get_regime_mu_sigma
++  - LiveOrchestrator.analyze_symbol -> getattr
++  - LiveOrchestrator.analyze_symbol -> hasattr
++
++
++  ## engines/mc_engine.py
++
++  ### 주요 import(요약)
++
++  - dataclasses
++  - engines.base
++  - engines.mc_risk
++  - jax
++  - jax.numpy
++  - logging
++  - math
++  - models.alpha_hit_mlp
++  - numpy
++  - os
++  - regime
++  - time
++  - torch
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++
++  ### 클래스/함수 목록(라인)
++
++  -    53: def _jax_mc_device
++  -    76: def _cvar_empirical
++  -    82: def _cvar_bootstrap
++  -   101: def _cvar_tail_inflate
++  -   111: def cvar_ensemble
++  -   124: def _norm_cdf
++  -   129: def _approx_p_pos_and_ev_hold
++  -   174: def simulate_exit_policy_rollforward
++  -   435: def simulate_exit_policy_rollforward_analytic
++  -   647: def _cvar_jnp
++  -   654: def _sample_noise
++  -   670: def _mc_first_passage_tp_sl_jax_core
++  -   747: def _generate_and_check_paths_jax_core
++  -   825: def mc_first_passage_tp_sl_jax
++  -   902: def ema
++  -   915: class MCParams
++  -   932: class MonteCarloEngine
++  -   965: def MonteCarloEngine.__init__
++  -  1033: def MonteCarloEngine.mc_first_passage_tp_sl
++  -  1187: def MonteCarloEngine._annualize
++  -  1194: def MonteCarloEngine._trend_direction
++  -  1205: def MonteCarloEngine._signal_alpha_mu_annual
++  -  1218: def MonteCarloEngine._signal_alpha_mu_annual_parts
++  -  1337: def MonteCarloEngine._get_params
++  -  1378: def MonteCarloEngine._cluster_regime
++  -  1413: def MonteCarloEngine._estimate_slippage
++  -  1430: def MonteCarloEngine._estimate_p_maker
++  -  1462: def MonteCarloEngine._sample_increments_np
++  -  1473: def MonteCarloEngine._sample_increments_jax
++  -  1493: def MonteCarloEngine.simulate_paths_price
++  -  1546: def MonteCarloEngine.evaluate_entry_metrics
++  -  3716: def MonteCarloEngine.decide
++  -  4268: def MonteCarloEngine._weights_for_horizons
++  -  4282: def MonteCarloEngine._execution_mix_from_survival
++  -  4313: def MonteCarloEngine._sigma_per_sec
++  -  4322: def MonteCarloEngine.compute_exit_policy_metrics
++  -  4586: def MonteCarloEngine._compress_reason_counts
++  -  4614: def MonteCarloEngine._extract_alpha_hit_features
++  -  4668: def MonteCarloEngine.collect_alpha_hit_sample
++  -  4722: def MonteCarloEngine._predict_horizon_hit_probs
++  -  4767: def _simulate_paths_price_jax_core
++  -  4823: def _extract_alpha_hit_features
++  -  4874: def collect_alpha_hit_sample
++  -  4931: def _predict_horizon_hit_probs
++  -  4981: def _compute_ev_based_weights
++  -  5026: def simulate_paths_netpnl
++
++  ### 내부 호출 관계(근사, 상위 80)
++
++  - _jax_mc_device -> jax.devices
++  - _jax_mc_device -> lower
++  - _jax_mc_device -> os.environ.get
++  - _jax_mc_device -> strip
++  - _cvar_empirical -> float
++  - _cvar_empirical -> int
++  - _cvar_empirical -> len
++  - _cvar_empirical -> max
++  - _cvar_empirical -> mean
++  - _cvar_empirical -> np.asarray
++  - _cvar_empirical -> np.sort
++  - _cvar_bootstrap -> _cvar_empirical
++  - _cvar_bootstrap -> float
++  - _cvar_bootstrap -> int
++  - _cvar_bootstrap -> len
++  - _cvar_bootstrap -> max
++  - _cvar_bootstrap -> np.asarray
++  - _cvar_bootstrap -> np.median
++  - _cvar_bootstrap -> np.random.default_rng
++  - _cvar_bootstrap -> os.environ.get
++  - _cvar_bootstrap -> range
++  - _cvar_bootstrap -> rng.choice
++  - _cvar_bootstrap -> vals.append
++  - _cvar_tail_inflate -> float
++  - _cvar_tail_inflate -> np.asarray
++  - _cvar_tail_inflate -> np.quantile
++  - _cvar_tail_inflate -> tail.mean
++  - cvar_ensemble -> _cvar_bootstrap
++  - cvar_ensemble -> _cvar_empirical
++  - cvar_ensemble -> _cvar_tail_inflate
++  - cvar_ensemble -> float
++  - cvar_ensemble -> np.asarray
++  - _norm_cdf -> float
++  - _norm_cdf -> math.erf
++  - _norm_cdf -> math.sqrt
++  - _approx_p_pos_and_ev_hold -> _norm_cdf
++  - _approx_p_pos_and_ev_hold -> float
++  - _approx_p_pos_and_ev_hold -> int
++  - _approx_p_pos_and_ev_hold -> math.sqrt
++  - _approx_p_pos_and_ev_hold -> max
++  - simulate_exit_policy_rollforward -> ValueError
++  - simulate_exit_policy_rollforward -> _meta_default
++  - simulate_exit_policy_rollforward -> counts.get
++  - simulate_exit_policy_rollforward -> float
++  - simulate_exit_policy_rollforward -> int
++  - simulate_exit_policy_rollforward -> len
++  - simulate_exit_policy_rollforward -> m.get
++  - simulate_exit_policy_rollforward -> max
++  - simulate_exit_policy_rollforward -> min
++  - simulate_exit_policy_rollforward -> np.any
++  - simulate_exit_policy_rollforward -> np.arange
++  - simulate_exit_policy_rollforward -> np.argmax
++  - simulate_exit_policy_rollforward -> np.asarray
++  - simulate_exit_policy_rollforward -> np.full
++  - simulate_exit_policy_rollforward -> np.mean
++  - simulate_exit_policy_rollforward -> np.median
++  - simulate_exit_policy_rollforward -> np.sum
++  - simulate_exit_policy_rollforward -> np.zeros
++  - simulate_exit_policy_rollforward -> range
++  - _meta_default -> _approx_p_pos_and_ev_hold
++  - _meta_default -> _prob_max_geq
++  - _meta_default -> _prob_min_leq
++  - _meta_default -> bool
++  - _meta_default -> float
++  - _meta_default -> math.isfinite
++  - _meta_default -> max
++  - simulate_exit_policy_rollforward_analytic -> _approx_p_pos_and_ev_hold
++  - simulate_exit_policy_rollforward_analytic -> _meta_default
++  - simulate_exit_policy_rollforward_analytic -> bool
++  - simulate_exit_policy_rollforward_analytic -> float
++  - simulate_exit_policy_rollforward_analytic -> int
++  - simulate_exit_policy_rollforward_analytic -> m.get
++  - simulate_exit_policy_rollforward_analytic -> math.isfinite
++  - simulate_exit_policy_rollforward_analytic -> max
++  - simulate_exit_policy_rollforward_analytic -> min
++  - simulate_exit_policy_rollforward_analytic -> range
++  - simulate_exit_policy_rollforward_analytic -> str
++  - _prob_max_geq -> _norm_cdf
++  - _prob_max_geq -> float
++  - _prob_max_geq -> math.exp
++
++
++  ## 프로젝트 전체 외부 의존성(합집합)
++
++  - __future__
++  - aiohttp.tcp_helpers
++  - asyncio
++  - ccxt.async_support
++  - collections
++  - config
++  - copy
++  - core.dashboard_server
++  - core.data_manager
++  - dataclasses
++  - engines.base
++  - engines.engine_hub
++  - engines.mc_engine
++  - engines.mc_risk
++  - engines.pmaker_manager
++  - engines.running_stats
++  - jax
++  - jax.numpy
++  - json
++  - logging
++  - math
++  - models.alpha_hit_mlp
++  - numpy
++  - os
++  - pathlib
++  - random
++  - regime
++  - time
++  - torch
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++  - utils.alpha_features
++  - utils.helpers
++
+
+# 2025-12-28 03:09:13.812708
++n
+
+# 2025-12-28 03:10:21.318424
++그래 계속 진행해
+
+# 2025-12-28 03:12:32.461425
++y
+
+# 2025-12-28 10:20:50.230694
++n
+
+# 2025-12-28 10:22:43.613900
++지금내가내프로젝트에서 가장 중요한 두 파일의 구조를 줄게. 읽어보고 그 두개의 큰 파일을 리팩토링할 계획을여러 단계로 세워  Wrote CONTINUE_BRIEF.md
++  �� 요약 자료
++  [리팩토링 목표/문제점]
++  - 가장 큰 목표: (예: 메인 2개 파일을 모듈로 분리하고 테스트 가능하게)
++  - 현재 고통 포인트(최대 8개):
++    1)각 파일의 기능과 함수간의 연결 관계가 파악이 안됨
++    2)기능 하나만 수정해도 같은 오류가 계속 발생
++    3)LLM이 코드를 수정할 때 context길이의 한계로 인해 수정이 안됨
++  - 절대 바꾸면 안 되는 것(회귀 금지)
++    - 예: 전략 결과/EV 계산 결과는 동일해야 함
++    - 예: 로그 포맷, state/*.json 키 구조 유지
++  - 성능 요구:
++    - 예: 실시간 매매라 레이턴시 중요 / 백테스트라 처리량 중요
++
++  ## main_engine_mc_v2_final.py
++
++  ### 주요 import(요약)
++
++  - __future__
++  - aiohttp.tcp_helpers
++  - asyncio
++  - ccxt.async_support
++  - collections
++  - config
++  - copy
++  - core.dashboard_server
++  - core.data_manager
++  - engines.engine_hub
++  - engines.mc_engine
++  - engines.mc_risk
++  - engines.pmaker_manager
++  - engines.running_stats
++  - json
++  - math
++  - numpy
++  - os
++  - pathlib
++  - random
++  - regime
++  - time
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++  - utils.alpha_features
++  - utils.helpers
++
++  ### 클래스/함수 목록(라인)
++
++  -    29: def _tcp_keepalive_safe
++  -    60: class LiveOrchestrator
++  -    61: def LiveOrchestrator.__init__
++  -   282: def LiveOrchestrator._compute_atr_proxy
++  -   304: def LiveOrchestrator._exec_stats_for
++  -   330: def LiveOrchestrator._rows_snapshot
++  -   343: def LiveOrchestrator.broadcast_loop
++  -   360: def LiveOrchestrator.analyze_symbol
++  -  1250: def LiveOrchestrator._compute_decision_task
++  -  1324: def LiveOrchestrator._log
++  -  1330: def LiveOrchestrator._log_err
++  -  1336: def LiveOrchestrator._pmaker_status
++  -  1340: def LiveOrchestrator._ccxt_call
++  -  1375: def LiveOrchestrator._load_json
++  -  1384: def LiveOrchestrator._load_persistent_state
++  -  1435: def LiveOrchestrator._persist_state
++  -  1454: def LiveOrchestrator._compute_returns_and_vol
++  -  1473: def LiveOrchestrator._annualize_mu_sigma
++  -  1480: def LiveOrchestrator._safe_float
++  -  1487: def LiveOrchestrator._sanitize_for_json
++  -  1542: def LiveOrchestrator._row
++  -  1966: def LiveOrchestrator._total_open_notional
++  -  1969: def LiveOrchestrator._can_enter_position
++  -  1976: def LiveOrchestrator._entry_permit
++  -  2022: def LiveOrchestrator._calc_position_size
++  -  2038: def LiveOrchestrator._dynamic_leverage_risk
++  -  2074: def LiveOrchestrator._direction_bias
++  -  2108: def LiveOrchestrator._infer_regime
++  -  2129: def LiveOrchestrator._compute_ofi_score
++  -  2144: def LiveOrchestrator._liquidity_score
++  -  2153: def LiveOrchestrator._enter_position
++  -  2250: def LiveOrchestrator._close_position
++  -  2295: def LiveOrchestrator._pmaker_update_attempt
++  -  2339: def LiveOrchestrator._maybe_place_order
++  -  2351: def LiveOrchestrator._execute_order
++  -  2604: def LiveOrchestrator._execute_close_order
++  -  2657: def LiveOrchestrator._best_bid_ask
++  -  2682: def LiveOrchestrator._infer_tick_size
++  -  2720: def LiveOrchestrator._infer_tick_size_from_ladders
++  -  2748: def LiveOrchestrator._round_price_to_tick
++  -  2753: def LiveOrchestrator._extract_order_stats
++  -  2810: def LiveOrchestrator._fetch_order_trades_any
++  -  2846: def LiveOrchestrator._pmaker_probe_price
++  -  2863: def LiveOrchestrator._rebalance_position
++  -  2931: def LiveOrchestrator._update_pos_pred_snapshot_from_decision
++  -  2974: def LiveOrchestrator._maybe_exit_position_unified
++  -  3123: def LiveOrchestrator._maybe_exit_position
++  -  3158: def LiveOrchestrator._record_trade
++  -  3236: def LiveOrchestrator._consensus_used_flag
++  -  3246: def LiveOrchestrator._ema_update
++  -  3259: def LiveOrchestrator._calc_rsi
++  -  3277: def LiveOrchestrator._consensus_action
++  -  3367: def LiveOrchestrator._spread_signal
++  -  3390: def LiveOrchestrator._manage_spreads
++  -  3442: def LiveOrchestrator._decide_v3
++  -  3641: def LiveOrchestrator._mark_exit_and_cooldown
++  -  3659: def LiveOrchestrator.decision_loop
++  -  3796: def main
++
++  ### __main__ 주변(발췌)
++
++  ```text
++  3830:     # If you use testnet keys, you must enable sandbox mode.
++  3831:     if _env_bool("BYBIT_TESTNET", False) or _env_bool("CCXT_SANDBOX", False):
++  3832:         try:
++  3833:             exchange.set_sandbox_mode(True)
++  3834:             print("[BYBIT] sandbox_mode enabled (testnet)")
++  3835:         except Exception as e:
++  3836:             print(f"[BYBIT] sandbox_mode enable failed: {e}")
++  3837: 
++  3838:     # Load markets once and drop symbols that don't exist (common on testnet).
++  3839:     try:
++  3840:         await exchange.load_markets()
++  3841:         global SYMBOLS
++  3842:         missing = [s for s in SYMBOLS if s not in exchange.markets]
++  3843:         if missing:
++  3844:             print(f"[BYBIT] dropping unsupported symbols: {missing}")
++  3845:         SYMBOLS = [s for s in SYMBOLS if s in exchange.markets]
++  3846:         if not SYMBOLS:
++  3847:             raise RuntimeError("No supported symbols after filtering; set SYMBOLS_CSV to valid Bybit markets.")
++  3848:     except Exception as e:
++  3849:         print(f"[BYBIT] load_markets/filter failed: {e}")
++  3850:     orchestrator = LiveOrchestrator(exchange, SYMBOLS)
++  3851: 
++  3852:     runner = None
++  3853:     site = None
++  3854:     try:
++  3855:         dashboard = DashboardServer(orchestrator)
++  3856:         orchestrator.dashboard = dashboard
++  3857:         await dashboard.start()
++  3858: 
++  3859:         # ✅ OHLCV preload를 먼저 완료한 후 decision_loop 시작 (데이터 없이 실행 방지)
++  3860:         if PRELOAD_ON_START:
++  3861:             try:
++  3862:                 print(f"⏳ Preloading OHLCV (limit={OHLCV_PRELOAD_LIMIT})...")
++  3863:                 await orchestrator.data.preload_all_ohlcv(limit=OHLCV_PRELOAD_LIMIT)
++  3864:                 orchestrator._persist_state(force=True)
++  3865:                 print("✅ OHLCV preload done")
++  3866:             except Exception as e:
++  3867:                 print(f"[ERR] preload task failed: {e}")
++  3868: 
++  3869:         # ✅ 초기 이벤트 설정: decision_loop가 실행될 수 있도록 (preload 완료 후)
++  3870:         orchestrator.data.data_updated_event.set()
++  3871: 
++  3872:         asyncio.create_task(orchestrator.data.fetch_prices_loop())
++  3873:         asyncio.create_task(orchestrator.data.fetch_ohlcv_loop())
++  3874:         asyncio.create_task(orchestrator.data.fetch_orderbook_loop())
++  3875:         asyncio.create_task(orchestrator.decision_loop())
++  3876:         asyncio.create_task(orchestrator.broadcast_loop())
++  3877:         
++  3878: 
++  3879: 
++  3880:         print(f"🚀 Dashboard: http://localhost:{PORT}")
++  3881:         print(f"📄 Serving: {DASHBOARD_FILE.name}")
++  3882:         await asyncio.Future()
++  3883:     except OSError as e:
++  3884:         print(f"[ERR] Failed to bind on port {PORT}: {e}")
++  3885:     finally:
++  3886:         # ✅ 엔진 종료 시 PMaker 모델 저장 (finally 블록에서도 저장)
++  3887:         if 'orchestrator' in locals() and orchestrator.pmaker.surv is not None and orchestrator.pmaker.enabled:
++  3888:             try:
++  3889:                 orchestrator.pmaker.surv.save(orchestrator.pmaker.model_path)
++  3890:                 print(f"[SHUTDOWN] PMaker model saved to {orchestrator.pmaker.model_path}")
++  3891:             except Exception as e:
++  3892:                 print(f"[SHUTDOWN] Failed to save PMaker model: {e}")
++  3893:         
++  3894:         try:
++  3895:             await exchange.close()
++  3896:         except Exception:
++  3897:             pass
++  3898:         if site is not None:
++  3899:             try:
++  3900:                 await site.stop()
++  3901:             except Exception:
++  3902:                 pass
++  3903:         if runner is not None:
++  3904:             try:
++  3905:                 await runner.cleanup()
++  3906:             except Exception:
++  3907:                 pass
++  3908: 
++  3909: 
++  3910: if __name__ == "__main__":
++  3911:     asyncio.run(main())
++  3912: 1
++  ```
++
++  ### 내부 호출 관계(근사, 상위 80)
++
++  - _tcp_keepalive_safe -> _orig_tcp_keepalive
++  - LiveOrchestrator.__init__ -> AlphaTrainerConfig
++  - LiveOrchestrator.__init__ -> DataManager
++  - LiveOrchestrator.__init__ -> EngineHub
++  - LiveOrchestrator.__init__ -> ExitPolicy
++  - LiveOrchestrator.__init__ -> OnlineAlphaTrainer
++  - LiveOrchestrator.__init__ -> PMakerManager
++  - LiveOrchestrator.__init__ -> RunningStats
++  - LiveOrchestrator.__init__ -> _env_bool
++  - LiveOrchestrator.__init__ -> _env_float
++  - LiveOrchestrator.__init__ -> _env_int
++  - LiveOrchestrator.__init__ -> asyncio.Semaphore
++  - LiveOrchestrator.__init__ -> deque
++  - LiveOrchestrator.__init__ -> float
++  - LiveOrchestrator.__init__ -> int
++  - LiveOrchestrator.__init__ -> k.strip
++  - LiveOrchestrator.__init__ -> kv.split
++  - LiveOrchestrator.__init__ -> len
++  - LiveOrchestrator.__init__ -> lower
++  - LiveOrchestrator.__init__ -> max
++  - LiveOrchestrator.__init__ -> os.environ.get
++  - LiveOrchestrator.__init__ -> os.getenv
++  - LiveOrchestrator.__init__ -> print
++  - LiveOrchestrator.__init__ -> s.split
++  - LiveOrchestrator.__init__ -> self._load_persistent_state
++  - LiveOrchestrator.__init__ -> self.state_dir.mkdir
++  - LiveOrchestrator.__init__ -> set
++  - LiveOrchestrator.__init__ -> str
++  - LiveOrchestrator.__init__ -> strip
++  - LiveOrchestrator.__init__ -> v.strip
++  - LiveOrchestrator._compute_atr_proxy -> float
++  - LiveOrchestrator._compute_atr_proxy -> len
++  - LiveOrchestrator._compute_atr_proxy -> np.abs
++  - LiveOrchestrator._compute_atr_proxy -> np.diff
++  - LiveOrchestrator._compute_atr_proxy -> np.mean
++  - LiveOrchestrator._exec_stats_for -> deque
++  - LiveOrchestrator._exec_stats_for -> now_ms
++  - LiveOrchestrator._exec_stats_for -> self._exec_stats.get
++  - LiveOrchestrator._rows_snapshot -> get
++  - LiveOrchestrator._rows_snapshot -> len
++  - LiveOrchestrator._rows_snapshot -> list
++  - LiveOrchestrator._rows_snapshot -> rows.append
++  - LiveOrchestrator._rows_snapshot -> self._decision_cache.get
++  - LiveOrchestrator._rows_snapshot -> self._row
++  - LiveOrchestrator._rows_snapshot -> self.data.market.get
++  - LiveOrchestrator._rows_snapshot -> self.data.ohlcv_buffer.get
++  - LiveOrchestrator.broadcast_loop -> asyncio.sleep
++  - LiveOrchestrator.broadcast_loop -> now_ms
++  - LiveOrchestrator.broadcast_loop -> print
++  - LiveOrchestrator.broadcast_loop -> self._log_err
++  - LiveOrchestrator.broadcast_loop -> self._rows_snapshot
++  - LiveOrchestrator.broadcast_loop -> self.dashboard.broadcast
++  - LiveOrchestrator.analyze_symbol -> EV_DROP.get
++  - LiveOrchestrator.analyze_symbol -> EV_EXIT_FLOOR.get
++  - LiveOrchestrator.analyze_symbol -> PSL_RISE.get
++  - LiveOrchestrator.analyze_symbol -> _s
++  - LiveOrchestrator.analyze_symbol -> adjust_mu_sigma
++  - LiveOrchestrator.analyze_symbol -> append
++  - LiveOrchestrator.analyze_symbol -> astype
++  - LiveOrchestrator.analyze_symbol -> asyncio.create_task
++  - LiveOrchestrator.analyze_symbol -> bool
++  - LiveOrchestrator.analyze_symbol -> build_alpha_features
++  - LiveOrchestrator.analyze_symbol -> c.get
++  - LiveOrchestrator.analyze_symbol -> cached_decision.get
++  - LiveOrchestrator.analyze_symbol -> cap_map.get
++  - LiveOrchestrator.analyze_symbol -> ctx.get
++  - LiveOrchestrator.analyze_symbol -> ctx.keys
++  - LiveOrchestrator.analyze_symbol -> ctx.setdefault
++  - LiveOrchestrator.analyze_symbol -> cvar_floor_map.get
++  - LiveOrchestrator.analyze_symbol -> d.get
++  - LiveOrchestrator.analyze_symbol -> decision.get
++  - LiveOrchestrator.analyze_symbol -> decision_meta.get
++  - LiveOrchestrator.analyze_symbol -> decision_meta.update
++  - LiveOrchestrator.analyze_symbol -> deque
++  - LiveOrchestrator.analyze_symbol -> dict
++  - LiveOrchestrator.analyze_symbol -> float
++  - LiveOrchestrator.analyze_symbol -> get
++  - LiveOrchestrator.analyze_symbol -> get_regime_mu_sigma
++  - LiveOrchestrator.analyze_symbol -> getattr
++  - LiveOrchestrator.analyze_symbol -> hasattr
++
++
++  ## engines/mc_engine.py
++
++  ### 주요 import(요약)
++
++  - dataclasses
++  - engines.base
++  - engines.mc_risk
++  - jax
++  - jax.numpy
++  - logging
++  - math
++  - models.alpha_hit_mlp
++  - numpy
++  - os
++  - regime
++  - time
++  - torch
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++
++  ### 클래스/함수 목록(라인)
++
++  -    53: def _jax_mc_device
++  -    76: def _cvar_empirical
++  -    82: def _cvar_bootstrap
++  -   101: def _cvar_tail_inflate
++  -   111: def cvar_ensemble
++  -   124: def _norm_cdf
++  -   129: def _approx_p_pos_and_ev_hold
++  -   174: def simulate_exit_policy_rollforward
++  -   435: def simulate_exit_policy_rollforward_analytic
++  -   647: def _cvar_jnp
++  -   654: def _sample_noise
++  -   670: def _mc_first_passage_tp_sl_jax_core
++  -   747: def _generate_and_check_paths_jax_core
++  -   825: def mc_first_passage_tp_sl_jax
++  -   902: def ema
++  -   915: class MCParams
++  -   932: class MonteCarloEngine
++  -   965: def MonteCarloEngine.__init__
++  -  1033: def MonteCarloEngine.mc_first_passage_tp_sl
++  -  1187: def MonteCarloEngine._annualize
++  -  1194: def MonteCarloEngine._trend_direction
++  -  1205: def MonteCarloEngine._signal_alpha_mu_annual
++  -  1218: def MonteCarloEngine._signal_alpha_mu_annual_parts
++  -  1337: def MonteCarloEngine._get_params
++  -  1378: def MonteCarloEngine._cluster_regime
++  -  1413: def MonteCarloEngine._estimate_slippage
++  -  1430: def MonteCarloEngine._estimate_p_maker
++  -  1462: def MonteCarloEngine._sample_increments_np
++  -  1473: def MonteCarloEngine._sample_increments_jax
++  -  1493: def MonteCarloEngine.simulate_paths_price
++  -  1546: def MonteCarloEngine.evaluate_entry_metrics
++  -  3716: def MonteCarloEngine.decide
++  -  4268: def MonteCarloEngine._weights_for_horizons
++  -  4282: def MonteCarloEngine._execution_mix_from_survival
++  -  4313: def MonteCarloEngine._sigma_per_sec
++  -  4322: def MonteCarloEngine.compute_exit_policy_metrics
++  -  4586: def MonteCarloEngine._compress_reason_counts
++  -  4614: def MonteCarloEngine._extract_alpha_hit_features
++  -  4668: def MonteCarloEngine.collect_alpha_hit_sample
++  -  4722: def MonteCarloEngine._predict_horizon_hit_probs
++  -  4767: def _simulate_paths_price_jax_core
++  -  4823: def _extract_alpha_hit_features
++  -  4874: def collect_alpha_hit_sample
++  -  4931: def _predict_horizon_hit_probs
++  -  4981: def _compute_ev_based_weights
++  -  5026: def simulate_paths_netpnl
++
++  ### 내부 호출 관계(근사, 상위 80)
++
++  - _jax_mc_device -> jax.devices
++  - _jax_mc_device -> lower
++  - _jax_mc_device -> os.environ.get
++  - _jax_mc_device -> strip
++  - _cvar_empirical -> float
++  - _cvar_empirical -> int
++  - _cvar_empirical -> len
++  - _cvar_empirical -> max
++  - _cvar_empirical -> mean
++  - _cvar_empirical -> np.asarray
++  - _cvar_empirical -> np.sort
++  - _cvar_bootstrap -> _cvar_empirical
++  - _cvar_bootstrap -> float
++  - _cvar_bootstrap -> int
++  - _cvar_bootstrap -> len
++  - _cvar_bootstrap -> max
++  - _cvar_bootstrap -> np.asarray
++  - _cvar_bootstrap -> np.median
++  - _cvar_bootstrap -> np.random.default_rng
++  - _cvar_bootstrap -> os.environ.get
++  - _cvar_bootstrap -> range
++  - _cvar_bootstrap -> rng.choice
++  - _cvar_bootstrap -> vals.append
++  - _cvar_tail_inflate -> float
++  - _cvar_tail_inflate -> np.asarray
++  - _cvar_tail_inflate -> np.quantile
++  - _cvar_tail_inflate -> tail.mean
++  - cvar_ensemble -> _cvar_bootstrap
++  - cvar_ensemble -> _cvar_empirical
++  - cvar_ensemble -> _cvar_tail_inflate
++  - cvar_ensemble -> float
++  - cvar_ensemble -> np.asarray
++  - _norm_cdf -> float
++  - _norm_cdf -> math.erf
++  - _norm_cdf -> math.sqrt
++  - _approx_p_pos_and_ev_hold -> _norm_cdf
++  - _approx_p_pos_and_ev_hold -> float
++  - _approx_p_pos_and_ev_hold -> int
++  - _approx_p_pos_and_ev_hold -> math.sqrt
++  - _approx_p_pos_and_ev_hold -> max
++  - simulate_exit_policy_rollforward -> ValueError
++  - simulate_exit_policy_rollforward -> _meta_default
++  - simulate_exit_policy_rollforward -> counts.get
++  - simulate_exit_policy_rollforward -> float
++  - simulate_exit_policy_rollforward -> int
++  - simulate_exit_policy_rollforward -> len
++  - simulate_exit_policy_rollforward -> m.get
++  - simulate_exit_policy_rollforward -> max
++  - simulate_exit_policy_rollforward -> min
++  - simulate_exit_policy_rollforward -> np.any
++  - simulate_exit_policy_rollforward -> np.arange
++  - simulate_exit_policy_rollforward -> np.argmax
++  - simulate_exit_policy_rollforward -> np.asarray
++  - simulate_exit_policy_rollforward -> np.full
++  - simulate_exit_policy_rollforward -> np.mean
++  - simulate_exit_policy_rollforward -> np.median
++  - simulate_exit_policy_rollforward -> np.sum
++  - simulate_exit_policy_rollforward -> np.zeros
++  - simulate_exit_policy_rollforward -> range
++  - _meta_default -> _approx_p_pos_and_ev_hold
++  - _meta_default -> _prob_max_geq
++  - _meta_default -> _prob_min_leq
++  - _meta_default -> bool
++  - _meta_default -> float
++  - _meta_default -> math.isfinite
++  - _meta_default -> max
++  - simulate_exit_policy_rollforward_analytic -> _approx_p_pos_and_ev_hold
++  - simulate_exit_policy_rollforward_analytic -> _meta_default
++  - simulate_exit_policy_rollforward_analytic -> bool
++  - simulate_exit_policy_rollforward_analytic -> float
++  - simulate_exit_policy_rollforward_analytic -> int
++  - simulate_exit_policy_rollforward_analytic -> m.get
++  - simulate_exit_policy_rollforward_analytic -> math.isfinite
++  - simulate_exit_policy_rollforward_analytic -> max
++  - simulate_exit_policy_rollforward_analytic -> min
++  - simulate_exit_policy_rollforward_analytic -> range
++  - simulate_exit_policy_rollforward_analytic -> str
++  - _prob_max_geq -> _norm_cdf
++  - _prob_max_geq -> float
++  - _prob_max_geq -> math.exp
++
++
++  ## 프로젝트 전체 외부 의존성(합집합)
++
++  - __future__
++  - aiohttp.tcp_helpers
++  - asyncio
++  - ccxt.async_support
++  - collections
++  - config
++  - copy
++  - core.dashboard_server
++  - core.data_manager
++  - dataclasses
++  - engines.base
++  - engines.engine_hub
++  - engines.mc_engine
++  - engines.mc_risk
++  - engines.pmaker_manager
++  - engines.running_stats
++  - jax
++  - jax.numpy
++  - json
++  - logging
++  - math
++  - models.alpha_hit_mlp
++  - numpy
++  - os
++  - pathlib
++  - random
++  - regime
++  - time
++  - torch
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++  - utils.alpha_features
++  - utils.helpers
+
+# 2025-12-28 10:22:47.546942
++n
+
+# 2025-12-28 10:26:52.156823
++내 말 들려?
+
+# 2025-12-28 18:23:35.910724
++n
+
+# 2025-12-28 18:23:41.465304
++안녕
+
+# 2025-12-28 18:29:52.270371
++n
+
+# 2025-12-28 18:29:56.500125
++안녕
+
+# 2025-12-28 18:30:50.274984
++continue_breif.md라는 파일을 보면 2개의 파일에 대한 리펙토링 계획이 나와있어. 그걸 보고 리팩토링 계획을 여러 단계에 나누어서 세워봐. 한 단계씩 진행할거야
+
+# 2025-12-28 18:31:14.470009
++  Wrote CONTINUE_BRIEF.md
++  �� 요약 자료
++  [리팩토링 목표/문제점]
++  - 가장 큰 목표: (예: 메인 2개 파일을 모듈로 분리하고 테스트 가능하게)
++  - 현재 고통 포인트(최대 8개):
++    1)각 파일의 기능과 함수간의 연결 관계가 파악이 안됨
++    2)기능 하나만 수정해도 같은 오류가 계속 발생
++    3)LLM이 코드를 수정할 때 context길이의 한계로 인해 수정이 안됨
++  - 절대 바꾸면 안 되는 것(회귀 금지)
++    - 예: 전략 결과/EV 계산 결과는 동일해야 함
++    - 예: 로그 포맷, state/*.json 키 구조 유지
++  - 성능 요구:
++    - 예: 실시간 매매라 레이턴시 중요 / 백테스트라 처리량 중요
++
++  ## main_engine_mc_v2_final.py
++
++  ### 주요 import(요약)
++
++  - __future__
++  - aiohttp.tcp_helpers
++  - asyncio
++  - ccxt.async_support
++  - collections
++  - config
++  - copy
++  - core.dashboard_server
++  - core.data_manager
++  - engines.engine_hub
++  - engines.mc_engine
++  - engines.mc_risk
++  - engines.pmaker_manager
++  - engines.running_stats
++  - json
++  - math
++  - numpy
++  - os
++  - pathlib
++  - random
++  - regime
++  - time
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++  - utils.alpha_features
++  - utils.helpers
++
++  ### 클래스/함수 목록(라인)
++
++  -    29: def _tcp_keepalive_safe
++  -    60: class LiveOrchestrator
++  -    61: def LiveOrchestrator.__init__
++  -   282: def LiveOrchestrator._compute_atr_proxy
++  -   304: def LiveOrchestrator._exec_stats_for
++  -   330: def LiveOrchestrator._rows_snapshot
++  -   343: def LiveOrchestrator.broadcast_loop
++  -   360: def LiveOrchestrator.analyze_symbol
++  -  1250: def LiveOrchestrator._compute_decision_task
++  -  1324: def LiveOrchestrator._log
++  -  1330: def LiveOrchestrator._log_err
++  -  1336: def LiveOrchestrator._pmaker_status
++  -  1340: def LiveOrchestrator._ccxt_call
++  -  1375: def LiveOrchestrator._load_json
++  -  1384: def LiveOrchestrator._load_persistent_state
++  -  1435: def LiveOrchestrator._persist_state
++  -  1454: def LiveOrchestrator._compute_returns_and_vol
++  -  1473: def LiveOrchestrator._annualize_mu_sigma
++  -  1480: def LiveOrchestrator._safe_float
++  -  1487: def LiveOrchestrator._sanitize_for_json
++  -  1542: def LiveOrchestrator._row
++  -  1966: def LiveOrchestrator._total_open_notional
++  -  1969: def LiveOrchestrator._can_enter_position
++  -  1976: def LiveOrchestrator._entry_permit
++  -  2022: def LiveOrchestrator._calc_position_size
++  -  2038: def LiveOrchestrator._dynamic_leverage_risk
++  -  2074: def LiveOrchestrator._direction_bias
++  -  2108: def LiveOrchestrator._infer_regime
++  -  2129: def LiveOrchestrator._compute_ofi_score
++  -  2144: def LiveOrchestrator._liquidity_score
++  -  2153: def LiveOrchestrator._enter_position
++  -  2250: def LiveOrchestrator._close_position
++  -  2295: def LiveOrchestrator._pmaker_update_attempt
++  -  2339: def LiveOrchestrator._maybe_place_order
++  -  2351: def LiveOrchestrator._execute_order
++  -  2604: def LiveOrchestrator._execute_close_order
++  -  2657: def LiveOrchestrator._best_bid_ask
++  -  2682: def LiveOrchestrator._infer_tick_size
++  -  2720: def LiveOrchestrator._infer_tick_size_from_ladders
++  -  2748: def LiveOrchestrator._round_price_to_tick
++  -  2753: def LiveOrchestrator._extract_order_stats
++  -  2810: def LiveOrchestrator._fetch_order_trades_any
++  -  2846: def LiveOrchestrator._pmaker_probe_price
++  -  2863: def LiveOrchestrator._rebalance_position
++  -  2931: def LiveOrchestrator._update_pos_pred_snapshot_from_decision
++  -  2974: def LiveOrchestrator._maybe_exit_position_unified
++  -  3123: def LiveOrchestrator._maybe_exit_position
++  -  3158: def LiveOrchestrator._record_trade
++  -  3236: def LiveOrchestrator._consensus_used_flag
++  -  3246: def LiveOrchestrator._ema_update
++  -  3259: def LiveOrchestrator._calc_rsi
++  -  3277: def LiveOrchestrator._consensus_action
++  -  3367: def LiveOrchestrator._spread_signal
++  -  3390: def LiveOrchestrator._manage_spreads
++  -  3442: def LiveOrchestrator._decide_v3
++  -  3641: def LiveOrchestrator._mark_exit_and_cooldown
++  -  3659: def LiveOrchestrator.decision_loop
++  -  3796: def main
++
++  ### __main__ 주변(발췌)
++
++  ```text
++  3830:     # If you use testnet keys, you must enable sandbox mode.
++  3831:     if _env_bool("BYBIT_TESTNET", False) or _env_bool("CCXT_SANDBOX", False):
++  3832:         try:
++  3833:             exchange.set_sandbox_mode(True)
++  3834:             print("[BYBIT] sandbox_mode enabled (testnet)")
++  3835:         except Exception as e:
++  3836:             print(f"[BYBIT] sandbox_mode enable failed: {e}")
++  3837: 
++  3838:     # Load markets once and drop symbols that don't exist (common on testnet).
++  3839:     try:
++  3840:         await exchange.load_markets()
++  3841:         global SYMBOLS
++  3842:         missing = [s for s in SYMBOLS if s not in exchange.markets]
++  3843:         if missing:
++  3844:             print(f"[BYBIT] dropping unsupported symbols: {missing}")
++  3845:         SYMBOLS = [s for s in SYMBOLS if s in exchange.markets]
++  3846:         if not SYMBOLS:
++  3847:             raise RuntimeError("No supported symbols after filtering; set SYMBOLS_CSV to valid Bybit markets.")
++  3848:     except Exception as e:
++  3849:         print(f"[BYBIT] load_markets/filter failed: {e}")
++  3850:     orchestrator = LiveOrchestrator(exchange, SYMBOLS)
++  3851: 
++  3852:     runner = None
++  3853:     site = None
++  3854:     try:
++  3855:         dashboard = DashboardServer(orchestrator)
++  3856:         orchestrator.dashboard = dashboard
++  3857:         await dashboard.start()
++  3858: 
++  3859:         # ✅ OHLCV preload를 먼저 완료한 후 decision_loop 시작 (데이터 없이 실행 방지)
++  3860:         if PRELOAD_ON_START:
++  3861:             try:
++  3862:                 print(f"⏳ Preloading OHLCV (limit={OHLCV_PRELOAD_LIMIT})...")
++  3863:                 await orchestrator.data.preload_all_ohlcv(limit=OHLCV_PRELOAD_LIMIT)
++  3864:                 orchestrator._persist_state(force=True)
++  3865:                 print("✅ OHLCV preload done")
++  3866:             except Exception as e:
++  3867:                 print(f"[ERR] preload task failed: {e}")
++  3868: 
++  3869:         # ✅ 초기 이벤트 설정: decision_loop가 실행될 수 있도록 (preload 완료 후)
++  3870:         orchestrator.data.data_updated_event.set()
++  3871: 
++  3872:         asyncio.create_task(orchestrator.data.fetch_prices_loop())
++  3873:         asyncio.create_task(orchestrator.data.fetch_ohlcv_loop())
++  3874:         asyncio.create_task(orchestrator.data.fetch_orderbook_loop())
++  3875:         asyncio.create_task(orchestrator.decision_loop())
++  3876:         asyncio.create_task(orchestrator.broadcast_loop())
++  3877:         
++  3878: 
++  3879: 
++  3880:         print(f"🚀 Dashboard: http://localhost:{PORT}")
++  3881:         print(f"📄 Serving: {DASHBOARD_FILE.name}")
++  3882:         await asyncio.Future()
++  3883:     except OSError as e:
++  3884:         print(f"[ERR] Failed to bind on port {PORT}: {e}")
++  3885:     finally:
++  3886:         # ✅ 엔진 종료 시 PMaker 모델 저장 (finally 블록에서도 저장)
++  3887:         if 'orchestrator' in locals() and orchestrator.pmaker.surv is not None and orchestrator.pmaker.enabled:
++  3888:             try:
++  3889:                 orchestrator.pmaker.surv.save(orchestrator.pmaker.model_path)
++  3890:                 print(f"[SHUTDOWN] PMaker model saved to {orchestrator.pmaker.model_path}")
++  3891:             except Exception as e:
++  3892:                 print(f"[SHUTDOWN] Failed to save PMaker model: {e}")
++  3893:         
++  3894:         try:
++  3895:             await exchange.close()
++  3896:         except Exception:
++  3897:             pass
++  3898:         if site is not None:
++  3899:             try:
++  3900:                 await site.stop()
++  3901:             except Exception:
++  3902:                 pass
++  3903:         if runner is not None:
++  3904:             try:
++  3905:                 await runner.cleanup()
++  3906:             except Exception:
++  3907:                 pass
++  3908: 
++  3909: 
++  3910: if __name__ == "__main__":
++  3911:     asyncio.run(main())
++  3912: 1
++  ```
++
++  ### 내부 호출 관계(근사, 상위 80)
++
++  - _tcp_keepalive_safe -> _orig_tcp_keepalive
++  - LiveOrchestrator.__init__ -> AlphaTrainerConfig
++  - LiveOrchestrator.__init__ -> DataManager
++  - LiveOrchestrator.__init__ -> EngineHub
++  - LiveOrchestrator.__init__ -> ExitPolicy
++  - LiveOrchestrator.__init__ -> OnlineAlphaTrainer
++  - LiveOrchestrator.__init__ -> PMakerManager
++  - LiveOrchestrator.__init__ -> RunningStats
++  - LiveOrchestrator.__init__ -> _env_bool
++  - LiveOrchestrator.__init__ -> _env_float
++  - LiveOrchestrator.__init__ -> _env_int
++  - LiveOrchestrator.__init__ -> asyncio.Semaphore
++  - LiveOrchestrator.__init__ -> deque
++  - LiveOrchestrator.__init__ -> float
++  - LiveOrchestrator.__init__ -> int
++  - LiveOrchestrator.__init__ -> k.strip
++  - LiveOrchestrator.__init__ -> kv.split
++  - LiveOrchestrator.__init__ -> len
++  - LiveOrchestrator.__init__ -> lower
++  - LiveOrchestrator.__init__ -> max
++  - LiveOrchestrator.__init__ -> os.environ.get
++  - LiveOrchestrator.__init__ -> os.getenv
++  - LiveOrchestrator.__init__ -> print
++  - LiveOrchestrator.__init__ -> s.split
++  - LiveOrchestrator.__init__ -> self._load_persistent_state
++  - LiveOrchestrator.__init__ -> self.state_dir.mkdir
++  - LiveOrchestrator.__init__ -> set
++  - LiveOrchestrator.__init__ -> str
++  - LiveOrchestrator.__init__ -> strip
++  - LiveOrchestrator.__init__ -> v.strip
++  - LiveOrchestrator._compute_atr_proxy -> float
++  - LiveOrchestrator._compute_atr_proxy -> len
++  - LiveOrchestrator._compute_atr_proxy -> np.abs
++  - LiveOrchestrator._compute_atr_proxy -> np.diff
++  - LiveOrchestrator._compute_atr_proxy -> np.mean
++  - LiveOrchestrator._exec_stats_for -> deque
++  - LiveOrchestrator._exec_stats_for -> now_ms
++  - LiveOrchestrator._exec_stats_for -> self._exec_stats.get
++  - LiveOrchestrator._rows_snapshot -> get
++  - LiveOrchestrator._rows_snapshot -> len
++  - LiveOrchestrator._rows_snapshot -> list
++  - LiveOrchestrator._rows_snapshot -> rows.append
++  - LiveOrchestrator._rows_snapshot -> self._decision_cache.get
++  - LiveOrchestrator._rows_snapshot -> self._row
++  - LiveOrchestrator._rows_snapshot -> self.data.market.get
++  - LiveOrchestrator._rows_snapshot -> self.data.ohlcv_buffer.get
++  - LiveOrchestrator.broadcast_loop -> asyncio.sleep
++  - LiveOrchestrator.broadcast_loop -> now_ms
++  - LiveOrchestrator.broadcast_loop -> print
++  - LiveOrchestrator.broadcast_loop -> self._log_err
++  - LiveOrchestrator.broadcast_loop -> self._rows_snapshot
++  - LiveOrchestrator.broadcast_loop -> self.dashboard.broadcast
++  - LiveOrchestrator.analyze_symbol -> EV_DROP.get
++  - LiveOrchestrator.analyze_symbol -> EV_EXIT_FLOOR.get
++  - LiveOrchestrator.analyze_symbol -> PSL_RISE.get
++  - LiveOrchestrator.analyze_symbol -> _s
++  - LiveOrchestrator.analyze_symbol -> adjust_mu_sigma
++  - LiveOrchestrator.analyze_symbol -> append
++  - LiveOrchestrator.analyze_symbol -> astype
++  - LiveOrchestrator.analyze_symbol -> asyncio.create_task
++  - LiveOrchestrator.analyze_symbol -> bool
++  - LiveOrchestrator.analyze_symbol -> build_alpha_features
++  - LiveOrchestrator.analyze_symbol -> c.get
++  - LiveOrchestrator.analyze_symbol -> cached_decision.get
++  - LiveOrchestrator.analyze_symbol -> cap_map.get
++  - LiveOrchestrator.analyze_symbol -> ctx.get
++  - LiveOrchestrator.analyze_symbol -> ctx.keys
++  - LiveOrchestrator.analyze_symbol -> ctx.setdefault
++  - LiveOrchestrator.analyze_symbol -> cvar_floor_map.get
++  - LiveOrchestrator.analyze_symbol -> d.get
++  - LiveOrchestrator.analyze_symbol -> decision.get
++  - LiveOrchestrator.analyze_symbol -> decision_meta.get
++  - LiveOrchestrator.analyze_symbol -> decision_meta.update
++  - LiveOrchestrator.analyze_symbol -> deque
++  - LiveOrchestrator.analyze_symbol -> dict
++  - LiveOrchestrator.analyze_symbol -> float
++  - LiveOrchestrator.analyze_symbol -> get
++  - LiveOrchestrator.analyze_symbol -> get_regime_mu_sigma
++  - LiveOrchestrator.analyze_symbol -> getattr
++  - LiveOrchestrator.analyze_symbol -> hasattr
++
++
++  ## engines/mc_engine.py
++
++  ### 주요 import(요약)
++
++  - dataclasses
++  - engines.base
++  - engines.mc_risk
++  - jax
++  - jax.numpy
++  - logging
++  - math
++  - models.alpha_hit_mlp
++  - numpy
++  - os
++  - regime
++  - time
++  - torch
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++
++  ### 클래스/함수 목록(라인)
++
++  -    53: def _jax_mc_device
++  -    76: def _cvar_empirical
++  -    82: def _cvar_bootstrap
++  -   101: def _cvar_tail_inflate
++  -   111: def cvar_ensemble
++  -   124: def _norm_cdf
++  -   129: def _approx_p_pos_and_ev_hold
++  -   174: def simulate_exit_policy_rollforward
++  -   435: def simulate_exit_policy_rollforward_analytic
++  -   647: def _cvar_jnp
++  -   654: def _sample_noise
++  -   670: def _mc_first_passage_tp_sl_jax_core
++  -   747: def _generate_and_check_paths_jax_core
++  -   825: def mc_first_passage_tp_sl_jax
++  -   902: def ema
++  -   915: class MCParams
++  -   932: class MonteCarloEngine
++  -   965: def MonteCarloEngine.__init__
++  -  1033: def MonteCarloEngine.mc_first_passage_tp_sl
++  -  1187: def MonteCarloEngine._annualize
++  -  1194: def MonteCarloEngine._trend_direction
++  -  1205: def MonteCarloEngine._signal_alpha_mu_annual
++  -  1218: def MonteCarloEngine._signal_alpha_mu_annual_parts
++  -  1337: def MonteCarloEngine._get_params
++  -  1378: def MonteCarloEngine._cluster_regime
++  -  1413: def MonteCarloEngine._estimate_slippage
++  -  1430: def MonteCarloEngine._estimate_p_maker
++  -  1462: def MonteCarloEngine._sample_increments_np
++  -  1473: def MonteCarloEngine._sample_increments_jax
++  -  1493: def MonteCarloEngine.simulate_paths_price
++  -  1546: def MonteCarloEngine.evaluate_entry_metrics
++  -  3716: def MonteCarloEngine.decide
++  -  4268: def MonteCarloEngine._weights_for_horizons
++  -  4282: def MonteCarloEngine._execution_mix_from_survival
++  -  4313: def MonteCarloEngine._sigma_per_sec
++  -  4322: def MonteCarloEngine.compute_exit_policy_metrics
++  -  4586: def MonteCarloEngine._compress_reason_counts
++  -  4614: def MonteCarloEngine._extract_alpha_hit_features
++  -  4668: def MonteCarloEngine.collect_alpha_hit_sample
++  -  4722: def MonteCarloEngine._predict_horizon_hit_probs
++  -  4767: def _simulate_paths_price_jax_core
++  -  4823: def _extract_alpha_hit_features
++  -  4874: def collect_alpha_hit_sample
++  -  4931: def _predict_horizon_hit_probs
++  -  4981: def _compute_ev_based_weights
++  -  5026: def simulate_paths_netpnl
++
++  ### 내부 호출 관계(근사, 상위 80)
++
++  - _jax_mc_device -> jax.devices
++  - _jax_mc_device -> lower
++  - _jax_mc_device -> os.environ.get
++  - _jax_mc_device -> strip
++  - _cvar_empirical -> float
++  - _cvar_empirical -> int
++  - _cvar_empirical -> len
++  - _cvar_empirical -> max
++  - _cvar_empirical -> mean
++  - _cvar_empirical -> np.asarray
++  - _cvar_empirical -> np.sort
++  - _cvar_bootstrap -> _cvar_empirical
++  - _cvar_bootstrap -> float
++  - _cvar_bootstrap -> int
++  - _cvar_bootstrap -> len
++  - _cvar_bootstrap -> max
++  - _cvar_bootstrap -> np.asarray
++  - _cvar_bootstrap -> np.median
++  - _cvar_bootstrap -> np.random.default_rng
++  - _cvar_bootstrap -> os.environ.get
++  - _cvar_bootstrap -> range
++  - _cvar_bootstrap -> rng.choice
++  - _cvar_bootstrap -> vals.append
++  - _cvar_tail_inflate -> float
++  - _cvar_tail_inflate -> np.asarray
++  - _cvar_tail_inflate -> np.quantile
++  - _cvar_tail_inflate -> tail.mean
++  - cvar_ensemble -> _cvar_bootstrap
++  - cvar_ensemble -> _cvar_empirical
++  - cvar_ensemble -> _cvar_tail_inflate
++  - cvar_ensemble -> float
++  - cvar_ensemble -> np.asarray
++  - _norm_cdf -> float
++  - _norm_cdf -> math.erf
++  - _norm_cdf -> math.sqrt
++  - _approx_p_pos_and_ev_hold -> _norm_cdf
++  - _approx_p_pos_and_ev_hold -> float
++  - _approx_p_pos_and_ev_hold -> int
++  - _approx_p_pos_and_ev_hold -> math.sqrt
++  - _approx_p_pos_and_ev_hold -> max
++  - simulate_exit_policy_rollforward -> ValueError
++  - simulate_exit_policy_rollforward -> _meta_default
++  - simulate_exit_policy_rollforward -> counts.get
++  - simulate_exit_policy_rollforward -> float
++  - simulate_exit_policy_rollforward -> int
++  - simulate_exit_policy_rollforward -> len
++  - simulate_exit_policy_rollforward -> m.get
++  - simulate_exit_policy_rollforward -> max
++  - simulate_exit_policy_rollforward -> min
++  - simulate_exit_policy_rollforward -> np.any
++  - simulate_exit_policy_rollforward -> np.arange
++  - simulate_exit_policy_rollforward -> np.argmax
++  - simulate_exit_policy_rollforward -> np.asarray
++  - simulate_exit_policy_rollforward -> np.full
++  - simulate_exit_policy_rollforward -> np.mean
++  - simulate_exit_policy_rollforward -> np.median
++  - simulate_exit_policy_rollforward -> np.sum
++  - simulate_exit_policy_rollforward -> np.zeros
++  - simulate_exit_policy_rollforward -> range
++  - _meta_default -> _approx_p_pos_and_ev_hold
++  - _meta_default -> _prob_max_geq
++  - _meta_default -> _prob_min_leq
++  - _meta_default -> bool
++  - _meta_default -> float
++  - _meta_default -> math.isfinite
++  - _meta_default -> max
++  - simulate_exit_policy_rollforward_analytic -> _approx_p_pos_and_ev_hold
++  - simulate_exit_policy_rollforward_analytic -> _meta_default
++  - simulate_exit_policy_rollforward_analytic -> bool
++  - simulate_exit_policy_rollforward_analytic -> float
++  - simulate_exit_policy_rollforward_analytic -> int
++  - simulate_exit_policy_rollforward_analytic -> m.get
++  - simulate_exit_policy_rollforward_analytic -> math.isfinite
++  - simulate_exit_policy_rollforward_analytic -> max
++  - simulate_exit_policy_rollforward_analytic -> min
++  - simulate_exit_policy_rollforward_analytic -> range
++  - simulate_exit_policy_rollforward_analytic -> str
++  - _prob_max_geq -> _norm_cdf
++  - _prob_max_geq -> float
++  - _prob_max_geq -> math.exp
++
++
++  ## 프로젝트 전체 외부 의존성(합집합)
++
++  - __future__
++  - aiohttp.tcp_helpers
++  - asyncio
++  - ccxt.async_support
++  - collections
++  - config
++  - copy
++  - core.dashboard_server
++  - core.data_manager
++  - dataclasses
++  - engines.base
++  - engines.engine_hub
++  - engines.mc_engine
++  - engines.mc_risk
++  - engines.pmaker_manager
++  - engines.running_stats
++  - jax
++  - jax.numpy
++  - json
++  - logging
++  - math
++  - models.alpha_hit_mlp
++  - numpy
++  - os
++  - pathlib
++  - random
++  - regime
++  - time
++  - torch
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++  - utils.alpha_features
++  - utils.helpers
++
+
+# 2025-12-28 18:31:17.573072
++n
+
+# 2025-12-28 18:32:25.327324
++1단계를 더 세분화해봐,
+
+# 2025-12-28 18:33:45.341712
++n
+
+# 2025-12-28 18:34:16.564799
++내가 이제 리팩토링 하고자 하는 두 파일에 대한 젇보를 줄거야. 그걸 보고 리팩토링 계획을 세워줘
+
+# 2025-12-28 18:34:44.438266
++n
+
+# 2025-12-28 18:34:59.353260
++continue_brief.md보고 리팩토링 계획을 세워봐
+
+# 2025-12-28 18:35:14.570164
++  Wrote CONTINUE_BRIEF.md
++  �� 요약 자료
++  [리팩토링 목표/문제점]
++  - 가장 큰 목표: (예: 메인 2개 파일을 모듈로 분리하고 테스트 가능하게)
++  - 현재 고통 포인트(최대 8개):
++    1)각 파일의 기능과 함수간의 연결 관계가 파악이 안됨
++    2)기능 하나만 수정해도 같은 오류가 계속 발생
++    3)LLM이 코드를 수정할 때 context길이의 한계로 인해 수정이 안됨
++  - 절대 바꾸면 안 되는 것(회귀 금지)
++    - 예: 전략 결과/EV 계산 결과는 동일해야 함
++    - 예: 로그 포맷, state/*.json 키 구조 유지
++  - 성능 요구:
++    - 예: 실시간 매매라 레이턴시 중요 / 백테스트라 처리량 중요
++
++  ## main_engine_mc_v2_final.py
++
++  ### 주요 import(요약)
++
++  - __future__
++  - aiohttp.tcp_helpers
++  - asyncio
++  - ccxt.async_support
++  - collections
++  - config
++  - copy
++  - core.dashboard_server
++  - core.data_manager
++  - engines.engine_hub
++  - engines.mc_engine
++  - engines.mc_risk
++  - engines.pmaker_manager
++  - engines.running_stats
++  - json
++  - math
++  - numpy
++  - os
++  - pathlib
++  - random
++  - regime
++  - time
++  - traceback
++  - trainers.online_alpha_traine
++  - typing
++  - utils.alpha_features
++  - utils.helpers
++
++  ### 클래스/함수 목록(라인)
++
++  -    29: def _tcp_keepalive_safe
++  -    60: class LiveOrchestrator
++  -    61: def LiveOrchestrator.__init__
++  -   282: def LiveOrchestrator._compute_atr_proxy
++  -   304: def LiveOrchestrator._exec_stats_for
++  -   330: def LiveOrchestrator._rows_snapshot
++  -   343: def LiveOrchestrator.broadcast_loop
++  -   360: def LiveOrchestrator.analyze_symbol
++  -  1250: def LiveOrchestrator._compute_decision_task
++  -  1324: def LiveOrchestrator._log
++  -  1330: def LiveOrchestrator._log_err
++  -  1336: def LiveOrchestrator._pmaker_status
++  -  1340: def LiveOrchestrator._ccxt_call
++  -  1375: def LiveOrchestrator._load_json
++  -  1384: def LiveOrchestrator._load_persistent_state
++  -  1435: def LiveOrchestrator._persist_state
++  -  1454: def LiveOrchestrator._compute_returns_and_vol
++  -  1473: def LiveOrchestrator._annualize_mu_sigma
++  -  1480: def LiveOrchestrator._safe_float
++  -  1487: def LiveOrchestrator._sanitize_for_json
++  -  1542: def LiveOrchestrator._row
++  -  1966: def LiveOrchestrator._total_open_notional
++  -  1969: def LiveOrchestrator._can_enter_position
++  -  1976: def LiveOrchestrator._entry_permit
++  -  2022: def LiveOrchestrator._calc_position_size
++  -  2038: def LiveOrchestrator._dynamic_leverage_risk
++  -  2074: def LiveOrchestrator._direction_bias
++  -  2108: def LiveOrchestrator._infer_regime
++  -  2129: def LiveOrchestrator._compute_ofi_score
++  -  2144: def LiveOrchestrator._liquidity_score
++  -  2153: def LiveOrchestrator._enter_position
++  -  2250: def LiveOrchestrator._close_position
++  -  2295: def LiveOrchestrator._pmaker_update_attempt
++  -  2339: def LiveOrchestrator._maybe_place_order
++  -  2351: def LiveOrchestrator._execute_order
++  -  2604: def LiveOrchestrator._execute_close_order
++  -  2657: def LiveOrchestrator._best_bid_ask
++  -  2682: def LiveOrchestrator._infer_tick_size
++  -  2720: def LiveOrchestrator._infer_tick_size_from_ladders
++  -  2748: def LiveOrchestrator._round_price_to_tick
++  -  2753: def LiveOrchestrator._extract_order_stats
++  -  2810: def LiveOrchestrator._fetch_order_trades_any
++  -  2846: def LiveOrchestrator._pmaker_probe_price
++  -  2863: def LiveOrchestrator._rebalance_position
++  -  2931: def LiveOrchestrator._update_pos_pred_snapshot_from_decision
++  -  2974: def LiveOrchestrator._maybe_exit_position_unified
++  -  3123: def LiveOrchestrator._maybe_exit_position
++  -  3158: def LiveOrchestrator._record_trade
++  -  3236: def LiveOrchestrator._consensus_used_flag
++  -  3246: def LiveOrchestrator._ema_update
++  -  3259: def LiveOrchestrator._calc_rsi
++  -  3277: def LiveOrchestrator._consensus_action
++  -  3367: def LiveOrchestrator._spread_signal
++  -  3390: def LiveOrchestrator._manage_spreads
++  -  3442: def LiveOrchestrator._decide_v3
++  -  3641: def LiveOrchestrator._mark_exit_and_cooldown
++  -  3659: def LiveOrchestrator.decision_loop
++  -  3796: def main
++
++  ### __main__ 주변(발췌)
++
++  ```text
++  3830:     # If you use testnet keys, you must enable sandbox mode.
++  3831:     if _env_bool("BYBIT_TESTNET", False) or _env_bool("CCXT_SANDBOX", False):
++  3832:         try:
++  3833:             exchange.set_sandbox_mode(True)
++  3834:             print("[BYBIT] sandbox_mode enabled (testnet)")
++  3835:         except Exception as e:
++  3836:             print(f"[BYBIT] sandbox_mode enable failed: {e}")
++  3837: 
++  3838:     # Load markets once and drop symbols that don't exist (common on testnet).
++  3839:     try:
++  3840:         await exchange.load_markets()
++  3841:         global SYMBOLS
++  3842:         missing = [s for s in SYMBOLS if s not in exchange.markets]
++  3843:         if missing:
++  3844:             print(f"[BYBIT] dropping unsupported symbols: {missing}")
++  3845:         SYMBOLS = [s for s in SYMBOLS if s in exchange.markets]
++  3846:         if not SYMBOLS:
++  3847:             raise RuntimeError("No supported symbols after filtering; set SYMBOLS_CSV to valid Bybit markets.")
++  3848:     except Exception as e:
++  3849:         print(f"[BYBIT] load_markets/filter failed: {e}")
++  3850:     orchestrator = LiveOrchestrator(exchange, SYMBOLS)
++  3851: 
++  3852:     runner = None
++  3853:     site = None
++  3854:     try:
++  3855:         dashboard = DashboardServer(orchestrator)
++  3856:         orchestrator.dashboard = dashboard
++  3857:         await dashboard.start()
++  3858: 
++  3859:         # ✅ OHLCV preload를 먼저 완료한 후 decision_loop 시작 (데이터 없이 실행 방지)
++  3860:         if PRELOAD_ON_START:
++  3861:             try:
++  3862:                 print(f"⏳ Preloading OHLCV (limit={OHLCV_PRELOAD_LIMIT})...")
++  3863:                 await orchestrator.data.preload_all_ohlcv(limit=OHLCV_PRELOAD_LIMIT)
++  3864:                 orchestrator._persist_state(force=True)
++  3865:                 print("✅ OHLCV preload done")
++  3866:             except Exception as e:
++  3867:                 print(f"[ERR] preload task failed: {e}")
++  3868: 
++  3869:         # ✅ 초기 이벤트 설정: decision_loop가 실행될 수 있도록 (preload 완료 후)
++  3870:         orchestrator.data.data_updated_event.set()
++  3871: 
++  3872:         asyncio.create_task(orchestrator.data.fetch_prices_loop())
++  3873:         asyncio.create_task(orchestrator.data.fetch_ohlcv_loop())
++  3874:         asyncio.create_task(orchestrator.data.fetch_orderbook_loop())
++  3875:         asyncio.create_task(orchestrator.decision_loop())
++  3876:         asyncio.create_task(orchestrator.broadcast_loop())
++  3877:         
++  3878: 
++  3879: 
++  3880:         print(f"🚀 Dashboard: http://localhost:{PORT}")
++  3881:         print(f"📄 Serving: {DASHBOARD_FILE.name}")
++  3882:         await asyncio.Future()
++  3883:     except OSError as e:
++  3884:         print(f"[ERR] Failed to bind on port {PORT}: {e}")
++  3885:     finally:
++  3886:         # ✅ 엔진 종료 시 PMaker 모델 저장 (finally 블록에서도 저장)
++  3887:         if 'orchestrator' in locals() and orchestrator.pmaker.surv is not None and orchestrator.pmaker.enabled:
++  3888:             try:
++  3889:                 orchestrator.pmaker.surv.save(orchestrator.pmaker.model_path)
++  3890:                 print(f"[SHUTDOWN] PMaker model saved to {orchestrator.pmaker.model_path}")
++  3891:             except Exception as e:
++  3892:                 print(f"[SHUTDOWN] Failed to save PMaker model: {e}")
++  3893:         
++  3894:         try:
++  3895:             await exchange.close()
++  3896:         except Exception:
++  3897:             pass
++  3898:         if site is not None:
++  3899:             try:
++  3900:                 await site.stop()
++  3901:             except Exception:
++  3902:                 pass
++  3903:         if runner is not None:
++  3904:             try:
++  3905:                 await runner.cleanup()
++  3906:             except Exception:
++  3907:                 pass
++  3908: 
++  3909: 
++  3910: if __name__ == "__main__":
++  3911:     asyncio.run(main())
++  3912: 1
++  ```
++
++  ### 내부 호출 관계(근사, 상위 80)
++
++  - _tcp_keepalive_safe -> _orig_tcp_keepalive
++  - LiveOrchestrator.__init__ -> AlphaTrainerConfig
++  - LiveOrchestrator.__init__ -> DataManager
++  - LiveOrchestrator.__init__ -> EngineHub
++  - LiveOrchestrator.__init__ -> ExitPolicy
++  - LiveOrchestrator.__init__ -> OnlineAlphaTrainer
++  - LiveOrchestrator.__init__ -> PMakerManager
++  - LiveOrchestrator.__init__ -> RunningStats
++  - LiveOrchestrator.__init__ -> _env_bool
++  - LiveOrchestrator.__init__ -> _env_float
++  - LiveOrchestrator.__init__ -> _env_int
++  - LiveOrchestrator.__init__ -> asyncio.Semaphore
++  - LiveOrchestrator.__init__ -> deque
++  - LiveOrchestrator.__init__ -> float
++  - LiveOrchestrator.__init__ -> int
++  - LiveOrchestrator.__init__ -> k.strip
++  - LiveOrchestrator.__init__ -> kv.split
++  - LiveOrchestrator.__init__ -> len
++  - LiveOrchestrator.__init__ -> lower
++  - LiveOrchestrator.__init__ -> max
++  - LiveOrchestrator.__init__ -> os.environ.get
++  - LiveOrchestrator.__init__ -> os.getenv
++  - LiveOrchestrator.__init__ -> print
++  - LiveOrchestrator.__init__ -> s.split
++  - LiveOrchestrator.__init__ -> self._load_persistent_state
++  - LiveOrchestrator.__init__ -> self.state_dir.mkdir
++  - LiveOrchestrator.__init__ -> set
++  - LiveOrchestrator.__init__ -> str
++  - LiveOrchestrator.__init__ -> strip
++  - LiveOrchestrator.__init__ -> v.strip
++  - LiveOrchestrator._compute_atr_proxy -> float
++  - LiveOrchestrator._compute_atr_proxy -> len
++  - LiveOrchestrator._compute_atr_proxy -> np.abs
++  - LiveOrchestrator._compute_atr_proxy -> np.diff
++  - LiveOrchestrator._compute_atr_proxy -> np.mean
++  - LiveOrchestrator._exec_stats_for -> deque
++  - LiveOrchestrator._exec_stats_for -> now_ms
++  - LiveOrchestrator._exec_stats_for -> self._exec_stats.get
++  - LiveOrchestrator._rows_snapshot -> get
++  - LiveOrchestrator._rows_snapshot -> len
++  - LiveOrchestrator._rows_snapshot -> list
++  - LiveOrchestrator._rows_snapshot -> rows.append
++  - LiveOrchestrator._rows_snapshot -> self._decision_cache.get
++  - LiveOrchestrator._rows_snapshot -> self._row
++  - LiveOrchestrator._rows_snapshot -> self.data.market.get
++  - LiveOrchestrator._rows_snapshot -> self.data.ohlcv_buffer.get
++  - LiveOrchestrator.broadcast_loop -> asyncio.sleep
++  - LiveOrchestrator.broadcast_loop -> now_ms
++  - LiveOrchestrator.broadcast_loop -> print
++  - LiveOrchestrator.broadcast_loop -> self._log_err
++  - LiveOrchestrator.broadcast_loop -> self._rows_snapshot
++  - LiveOrchestrator.broadcast_loop -> self.dashboard.broadcast
++  - LiveOrchestrator.analyze_symbol -> EV_DROP.get
++  - LiveOrchestrator.analyze_symbol -> EV_EXIT_FLOOR.get
++  - LiveOrchestrator.analyze_symbol -> PSL_RISE.get
++  - LiveOrchestrator.analyze_symbol -> _s
++  - LiveOrchestrator.analyze_symbol -> adjust_mu_sigma
++  - LiveOrchestrator.analyze_symbol -> append
++  - LiveOrchestrator.analyze_symbol -> astype
++  - LiveOrchestrator.analyze_symbol -> asyncio.create_task
++  - LiveOrchestrator.analyze_symbol -> bool
++  - LiveOrchestrator.analyze_symbol -> build_alpha_features
++  - LiveOrchestrator.analyze_symbol -> c.get
++  - LiveOrchestrator.analyze_symbol -> cached_decision.get
++  - LiveOrchestrator.analyze_symbol -> cap_map.get
++  - LiveOrchestrator.analyze_symbol -> ctx.get
++  - LiveOrchestrator.analyze_symbol -> ctx.keys
++  - LiveOrchestrator.analyze_symbol -> ctx.setdefault
++  - LiveOrchestrator.analyze_symbol -> cvar_floor_map.get
++  - LiveOrchestrator.analyze_symbol -> d.get
++  - LiveOrchestrator.analyze_symbol -> decision.get
++  - LiveOrchestrator.analyze_symbol -> decision_meta.get
++  - LiveOrchestrator.analyze_symbol -> decision_meta.update
++  - LiveOrchestrator.analyze_symbol -> deque
++  - LiveOrchestrator.analyze_symbol -> dict
++  - LiveOrchestrator.analyze_symbol -> float
++  - LiveOrchestrator.analyze_symbol -> get
++  - LiveOrchestrator.analyze_symbol -> get_regime_mu_sigma
++  - LiveOrchestrator.analyze_symbol -> getattr
++  - LiveOrchestrator.analyze_symbol -> hasattr
++
++
++  ## engines/mc_engine.py
++
++  ### 주요 import(요약)
++
++  - dataclasses
++  - engines.base
++  - engines.mc_risk
++  - jax
++  - jax.numpy
++  - logging
++  - math
++  - models.alpha_hit_mlp
++  - numpy
++  - os
++  - regime
++  - time
++  - torch
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++
++  ### 클래스/함수 목록(라인)
++
++  -    53: def _jax_mc_device
++  -    76: def _cvar_empirical
++  -    82: def _cvar_bootstrap
++  -   101: def _cvar_tail_inflate
++  -   111: def cvar_ensemble
++  -   124: def _norm_cdf
++  -   129: def _approx_p_pos_and_ev_hold
++  -   174: def simulate_exit_policy_rollforward
++  -   435: def simulate_exit_policy_rollforward_analytic
++  -   647: def _cvar_jnp
++  -   654: def _sample_noise
++  -   670: def _mc_first_passage_tp_sl_jax_core
++  -   747: def _generate_and_check_paths_jax_core
++  -   825: def mc_first_passage_tp_sl_jax
++  -   902: def ema
++  -   915: class MCParams
++  -   932: class MonteCarloEngine
++  -   965: def MonteCarloEngine.__init__
++  -  1033: def MonteCarloEngine.mc_first_passage_tp_sl
++  -  1187: def MonteCarloEngine._annualize
++  -  1194: def MonteCarloEngine._trend_direction
++  -  1205: def MonteCarloEngine._signal_alpha_mu_annual
++  -  1218: def MonteCarloEngine._signal_alpha_mu_annual_parts
++  -  1337: def MonteCarloEngine._get_params
++  -  1378: def MonteCarloEngine._cluster_regime
++  -  1413: def MonteCarloEngine._estimate_slippage
++  -  1430: def MonteCarloEngine._estimate_p_maker
++  -  1462: def MonteCarloEngine._sample_increments_np
++  -  1473: def MonteCarloEngine._sample_increments_jax
++  -  1493: def MonteCarloEngine.simulate_paths_price
++  -  1546: def MonteCarloEngine.evaluate_entry_metrics
++  -  3716: def MonteCarloEngine.decide
++  -  4268: def MonteCarloEngine._weights_for_horizons
++  -  4282: def MonteCarloEngine._execution_mix_from_survival
++  -  4313: def MonteCarloEngine._sigma_per_sec
++  -  4322: def MonteCarloEngine.compute_exit_policy_metrics
++  -  4586: def MonteCarloEngine._compress_reason_counts
++  -  4614: def MonteCarloEngine._extract_alpha_hit_features
++  -  4668: def MonteCarloEngine.collect_alpha_hit_sample
++  -  4722: def MonteCarloEngine._predict_horizon_hit_probs
++  -  4767: def _simulate_paths_price_jax_core
++  -  4823: def _extract_alpha_hit_features
++  -  4874: def collect_alpha_hit_sample
++  -  4931: def _predict_horizon_hit_probs
++  -  4981: def _compute_ev_based_weights
++  -  5026: def simulate_paths_netpnl
++
++  ### 내부 호출 관계(근사, 상위 80)
++
++  - _jax_mc_device -> jax.devices
++  - _jax_mc_device -> lower
++  - _jax_mc_device -> os.environ.get
++  - _jax_mc_device -> strip
++  - _cvar_empirical -> float
++  - _cvar_empirical -> int
++  - _cvar_empirical -> len
++  - _cvar_empirical -> max
++  - _cvar_empirical -> mean
++  - _cvar_empirical -> np.asarray
++  - _cvar_empirical -> np.sort
++  - _cvar_bootstrap -> _cvar_empirical
++  - _cvar_bootstrap -> float
++  - _cvar_bootstrap -> int
++  - _cvar_bootstrap -> len
++  - _cvar_bootstrap -> max
++  - _cvar_bootstrap -> np.asarray
++  - _cvar_bootstrap -> np.median
++  - _cvar_bootstrap -> np.random.default_rng
++  - _cvar_bootstrap -> os.environ.get
++  - _cvar_bootstrap -> range
++  - _cvar_bootstrap -> rng.choice
++  - _cvar_bootstrap -> vals.append
++  - _cvar_tail_inflate -> float
++  - _cvar_tail_inflate -> np.asarray
++  - _cvar_tail_inflate -> np.quantile
++  - _cvar_tail_inflate -> tail.mean
++  - cvar_ensemble -> _cvar_bootstrap
++  - cvar_ensemble -> _cvar_empirical
++  - cvar_ensemble -> _cvar_tail_inflate
++  - cvar_ensemble -> float
++  - cvar_ensemble -> np.asarray
++  - _norm_cdf -> float
++  - _norm_cdf -> math.erf
++  - _norm_cdf -> math.sqrt
++  - _approx_p_pos_and_ev_hold -> _norm_cdf
++  - _approx_p_pos_and_ev_hold -> float
++  - _approx_p_pos_and_ev_hold -> int
++  - _approx_p_pos_and_ev_hold -> math.sqrt
++  - _approx_p_pos_and_ev_hold -> max
++  - simulate_exit_policy_rollforward -> ValueError
++  - simulate_exit_policy_rollforward -> _meta_default
++  - simulate_exit_policy_rollforward -> counts.get
++  - simulate_exit_policy_rollforward -> float
++  - simulate_exit_policy_rollforward -> int
++  - simulate_exit_policy_rollforward -> len
++  - simulate_exit_policy_rollforward -> m.get
++  - simulate_exit_policy_rollforward -> max
++  - simulate_exit_policy_rollforward -> min
++  - simulate_exit_policy_rollforward -> np.any
++  - simulate_exit_policy_rollforward -> np.arange
++  - simulate_exit_policy_rollforward -> np.argmax
++  - simulate_exit_policy_rollforward -> np.asarray
++  - simulate_exit_policy_rollforward -> np.full
++  - simulate_exit_policy_rollforward -> np.mean
++  - simulate_exit_policy_rollforward -> np.median
++  - simulate_exit_policy_rollforward -> np.sum
++  - simulate_exit_policy_rollforward -> np.zeros
++  - simulate_exit_policy_rollforward -> range
++  - _meta_default -> _approx_p_pos_and_ev_hold
++  - _meta_default -> _prob_max_geq
++  - _meta_default -> _prob_min_leq
++  - _meta_default -> bool
++  - _meta_default -> float
++  - _meta_default -> math.isfinite
++  - _meta_default -> max
++  - simulate_exit_policy_rollforward_analytic -> _approx_p_pos_and_ev_hold
++  - simulate_exit_policy_rollforward_analytic -> _meta_default
++  - simulate_exit_policy_rollforward_analytic -> bool
++  - simulate_exit_policy_rollforward_analytic -> float
++  - simulate_exit_policy_rollforward_analytic -> int
++  - simulate_exit_policy_rollforward_analytic -> m.get
++  - simulate_exit_policy_rollforward_analytic -> math.isfinite
++  - simulate_exit_policy_rollforward_analytic -> max
++  - simulate_exit_policy_rollforward_analytic -> min
++  - simulate_exit_policy_rollforward_analytic -> range
++  - simulate_exit_policy_rollforward_analytic -> str
++  - _prob_max_geq -> _norm_cdf
++  - _prob_max_geq -> float
++  - _prob_max_geq -> math.exp
++
++
++  ## 프로젝트 전체 외부 의존성(합집합)
++
++  - __future__
++  - aiohttp.tcp_helpers
++  - asyncio
++  - ccxt.async_support
++  - collections
++  - config
++  - copy
++  - core.dashboard_server
++  - core.data_manager
++  - dataclasses
++  - engines.base
++  - engines.engine_hub
++  - engines.mc_engine
++  - engines.mc_risk
++  - engines.pmaker_manager
++  - engines.running_stats
++  - jax
++  - jax.numpy
++  - json
++  - logging
++  - math
++  - models.alpha_hit_mlp
++  - numpy
++  - os
++  - pathlib
++  - random
++  - regime
++  - time
++  - torch
++  - traceback
++  - trainers.online_alpha_trainer
++  - typing
++  - utils.alpha_features
++  - utils.helpers
++
+
+# 2025-12-28 18:35:16.640762
++n
+
+# 2025-12-28 18:36:59.972049
++1번과 2번 계획을 좀 더 세분화해봐. 내가 준 continue_brief.md의 내용을 보고진행해
+
+# 2025-12-28 18:37:31.214246
++아니야 두 파일이 너무 커서 너가 못읽어. 최대한 내가 준 정보만 가지고 진행해야돼
+
+# 2025-12-28 18:44:18.362550
++n
+
+# 2025-12-28 19:45:01.300558
++안녕
+
+# 2025-12-28 19:45:38.841485
++n
+
+# 2025-12-28 19:45:42.163655
++안녕
+
+# 2025-12-28 19:50:12.747959
++/add /Users/jeonghwakim/codex_quant/STRUCT_FOR_LLM.txt
+
+# 2025-12-28 19:50:53.880311
++이 strcut_for_llm.txt를 보고 여기에 적힌 두 파일의 리팩토링 계획을 세세하게 세워줘
+
+# 2025-12-28 19:51:36.498818
++n
+
+# 2025-12-28 19:52:14.414479
++나한테 코드 구조나 파일 예시를 보여주지마. 그냥 나한테는 계획만 간단히 표시해주고 중요한건 여러 단계에 걸친 계획이어야해
+
+# 2025-12-28 19:52:33.207121
++d
+
+# 2025-12-28 19:53:02.071237
++class나 함수 단위로 계획을 세분화 해서 txt파일을 만들어봐
+
+# 2025-12-28 19:53:30.764093
++y
+
+# 2025-12-28 19:54:37.087632
++잠시만모든 단계를 한번에 다 진행하지 말고 한 단계씩 진행하고 끝나면 나한테 끝났다고 말해. 그럼 내가 그다음 단계를 진행하라고 말할게
+
+# 2025-12-28 20:15:16.194322
++n\
+
+# 2025-12-28 20:15:17.751437
++n
+
+# 2025-12-28 20:15:34.948025
++/add STRUCT_FOR_LLM.txt
+
+# 2025-12-28 20:16:21.938064
++이걸 보고 여기 나온 두 파일의 리팩토링 계획을 최대한 자세히 세워봐. 나한테 절대 실제 코드나 자세한 내용 보여주지말고, 간략하게만 보여줘.
+
+# 2025-12-28 20:17:44.137060
++n
+
+# 2025-12-28 20:17:50.535887
++/add STRUCT_FOR_LLM.txt
+
+# 2025-12-28 20:18:18.963561
++이걸 읽고 여기 나온 두 파일의 리팩토링 계획을 세워봐. 절대 나한테 세부 내용이나 코드를 보여주지말고, 계획을 세운다음 나한테 간략하게만 보여줘.
+
+# 2025-12-28 20:21:32.019402
++몇개의 클래스나 함수가 하나의 파일이 되도록 리팩토링 계획을 더 세분화해봐. 이번에도 절대 나한테 실제 코드나 내용 보여주지 마.
+
+# 2025-12-28 20:21:57.827148
++n
+
+# 2025-12-28 20:23:16.480669
++그래 그럼 이제 이 계획에 따라 리팩토링을 진행할건데, 몇가지 규칙이 있어. 첫째, 모든 진행은 무조건 한번에 한단계씩 진행해. 한 단계가 끝나면 나한테 정말 간략하게만 결과를 설명해. 그러면 내가 그다음 단계를 진행하라고 말할게. 두번째, 절대 나에게 세부 내용이나 코드를 보여주지마. 시작해
+
+# 2025-12-28 20:25:08.982384
++아니 너 지금 STRUCT_FOR_LLM.txt를 리팩토링 하라는게 아니라 main_engine_mc_v2_final.py랑 engines/mc_engine.py를 리팩토링할 계획을 세워. 이번에도 절대 세부 내용이나 코드를 나에게 보여주지마.
+
+# 2025-12-28 20:25:28.443202
++n
+
+# 2025-12-28 20:26:40.304923
++아니야 STRUCT_FOR_LLM.txt를 보고 내가 리팩토링하라고 한 두 파일을 비슷한 기능적 구조를 가진 클래스나 함수를 포함한 몇개의 파일로 새롭게 리팩토링할 계획을 더 세분화 해서 세워봐. 이번에도 절대 나에게 세부 내용이나 코드를 보여주지마.
+
+# 2025-12-28 20:27:10.302701
++n
+
+# 2025-12-28 20:28:04.981264
++다시 한번 STRUCT_FOR_LLM.txt파일을 보고 전체 코드의 흐름과 각 클래스나 함수간 연관관계를 면밀히 파악해서 계획을 더 세분화 해봐. 이번에도 절대 나에게 세부 내용이나 코드를 보여주지마.
+
+# 2025-12-28 20:29:21.614117
++그래. 이제 이 계획대로 그대로 리팩토링을 진행하면 돼. 단 각 단계는 무조건 한번에 하나씩 진행해. 그리고 완료되면 나에게 정말 간략하게만 결과를 요약하고, 내가 다음단계로 진행하라고 하면 그때 진행해. 이번에도 절대 나에게 세부 코드 리팩토링 과정이나 내용을 보여주지마.
+
+# 2025-12-28 20:29:50.657025
++n
+
+# 2025-12-28 20:31:02.107849
++아니 STRUCT_FOR_LLM.txt를 리팩토링하는게 아니고 main_engine_mc_v2_final.py랑 engines/mc_engine.py를 리팩토링해야지. 그리고 절대 나에게 리팩토링하는 코드 내용 보여주지말고 너가 알아서 다 진행한다음 나에게 완료됐다고 말만해. 무조건 한번에 한단계씩 진행하고, 끝나면 나에게 보고하는거야.
+
+# 2025-12-28 20:31:27.753284
++y
+
+# 2025-12-28 20:34:38.540974
++그래 그다음 단계 진행해. 절대 나에게 세부 내용 보여주지말고 다 끝나면 끝났다고 말해.
+
+# 2025-12-28 20:35:25.056841
++y
+
+# 2025-12-28 20:35:55.120824
++절대 나한테 내용 보여주지말고 다 끝난다음에만 말해줘. 다음단게 진행해.
+
+# 2025-12-28 20:36:25.060765
++d
+
+# 2025-12-28 20:38:17.909710
++또 멈춘거지? 계획을 수정해서 아까 계획보다 더 작은 단위로 main_engine_mc_v2_final.py과 engines/mc_engine.py를 리팩토링할 계획을 세워봐. 이번에도 세부 코드나 내용 보여주지말고 간단하게만 보여줘. 10단계에 나누어서 계획을 세워보고 각 결과파일의 크기가 최대한 균등하게 분배해봐.
+
+# 2025-12-28 20:38:48.101706
++n
+
+# 2025-12-28 20:39:03.640611
++이제 1단계부터 다시 리팩토링 진행해봐.
+
+# 2025-12-28 20:45:27.773343
++/tokens
+
+# 2025-12-28 20:46:37.387577
++이제 다시 원래 10단계 계획 중 1단계를 진행해줘.
+
+# 2025-12-28 20:47:53.120421
++y
+
+# 2025-12-28 20:48:24.702513
++이제 그 다음 2단계 진행해.
+
+# 2025-12-28 20:55:55.313578
++y
+
+# 2025-12-28 20:56:41.865076
++그다음 3단계 진행해.
+
+# 2025-12-28 20:57:57.048893
++y
+
+# 2025-12-28 20:58:35.114758
++그다음 4단계 진행해.
+
+# 2025-12-28 20:59:58.554789
++그 다음4단계 진행해.
+
+# 2025-12-28 21:01:16.159143
++y
+
+# 2025-12-28 21:18:53.742487
++/drop
+
+# 2025-12-28 21:18:59.271189
++core/orchestrator.py
+
+# 2025-12-28 21:19:10.976973
++n
+
+# 2025-12-28 21:19:32.122373
++/drop core/orchestrator.py
+
+# 2025-12-28 21:19:45.346566
++/drop core/event_manger.py
+
+# 2025-12-28 21:20:11.041259
++/drop engines/mc_first_passage_engine.py
+
+# 2025-12-28 21:20:29.964944
++다시 4단계부터 진행해줘
+
+# 2025-12-28 21:22:28.197542
++/git
+
+# 2025-12-28 21:22:34.504241
++/git commit
+
+# 2025-12-28 21:23:01.295171
++> /git commit -m "리팩토링 준비 및 구조 정의서 추가"
+
+# 2025-12-28 21:26:15.087326
++n
+
+# 2025-12-28 21:26:26.090577
++/add skeleton.txt
+
+# 2025-12-28 21:26:59.102907
++/drop skeleton.txt
+
+# 2025-12-28 21:27:04.467054
++/add skeletone.txt
+
+# 2025-12-28 21:27:19.699381
++n
+
+# 2025-12-28 21:27:25.300218
++/add skeleton.txt
+
+# 2025-12-28 21:27:58.037844
++enignes/mc_engine.py는 5,000줄이라서 한 번에 읽기 힘들어. 여기 함수 목록(skeleton.txt)을 보고, 가장 먼저 별도의 파일로 분리해야 할 핵심 로직이나 거대 함수가 무엇인지 추천해줘."
+
+# 2025-12-28 21:29:59.793773
++/drop skeleton.txt
+
+# 2025-12-28 21:30:09.914461
++/add mc_engine_struct.txt
+
+# 2025-12-28 21:30:36.704715
++"이 파일은 5,000줄이라서 한 번에 읽기 힘들어. 여기 함수 목록(skeleton.txt)을 보고, 가장 먼저 별도의 파일로 분리해야 할 핵심 로직이나 거대 함수가 무엇인지 추천해줘."
+
+# 2025-12-28 21:31:01.603374
++"이 파일은 5,000줄이라서 한 번에 읽기 힘들어. 여기 함수 목록(mc_engine_struct.txt)을 보고, 가장 먼저 별도의 파일로 분리해야 할 핵심 로직이나 거대 함수가 무엇인지 추천해줘."
+
+# 2025-12-28 21:32:33.426299
++mlx_lm.generate --model mlx-community/Qwen2.5-Coder-14B-Instruct-4bit \
++  --max-tokens 2048 \
++  --prompt "아래 파일의 전체 코드를 분석하지 말고, 오직 '클래스 구조', '주요 함수 목록', '함수 간 의존성'만 요약해서 요약본을 만들어줘. 코드는 절대 포함하지 마.
++
++[대상 파일: engines/mc_engine.py]
++$(cat engines/mc_engine.py)" > mc_engine_guide.txt
+
+# 2025-12-28 21:34:08.844183
++n
+
+# 2025-12-28 21:34:13.275213
++/git status
+
+# 2025-12-28 21:34:33.508772
++git log --oneline -n 10
+
+# 2025-12-28 21:34:40.681033
++/git log --oneline -n 10
+
+# 2025-12-28 21:35:08.006945
++git log --oneline -n 20
+
+# 2025-12-28 21:35:14.278930
++/git log --oneline -n 20
+
+# 2025-12-28 21:38:21.257889
++"이 파일은 5,000줄이라서 한 번에 읽기 힘들어. 여기 함수 목록(mc_engine_strucct.txt)을 보고, 가장 먼저 별도의 파일로 분리해야 할 핵심 로직이나 거대 함수가 무엇인지 추천해줘."
+
+# 2025-12-28 21:39:54.246012
++/drop mc_engine_struct.txt
+
+# 2025-12-28 21:40:07.670783
++/add engines/mc_engine_strucct.txt
+
+# 2025-12-28 21:40:16.027523
++n
+
+# 2025-12-28 21:40:19.420494
++/add engines/mc_engine_struct.txt    
+
+# 2025-12-28 21:40:34.743291
++n
+
+# 2025-12-28 21:40:40.854246
++/add engines/mc_engine_structure.txt    
+
+# 2025-12-28 21:41:04.196110
++"이 파일은 5,000줄이라서 한 번에 읽기 힘들어. 여기 함수 목록(engine/mc_engine_structure.txt)을 보고, 가장 먼저 별도의 파일로 분리해야 할 핵심 로직이나 거대 함수가 무엇인지 추천해줘."
+
+# 2025-12-28 21:41:53.851983
++"이 파일은 5,000줄이라서 한 번에 읽기 힘들어. 여기 함수 목록(engines/mc_engine_structure.txt)을 보고, 가장 먼저 별도의 파일로 분리해야 할 핵심 로직이나 거대 함수가 무엇인지 추천해줘."
+
+# 2025-12-28 21:42:17.155921
++def _jax_mc_device():
++def _cvar_empirical(pnl: np.ndarray, alpha: float = 0.05) -> float:
++def _cvar_bootstrap(pnl: np.ndarray, alpha: float = 0.05, n_boot: Optional[int] = None, sample_frac: float = 0.7, seed: int = 42) -> float:
++def _cvar_tail_inflate(pnl: np.ndarray, alpha: float = 0.05, inflate: float = 1.15) -> float:
++def cvar_ensemble(pnl: Sequence[float], alpha: float = 0.05) -> float:
++def _norm_cdf(x: float) -> float:
++def _approx_p_pos_and_ev_hold(
++def simulate_exit_policy_rollforward(
++    def _meta_default(tau: float) -> dict:
++def simulate_exit_policy_rollforward_analytic(
++    def _meta_default(tau: float) -> dict:
++    def _prob_max_geq(mu0: float, sig0: float, T: float, a: float) -> float:
++    def _prob_min_leq(mu0: float, sig0: float, T: float, neg_a: float) -> float:
++def _cvar_jnp(x: "jnp.ndarray", alpha: float) -> "jnp.ndarray":  # type: ignore[name-defined]
++def _sample_noise(key, shape, dist="gaussian", df=6.0, boot=None):
++def _mc_first_passage_tp_sl_jax_core(
++    def step(carry, t):
++def _generate_and_check_paths_jax_core(
++    def step(carry, t):
++def mc_first_passage_tp_sl_jax(
++def ema(values: Sequence[float], period: int) -> Optional[float]:
++class MCParams:
++class MonteCarloEngine(BaseEngine):
++    def __init__(self):
++    def mc_first_passage_tp_sl(
++    def _annualize(mu_bar: float, sigma_bar: float, bar_seconds: float) -> Tuple[float, float]:
++    def _trend_direction(price: float, closes: Sequence[float]) -> int:
++    def _signal_alpha_mu_annual(closes: Sequence[float], bar_seconds: float, ofi_score: float, regime: str) -> float:
++    def _signal_alpha_mu_annual_parts(closes: Sequence[float], bar_seconds: float, ofi_score: float, regime: str) -> Dict[str, Any]:
++        def _mom_mu_ann(window_bars: int) -> tuple[float, float, float]:
++    def _get_params(self, regime: str, ctx: Dict[str, Any]) -> MCParams:
++    def _cluster_regime(closes: Sequence[float]) -> str:
++    def _estimate_slippage(self, leverage: float, sigma: float, liq_score: float, ofi_z_abs: float = 0.0) -> float:
++    def _estimate_p_maker(self, *, spread_pct: float, liq_score: float, ofi_z_abs: float) -> float:
++    def _sample_increments_np(self, rng: np.random.Generator, shape, *, mode: str, df: float, bootstrap_returns: Optional[np.ndarray]):
++    def _sample_increments_jax(self, key, shape, *, mode: str, df: float, bootstrap_returns: Optional[np.ndarray]):
++    def simulate_paths_price(
++    def evaluate_entry_metrics(self, ctx: Dict[str, Any], params: MCParams, seed: int) -> Dict[str, Any]:
++        def _s(val, default=0.0) -> float:
++        def summarize(net_by_h):
++        def _agg_from_dbg(dbg):
++    def decide(self, ctx: Dict[str, Any]) -> Dict[str, Any]:
++    def _weights_for_horizons(hs, signal_strength: float):
++    def _execution_mix_from_survival(
++    def _sigma_per_sec(self, sigma: float, dt: float) -> float:
++    def compute_exit_policy_metrics(
++    def _compress_reason_counts(counts: Any, *, top_k: int = 3) -> Dict[str, int]:
++    def _extract_alpha_hit_features(
++            def _f(val, default=0.0) -> float:
++    def collect_alpha_hit_sample(
++    def _predict_horizon_hit_probs(
++def _simulate_paths_price_jax_core(
++    def _extract_alpha_hit_features(
++    def collect_alpha_hit_sample(
++    def _predict_horizon_hit_probs(
++    def _compute_ev_based_weights(
++    def simulate_paths_netpnl(
++
+
+# 2025-12-28 21:43:10.262936
++그래 그러면 그것부터 리팩토링을 하나씩 진행해줘
+
+# 2025-12-28 21:43:24.735165
++y
+
+# 2025-12-28 21:48:05.637978
++/add temp_functions.py
+
+# 2025-12-28 21:48:21.577483
++내가 temp_functions.py에 두 함수의 내용을 넣어놨어. 한번 보고 진행해봐
+
+# 2025-12-28 21:49:26.951410
++내가 temp_functions.py에 두 함수의 내용을 넣어놨어. 한번 보고 진행해봐         
+
+# 2025-12-28 21:54:10.770092
++y
+
+# 2025-12-28 21:58:18.944335
++그럼 이제 다시 engines/mc_engine_structure.txt
+
+# 2025-12-28 21:58:39.646678
++그럼 이제 다시 engines/mc_engine_structure.txt를 보고 그 다음으로 리팩토링 해야할 함수들을 골라줘
+
+# 2025-12-28 22:01:01.081554
++그럼 이제 다시 engines/mc_engine_structure.txt를 보고 그 다음으로 리팩토링 해야할 함수들을 골라줘 def _jax_mc_device():
++def _cvar_empirical(pnl: np.ndarray, alpha: float = 0.05) -> float:
++def _cvar_bootstrap(pnl: np.ndarray, alpha: float = 0.05, n_boot: Optional[int] = None, sample_frac: float = 0.7, seed: int = 42) -> float:
++def _cvar_tail_inflate(pnl: np.ndarray, alpha: float = 0.05, inflate: float = 1.15) -> float:
++def cvar_ensemble(pnl: Sequence[float], alpha: float = 0.05) -> float:
++def _norm_cdf(x: float) -> float:
++def _approx_p_pos_and_ev_hold(
++def simulate_exit_policy_rollforward(
++    def _meta_default(tau: float) -> dict:
++def simulate_exit_policy_rollforward_analytic(
++    def _meta_default(tau: float) -> dict:
++    def _prob_max_geq(mu0: float, sig0: float, T: float, a: float) -> float:
++    def _prob_min_leq(mu0: float, sig0: float, T: float, neg_a: float) -> float:
++def _cvar_jnp(x: "jnp.ndarray", alpha: float) -> "jnp.ndarray":  # type: ignore[name-defined]
++def _sample_noise(key, shape, dist="gaussian", df=6.0, boot=None):
++def _mc_first_passage_tp_sl_jax_core(
++    def step(carry, t):
++def _generate_and_check_paths_jax_core(
++    def step(carry, t):
++def mc_first_passage_tp_sl_jax(
++def ema(values: Sequence[float], period: int) -> Optional[float]:
++class MCParams:
++class MonteCarloEngine(BaseEngine):
++    def __init__(self):
++    def mc_first_passage_tp_sl(
++    def _annualize(mu_bar: float, sigma_bar: float, bar_seconds: float) -> Tuple[float, float]:
++    def _trend_direction(price: float, closes: Sequence[float]) -> int:
++    def _signal_alpha_mu_annual(closes: Sequence[float], bar_seconds: float, ofi_score: float, regime: str) -> float:
++    def _signal_alpha_mu_annual_parts(closes: Sequence[float], bar_seconds: float, ofi_score: float, regime: str) -> Dict[str, Any]:
++        def _mom_mu_ann(window_bars: int) -> tuple[float, float, float]:
++    def _get_params(self, regime: str, ctx: Dict[str, Any]) -> MCParams:
++    def _cluster_regime(closes: Sequence[float]) -> str:
++    def _estimate_slippage(self, leverage: float, sigma: float, liq_score: float, ofi_z_abs: float = 0.0) -> float:
++    def _estimate_p_maker(self, *, spread_pct: float, liq_score: float, ofi_z_abs: float) -> float:
++    def _sample_increments_np(self, rng: np.random.Generator, shape, *, mode: str, df: float, bootstrap_returns: Optional[np.ndarray]):
++    def _sample_increments_jax(self, key, shape, *, mode: str, df: float, bootstrap_returns: Optional[np.ndarray]):
++    def simulate_paths_price(
++    def evaluate_entry_metrics(self, ctx: Dict[str, Any], params: MCParams, seed: int) -> Dict[str, Any]:
++        def _s(val, default=0.0) -> float:
++        def summarize(net_by_h):
++        def _agg_from_dbg(dbg):
++    def decide(self, ctx: Dict[str, Any]) -> Dict[str, Any]:
++    def _weights_for_horizons(hs, signal_strength: float):
++    def _execution_mix_from_survival(
++    def _sigma_per_sec(self, sigma: float, dt: float) -> float:
++    def compute_exit_policy_metrics(
++    def _compress_reason_counts(counts: Any, *, top_k: int = 3) -> Dict[str, int]:
++    def _extract_alpha_hit_features(
++            def _f(val, default=0.0) -> float:
++    def collect_alpha_hit_sample(
++    def _predict_horizon_hit_probs(
++def _simulate_paths_price_jax_core(
++    def _extract_alpha_hit_features(
++    def collect_alpha_hit_sample(
++    def _predict_horizon_hit_probs(
++    def _compute_ev_based_weights(
++    def simulate_paths_netpnl(
++
+
+# 2025-12-28 22:03:09.920969
++/drop
+
+# 2025-12-28 22:03:28.268126
++그럼 이제 다시 engines/mc_engine_structure.txt를 보고 그 다음으로 리팩토링 해야할 함수들을 골라줘 def _jax_mc_device(): 
++> def _cvar_empirical(pnl: np.ndarray, alpha: float = 0.05) -> float: 
++> def _cvar_bootstrap(pnl: np.ndarray, alpha: float = 0.05, n_boot: Optional[int] = None, sample_frac: float = 0.7, seed: int
++>  = 42) -> float: 
++> def _cvar_tail_inflate(pnl: np.ndarray, alpha: float = 0.05, inflate: float = 1.15) -> float: 
++> def cvar_ensemble(pnl: Sequence[float], alpha: float = 0.05) -> float: 
++> def _norm_cdf(x: float) -> float: 
++> def _approx_p_pos_and_ev_hold( 
++> def simulate_exit_policy_rollforward( 
++>     def _meta_default(tau: float) -> dict: 
++> def simulate_exit_policy_rollforward_analytic( 
++>     def _meta_default(tau: float) -> dict: 
++>     def _prob_max_geq(mu0: float, sig0: float, T: float, a: float) -> float: 
++>     def _prob_min_leq(mu0: float, sig0: float, T: float, neg_a: float) -> float: 
++> def _cvar_jnp(x: "jnp.ndarray", alpha: float) -> "jnp.ndarray":  # type: ignore[name-defined] 
++> def _sample_noise(key, shape, dist="gaussian", df=6.0, boot=None): 
++> def _mc_first_passage_tp_sl_jax_core( 
++>     def step(carry, t): 
++> def _generate_and_check_paths_jax_core( 
++>     def step(carry, t): 
++> def mc_first_passage_tp_sl_jax( 
++> def ema(values: Sequence[float], period: int) -> Optional[float]: 
++> class MCParams: 
++> class MonteCarloEngine(BaseEngine): 
++>     def __init__(self): 
++>     def mc_first_passage_tp_sl( 
++>     def _annualize(mu_bar: float, sigma_bar: float, bar_seconds: float) -> Tuple[float, float]: 
++>     def _trend_direction(price: float, closes: Sequence[float]) -> int: 
++>     def _signal_alpha_mu_annual(closes: Sequence[float], bar_seconds: float, ofi_score: float, regime: str) -> float: 
++>     def _signal_alpha_mu_annual_parts(closes: Sequence[float], bar_seconds: float, ofi_score: float, regime: str) -> Dict[s
++> tr, Any]: 
++>         def _mom_mu_ann(window_bars: int) -> tuple[float, float, float]: 
++>     def _get_params(self, regime: str, ctx: Dict[str, Any]) -> MCParams: 
++>     def _cluster_regime(closes: Sequence[float]) -> str: 
++>     def _estimate_slippage(self, leverage: float, sigma: float, liq_score: float, ofi_z_abs: float = 0.0) -> float: 
++>     def _estimate_p_maker(self, *, spread_pct: float, liq_score: float, ofi_z_abs: float) -> float: 
++>     def _sample_increments_np(self, rng: np.random.Generator, shape, *, mode: str, df: float, bootstrap_returns: Optional[n
++> p.ndarray]): 
++>     def _sample_increments_jax(self, key, shape, *, mode: str, df: float, bootstrap_returns: Optional[np.ndarray]): 
++>     def simulate_paths_price( 
++>     def evaluate_entry_metrics(self, ctx: Dict[str, Any], params: MCParams, seed: int) -> Dict[str, Any]: 
++>         def _s(val, default=0.0) -> float: 
++>         def summarize(net_by_h): 
++>         def _agg_from_dbg(dbg): 
++>     def decide(self, ctx: Dict[str, Any]) -> Dict[str, Any]: 
++>     def _weights_for_horizons(hs, signal_strength: float): 
++>     def _execution_mix_from_survival( 
++>     def _sigma_per_sec(self, sigma: float, dt: float) -> float: 
++>     def compute_exit_policy_metrics( 
++>     def _compress_reason_counts(counts: Any, *, top_k: int = 3) -> Dict[str, int]: 
++>     def _extract_alpha_hit_features( 
++>             def _f(val, default=0.0) -> float: 
++>     def collect_alpha_hit_sample( 
++>     def _predict_horizon_hit_probs( 
++> def _simulate_paths_price_jax_core( 
++>     def _extract_alpha_hit_features( 
++>     def collect_alpha_hit_sample( 
++>     def _predict_horizon_hit_probs( 
++>     def _compute_ev_based_weights( 
++>     def simulate_paths_netpnl( 
+
+# 2025-12-28 22:05:49.540380
++/clear
+
+# 2025-12-28 22:05:59.863408
++> 그럼 이제 다시 engines/mc_engine_structure.txt를 보고 그 다음으로 리팩토링 해야할 함수들을 골라줘 def _jax_mc_device():  
++> > def _cvar_empirical(pnl: np.ndarray, alpha: float = 0.05) -> float:  
++> > def _cvar_bootstrap(pnl: np.ndarray, alpha: float = 0.05, n_boot: Optional[int] = None, sample_frac: float = 0.7, seed: i
++> nt 
++> >  = 42) -> float:  
++> > def _cvar_tail_inflate(pnl: np.ndarray, alpha: float = 0.05, inflate: float = 1.15) -> float:  
++> > def cvar_ensemble(pnl: Sequence[float], alpha: float = 0.05) -> float:  
++> > def _norm_cdf(x: float) -> float:  
++> > def _approx_p_pos_and_ev_hold(  
++> > def simulate_exit_policy_rollforward(  
++> >     def _meta_default(tau: float) -> dict:  
++> > def simulate_exit_policy_rollforward_analytic(  
++> >     def _meta_default(tau: float) -> dict:  
++> >     def _prob_max_geq(mu0: float, sig0: float, T: float, a: float) -> float:  
++> >     def _prob_min_leq(mu0: float, sig0: float, T: float, neg_a: float) -> float:  
++> > def _cvar_jnp(x: "jnp.ndarray", alpha: float) -> "jnp.ndarray":  # type: ignore[name-defined]  
++> > def _sample_noise(key, shape, dist="gaussian", df=6.0, boot=None):  
++> > def _mc_first_passage_tp_sl_jax_core(  
++> >     def step(carry, t):  
++> > def _generate_and_check_paths_jax_core(  
++> >     def step(carry, t):  
++> > def mc_first_passage_tp_sl_jax(  
++> > def ema(values: Sequence[float], period: int) -> Optional[float]:  
++> > class MCParams:  
++> > class MonteCarloEngine(BaseEngine):  
++> >     def __init__(self):  
++> >     def mc_first_passage_tp_sl(  
++> >     def _annualize(mu_bar: float, sigma_bar: float, bar_seconds: float) -> Tuple[float, float]:  
++> >     def _trend_direction(price: float, closes: Sequence[float]) -> int:  
++> >     def _signal_alpha_mu_annual(closes: Sequence[float], bar_seconds: float, ofi_score: float, regime: str) -> float:  
++> >     def _signal_alpha_mu_annual_parts(closes: Sequence[float], bar_seconds: float, ofi_score: float, regime: str) -> Dict
++> [s 
++> > tr, Any]:  
++> >         def _mom_mu_ann(window_bars: int) -> tuple[float, float, float]:  
++> >     def _get_params(self, regime: str, ctx: Dict[str, Any]) -> MCParams:  
++> >     def _cluster_regime(closes: Sequence[float]) -> str:  
++> >     def _estimate_slippage(self, leverage: float, sigma: float, liq_score: float, ofi_z_abs: float = 0.0) -> float:  
++> >     def _estimate_p_maker(self, *, spread_pct: float, liq_score: float, ofi_z_abs: float) -> float:  
++> >     def _sample_increments_np(self, rng: np.random.Generator, shape, *, mode: str, df: float, bootstrap_returns: Optional
++> [n 
++> > p.ndarray]):  
++> >     def _sample_increments_jax(self, key, shape, *, mode: str, df: float, bootstrap_returns: Optional[np.ndarray]):  
++> >     def simulate_paths_price(  
++> >     def evaluate_entry_metrics(self, ctx: Dict[str, Any], params: MCParams, seed: int) -> Dict[str, Any]:  
++> >         def _s(val, default=0.0) -> float:  
++> >         def summarize(net_by_h):  
++> >         def _agg_from_dbg(dbg):  
++> >     def decide(self, ctx: Dict[str, Any]) -> Dict[str, Any]:  
++> >     def _weights_for_horizons(hs, signal_strength: float):  
++> >     def _execution_mix_from_survival(  
++> >     def _sigma_per_sec(self, sigma: float, dt: float) -> float:  
++> >     def compute_exit_policy_metrics(  
++> >     def _compress_reason_counts(counts: Any, *, top_k: int = 3) -> Dict[str, int]:  
++> >     def _extract_alpha_hit_features(  
++> >             def _f(val, default=0.0) -> float:  
++> >     def collect_alpha_hit_sample(  
++> >     def _predict_horizon_hit_probs(  
++> > def _simulate_paths_price_jax_core(  
++> >     def _extract_alpha_hit_features(  
++> >     def collect_alpha_hit_sample(  
++> >     def _predict_horizon_hit_probs(  
++> >     def _compute_ev_based_weights(  
++> >     def simulate_paths_netpnl(             
+
+# 2025-12-28 22:06:50.130402
++n
+
+# 2025-12-28 22:07:00.576359
++engines/mc_engine.py
+
+# 2025-12-28 22:08:10.253813
++이파일이 너무 커서 줄 수 없어. 아래에 내가 함수구조를 줄테니까 한번 보고 리팩토링할 함수들 목록을 뽑아봐. 참고로 가장 중요한 3개는 이미 진행했어.def _jax_mc_device():  
++>  
++> > > def _cvar_empirical(pnl: np.ndarray, alpha: float = 0.05) -> float:   
++> > > def _cvar_bootstrap(pnl: np.ndarray, alpha: float = 0.05, n_boot: Optional[int] = None, sample_frac: float = 0.7, seed:
++>  i 
++> > nt  
++> > >  = 42) -> float:   
++> > > def _cvar_tail_inflate(pnl: np.ndarray, alpha: float = 0.05, inflate: float = 1.15) -> float:   
++> > > def cvar_ensemble(pnl: Sequence[float], alpha: float = 0.05) -> float:   
++> > > def _norm_cdf(x: float) -> float:   
++> > > def _approx_p_pos_and_ev_hold(   
++> > > def simulate_exit_policy_rollforward(   
++> > >     def _meta_default(tau: float) -> dict:   
++> > > def simulate_exit_policy_rollforward_analytic(   
++> > >     def _meta_default(tau: float) -> dict:   
++> > >     def _prob_max_geq(mu0: float, sig0: float, T: float, a: float) -> float:   
++> > >     def _prob_min_leq(mu0: float, sig0: float, T: float, neg_a: float) -> float:   
++> > > def _cvar_jnp(x: "jnp.ndarray", alpha: float) -> "jnp.ndarray":  # type: ignore[name-defined]   
++> > > def _sample_noise(key, shape, dist="gaussian", df=6.0, boot=None):   
++> > > def _mc_first_passage_tp_sl_jax_core(   
++> > >     def step(carry, t):   
++> > > def _generate_and_check_paths_jax_core(   
++> > >     def step(carry, t):   
++> > > def mc_first_passage_tp_sl_jax(   
++> > > def ema(values: Sequence[float], period: int) -> Optional[float]:   
++> > > class MCParams:   
++> > > class MonteCarloEngine(BaseEngine):   
++> > >     def __init__(self):   
++> > >     def mc_first_passage_tp_sl(   
++> > >     def _annualize(mu_bar: float, sigma_bar: float, bar_seconds: float) -> Tuple[float, float]:   
++> > >     def _trend_direction(price: float, closes: Sequence[float]) -> int:   
++> > >     def _signal_alpha_mu_annual(closes: Sequence[float], bar_seconds: float, ofi_score: float, regime: str) -> float:  
++>  
++> > >     def _signal_alpha_mu_annual_parts(closes: Sequence[float], bar_seconds: float, ofi_score: float, regime: str) -> Di
++> ct 
++> > [s  
++> > > tr, Any]:   
++> > >         def _mom_mu_ann(window_bars: int) -> tuple[float, float, float]:   
++> > >     def _get_params(self, regime: str, ctx: Dict[str, Any]) -> MCParams:   
++> > >     def _cluster_regime(closes: Sequence[float]) -> str:   
++> > >     def _estimate_slippage(self, leverage: float, sigma: float, liq_score: float, ofi_z_abs: float = 0.0) -> float:   
++> > >     def _estimate_p_maker(self, *, spread_pct: float, liq_score: float, ofi_z_abs: float) -> float:   
++> > >     def _sample_increments_np(self, rng: np.random.Generator, shape, *, mode: str, df: float, bootstrap_returns: Option
++> al 
++> > [n  
++> > > p.ndarray]):   
++> > >     def _sample_increments_jax(self, key, shape, *, mode: str, df: float, bootstrap_returns: Optional[np.ndarray]):   
++> > >     def simulate_paths_price(   
++> > >     def evaluate_entry_metrics(self, ctx: Dict[str, Any], params: MCParams, seed: int) -> Dict[str, Any]:   
++> > >         def _s(val, default=0.0) -> float:   
++> > >         def summarize(net_by_h):   
++> > >         def _agg_from_dbg(dbg):   
++> > >     def decide(self, ctx: Dict[str, Any]) -> Dict[str, Any]:   
++> > >     def _weights_for_horizons(hs, signal_strength: float):   
++> > >     def _execution_mix_from_survival(   
++> > >     def _sigma_per_sec(self, sigma: float, dt: float) -> float:   
++> > >     def compute_exit_policy_metrics(   
++> > >     def _compress_reason_counts(counts: Any, *, top_k: int = 3) -> Dict[str, int]:   
++> > >     def _extract_alpha_hit_features(   
++> > >             def _f(val, default=0.0) -> float:   
++> > >     def collect_alpha_hit_sample(   
++> > >     def _predict_horizon_hit_probs(   
++> > > def _simulate_paths_price_jax_core(   
++> > >     def _extract_alpha_hit_features(   
++> > >     def collect_alpha_hit_sample(   
++> > >     def _predict_horizon_hit_probs(   
++> > >     def _compute_ev_based_weights(   
++> > >     def simulate_paths_netpnl(           
+
+# 2025-12-28 22:09:46.610898
++그럼 이 함수들을 이름만 보고 대충 더 작은 파일들로 묶는다면 어떻게 묶을거 같아? 4~7개로 묶는다고 생각해봐.
+
+# 2025-12-28 22:10:42.619841
++y
+
+# 2025-12-28 22:14:05.219975
++지금 너가 하고 있던 리팩토링 다 진행된거야?
+
+# 2025-12-28 22:15:55.453294
++y
+
+# 2025-12-28 22:18:10.890976
++/ctags codex_quant
+
+# 2025-12-28 22:18:23.263486
++/ls
+
+# 2025-12-28 22:18:38.754091
++/map
+
+# 2025-12-28 22:18:48.075689
++/drop
+
+# 2025-12-28 22:18:51.471876
++/ls
+
+# 2025-12-28 22:18:53.274856
++/map
+
+# 2025-12-28 22:19:36.138671
++그럼 지금 내 매매로직의 메인 실행파일이 무엇인지 알려주고, 그 메인실행파일이 모든 기능을 다 임포트해서 실행가능한 상태인지 점검한다음, 그 관계에 대한 설명을 하나의 텍스트파일을 생성해서 정리해줄래?
+
+# 2025-12-28 22:21:01.250013
++n
+
+# 2025-12-28 22:21:02.973787
++y
+
+# 2025-12-28 22:22:29.838127
++어때 main.py가 메인 실행파일인거 같아?
+
+# 2025-12-28 22:24:24.933444
++y
+
+# 2025-12-28 22:28:51.857054
++그리고 원래 내 매매로직의 결과를 대시보드에서 보여주는 기능이 있거든. 그것도 main.py에 임포트 되어 있는지, 그외에도 내 폴더의 모든 기능들이 잘 임포트 되어 있는지 점검해봐
+
+# 2025-12-28 22:34:25.631069
++n
+
+# 2025-12-28 22:34:40.537642
++/ctags
+
+# 2025-12-28 22:35:58.790731
++/ls
+
+# 2025-12-28 22:36:00.465758
++/map
+
+# 2025-12-28 22:37:06.880754
++지금 main.py에 대시보드 임포트 됐어? 그리고 다른 기능들도 모두 함수이름보고 대략적인 기능을 파악해서 나한테 main.py로 임포트 할건지말건지 점검받아.
+
+# 2025-12-28 22:37:46.045694
++y
+
+# 2025-12-28 22:38:50.637304
++이제 대시보드 기능 추가 된거지? 참고로 dashboard_v2.html이 추가돼야돼. 그리고 나머지 기능도 대략적인 기능을 추측해서 나한테 임포트할건지 말건지 물어봐줘
+
+# 2025-12-28 22:39:09.541377
++y
+
+# 2025-12-28 22:51:11.765877
++n
+
+# 2025-12-28 22:51:26.323012
++/ls
+
+# 2025-12-28 22:51:28.692670
++/map
+
+# 2025-12-28 22:52:01.784011
++지금 내 전체 디렉토리에 있는 각종 기능중에서main.py에아직 임포트 안된 기능들이 있는지 점검해서 알려줘 
+
+# 2025-12-28 22:54:39.294505
++n
+
+# 2025-12-28 22:54:46.209312
++지금 내 전체 디렉토리에 있는 각종 기능중에서main.py에아직 임포트 안된 기능들이 있는지 점검해서 알려줘       
+
+# 2025-12-28 22:55:16.466427
++main.py의 기능에 대해 설명해줘
+
+# 2025-12-28 22:56:10.465919
++main.py의 각 함수 구조와 간략한 기능에 대해 설명해
+
+# 2025-12-28 22:56:35.339807
++안
+
+# 2025-12-28 22:58:35.404755
++n
+
+# 2025-12-28 22:58:38.033106
++안녕
+
+# 2025-12-28 23:37:50.421522
++n
+
+# 2025-12-28 23:37:53.974465
++안녕
+
+# 2025-12-28 23:38:38.969377
++n
+
+# 2025-12-28 23:38:45.758072
++한국어로 말해줄 수 있어?
+
+# 2025-12-28 23:39:13.483179
++그래 그렇게 해
+
+# 2025-12-28 23:39:36.850211
++y
+
+# 2025-12-29 07:46:55.240452
++d
+
+# 2025-12-29 07:48:25.276694
++main.py  파일의 전체적인 함수 목록과 각 함수의 역할만 요약해줘."
+
+# 2025-12-29 07:48:30.456306
++n
+
+# 2025-12-29 07:53:37.524110
++y
+
+# 2025-12-29 07:58:09.385867
++ main.py  파일의 전체적인 함수 목록과 각 함수의 역할만 요약해줘.
+
+# 2025-12-29 08:00:42.843815
++d
+
+# 2025-12-29 08:02:03.093259
++main.py                                                                                                                      
++>  main.py은 지금 내가 가진 모든 기능들을 임포트해서 실행할 수 있는 기능을 가저야해. 전체 디렉토리의 함수 목록을 보고 너가 구조를 설계해서 main.py를 수정해줘.
+
+# 2025-12-29 08:02:05.131292
++y
+
+# 2025-12-29 08:04:22.349973
++아니 인사 기능외에 전체 디렉토리에 있는 내 퀀트 트레이딩 시스템에 추가할 수 있는 기능들을 찾아서 모두 추가해줘
+
+# 2025-12-29 08:05:09.167297
++y

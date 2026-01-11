@@ -11,6 +11,7 @@ if [[ "$MODE" != "probe" && "$MODE" != "live" ]]; then
   echo "  - Override any PMAKER_* vars by exporting them before running."
   exit 2
 fi
+shift
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
@@ -18,8 +19,12 @@ cd "$ROOT"
 export PYTHONUNBUFFERED="${PYTHONUNBUFFERED:-1}"
 export LOG_STDOUT="${LOG_STDOUT:-1}"
 export BYBIT_TESTNET="${BYBIT_TESTNET:-1}"
+# Market-data feed: default to mainnet so LIVE matches paper's data distribution.
+# Orders/positions still use BYBIT_TESTNET.
+export DATA_BYBIT_TESTNET="${DATA_BYBIT_TESTNET:-0}"
 export EXEC_MODE="${EXEC_MODE:-maker_then_market}"
 export PMAKER_ENABLE="${PMAKER_ENABLE:-1}"
+export MAX_TOTAL_LEVERAGE="${MAX_TOTAL_LEVERAGE:-10}"
 
 if [[ "$MODE" == "probe" ]]; then
   export TRAIN_PMAKER_ONLY="${TRAIN_PMAKER_ONLY:-1}"
@@ -48,4 +53,11 @@ else
   export PMAKER_BATCH="${PMAKER_BATCH:-64}"
 fi
 
-exec python3 -u main_engine_mc_v2_final.py
+PY_BIN="python3"
+if [[ -x "$ROOT/.venv311/bin/python" ]]; then
+  PY_BIN="$ROOT/.venv311/bin/python"
+elif [[ -x "$ROOT/.venv/bin/python" ]]; then
+  PY_BIN="$ROOT/.venv/bin/python"
+fi
+
+exec "$PY_BIN" -u main.py "$@"

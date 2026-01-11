@@ -1,0 +1,38 @@
+name: My Local Config
+version: 0.0.1
+schema: v1
+models:
+  - name: "Deepseek-r1:14b-64k (Balanced - 64k)"
+    model: "deepseek-r1:14b-64k"
+    provider: "ollama"
+    apiBase: "http://localhost:11434"
+    contextLength: 65536
+    roles: ["chat", "edit"]
+  - name: "Deepseek-r1:14b-40k (Balanced - 40k)"
+    model: "deepseep-r1:14b-40k"
+    provider: "ollama"
+    apiBase: "http://localhost:11434"
+    contextLength: 40960
+    roles: ["chat", "edit"]
+  - name: "Qwen 3 (14B Logic)"
+    model: "qwen3:14b-stable"
+    provider: "ollama"
+    apiBase: "http://localhost:11434"
+    roles: ["chat", "edit"]
+  - name: "DeepSeek R1 (32B Logic - 32k)"
+    model: "deepseek-32k"
+    provider: "ollama"
+    apiBase: "http://localhost:11434"
+    contextLength: 32768
+    roles: ["chat"]
+tabAutocompleteModel:
+  name: "Qwen Coder (1.5B Fast)"
+  model: "qwen2.5-coder:1.5b"
+  provider: "ollama"
+  apiBase: "http://localhost:11434"
+  roles: ["autocomplete"]
+embeddingsProvider:
+  provider: "ollama"
+  model: "nomic-embed-text"
+  apiBase: "http://localhost:11434"
+allowAnonymousTelemetry: false

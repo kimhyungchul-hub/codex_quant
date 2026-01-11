@@ -5,12 +5,13 @@ Mock 데이터로 _row 메서드를 호출하여 실제 payload를 생성하고 
 """
 
 import sys
-import os
+from pathlib import Path
 import time
 from collections import deque
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add repo root to path
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
 
 from main_engine_mc_v2_final import LiveOrchestrator
 
@@ -369,4 +370,3 @@ def test_runtime_payload():
 if __name__ == "__main__":
     exit_code = test_runtime_payload()
     sys.exit(exit_code)
-

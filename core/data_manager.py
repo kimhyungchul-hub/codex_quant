@@ -7,12 +7,14 @@ from config import *
 from utils.helpers import now_ms, _env_float
 
 class DataManager:
-    def __init__(self, orchestrator, symbols=None):
+    def __init__(self, orchestrator, symbols=None, data_exchange=None):
         self.orch = orchestrator
-        self.exchange = orchestrator.exchange
+        # Use a dedicated public-data exchange when provided (so live orders can be testnet
+        # while MC inputs match paper/mainnet market data distribution).
+        self.exchange = data_exchange or getattr(orchestrator, "data_exchange", None) or orchestrator.exchange
         self.symbols = symbols if symbols is not None else SYMBOLS
         
-        self.market = {s: {"price": None, "bid": None, "ask": None, "ts": 0} for s in self.symbols}
+        self.market = {s: {"price": None, "last": None, "bid": None, "ask": None, "ts": 0} for s in self.symbols}
         self.ohlcv_buffer = {s: deque(maxlen=OHLCV_PRELOAD_LIMIT) for s in self.symbols}
         self.orderbook = {s: {"ts": 0, "ready": False, "bids": [], "asks": []} for s in self.symbols}
         
@@ -20,22 +22,58 @@ class DataManager:
         self._last_kline_ok_ms = {s: 0 for s in self.symbols}
         self._preloaded = {s: False for s in self.symbols}
         self._last_feed_ok_ms = 0
+        self._markets_loaded = False
+
+        # Reduce dashboard/log spam: only log orderbook readiness transitions.
+        # (Logging every fetch produces huge payloads and slows UI updates.)
+        self._orderbook_ready_prev = {s: None for s in self.symbols}
         
         self.data_updated_event = asyncio.Event()
 
+    def _valid_symbols(self):
+        markets = getattr(self.exchange, "markets", {}) or {}
+        if markets:
+            return [s for s in self.symbols if s in markets]
+        return list(self.symbols)
+
     async def fetch_prices_loop(self):
+        count = 0
         while True:
+            count += 1
+            if count % 10 == 0:
+                print(f"💓 [HEARTBEAT] fetch_prices_loop active (cycle {count})", flush=True)
             try:
-                tickers = await self.orch._ccxt_call("fetch_tickers", self.exchange.fetch_tickers, self.symbols)
+                if not self._markets_loaded:
+                    try:
+                        await self.orch._ccxt_call("load_markets(prices)", self.exchange.load_markets)
+                        self._markets_loaded = True
+                    except Exception:
+                        pass
+                valid_syms = self._valid_symbols()
+                tickers = await self.orch._ccxt_call("fetch_tickers", self.exchange.fetch_tickers, valid_syms)
                 ts = now_ms()
                 ok_any = False
-                for s in self.symbols:
-                    t = tickers.get(s) or {}
+                if count % 10 == 0:
+                    print(f"DEBUG: valid_syms count={len(valid_syms)} samples={valid_syms[:2]}", flush=True)
+                    print(f"DEBUG: tickers sample for {valid_syms[0]}: {tickers.get(valid_syms[0])}", flush=True)
+                for s in valid_syms:
+                    base = s.split(":")[0] if isinstance(s, str) else s
+                    t = (tickers.get(s) or tickers.get(base) or {})
                     last = t.get("last")
                     bid = t.get("bid")
                     ask = t.get("ask")
+                    # Some venues/markets may omit `last` but still provide bid/ask.
+                    # Use mid as a fallback so paper PnL marking stays live.
+                    if last is None and bid is not None and ask is not None:
+                        try:
+                            last = 0.5 * (float(bid) + float(ask))
+                        except Exception:
+                            last = None
                     if last is not None:
                         self.market[s]["price"] = float(last)
+                        self.market[s]["last"] = float(last)
+                        if count % 10 == 0 and s == valid_syms[0]:
+                            print(f"[DEBUG] Market updated {s}: price={last}", flush=True)
                         ok_any = True
                     if bid is not None:
                         self.market[s]["bid"] = float(bid)
@@ -54,13 +92,32 @@ class DataManager:
             await asyncio.sleep(ticker_sleep)
 
     async def preload_all_ohlcv(self, limit: int = OHLCV_PRELOAD_LIMIT):
-        for sym in self.symbols:
+        # Ensure markets are loaded once up-front (avoids slow implicit load_markets per call).
+        try:
+            if hasattr(self.orch, "_ccxt_call"):
+                await self.orch._ccxt_call("load_markets(preload)", self.exchange.load_markets)
+            else:
+                await self.exchange.load_markets()
+        except Exception as e:
+            print(f"[WARN] preload load_markets: {e}", flush=True)
+
+        async def _fetch_one_symbol(sym: str):
+            """Helper to fetch OHLCV for a single symbol."""
             try:
-                print(f"[PRELOAD] Fetching {sym}...")
-                ohlcv = await self.exchange.fetch_ohlcv(sym, timeframe=TIMEFRAME, limit=limit)
+                print(f"[PRELOAD] Fetching {sym}...", flush=True)
+                if hasattr(self.orch, "_ccxt_call"):
+                    ohlcv = await self.orch._ccxt_call(
+                        f"fetch_ohlcv(preload) {sym}",
+                        self.exchange.fetch_ohlcv,
+                        sym,
+                        timeframe=TIMEFRAME,
+                        limit=limit,
+                    )
+                else:
+                    ohlcv = await self.exchange.fetch_ohlcv(sym, timeframe=TIMEFRAME, limit=limit)
                 if not ohlcv:
-                    print(f"[PRELOAD] {sym} - no data received")
-                    continue
+                    print(f"[PRELOAD] {sym} - no data received", flush=True)
+                    return
                 self.ohlcv_buffer[sym].clear()
                 last_ts = 0
                 for c in ohlcv:
@@ -72,19 +129,26 @@ class DataManager:
                 self._last_kline_ok_ms[sym] = now_ms()
                 self._preloaded[sym] = True
                 msg = f"[PRELOAD] {sym} candles={len(self.ohlcv_buffer[sym])}"
-                print(msg)
+                print(msg, flush=True)
                 self.orch._log(msg)
             except Exception as e:
                 err_msg = f"[ERR] preload_ohlcv {sym}: {e}"
-                print(err_msg)
+                print(err_msg, flush=True)
                 self.orch._log_err(err_msg)
+
+        # Fetch all symbols concurrently
+        await asyncio.gather(*[_fetch_one_symbol(sym) for sym in self.symbols])
+        self.data_updated_event.set()
+
 
 
     async def fetch_ohlcv_loop(self):
         while True:
             start = now_ms()
             try:
-                for sym in self.symbols:
+                valid_syms = self._valid_symbols()
+                
+                async def _update_one_ohlcv(sym: str):
                     try:
                         ohlcv = await self.orch._ccxt_call(
                             f"fetch_ohlcv {sym}",
@@ -92,7 +156,7 @@ class DataManager:
                             sym, timeframe=TIMEFRAME, limit=OHLCV_REFRESH_LIMIT
                         )
                         if not ohlcv:
-                            continue
+                            return
                         last = ohlcv[-1]
                         ts_ms = int(last[0])
                         close_price = float(last[4])
@@ -104,51 +168,63 @@ class DataManager:
                             self.data_updated_event.set()
                     except Exception as e_sym:
                         self.orch._log_err(f"[ERR] fetch_ohlcv {sym}: {e_sym}")
+
+                # Parallel fetch OHLCV for all symbols
+                await asyncio.gather(*[_update_one_ohlcv(sym) for sym in valid_syms])
             except Exception as e:
                 self.orch._log_err(f"[ERR] fetch_ohlcv(loop): {e}")
 
             elapsed = (now_ms() - start) / 1000.0
-            sleep_left = max(1.0, OHLCV_SLEEP_SEC - elapsed)
+            sleep_left = max(0.5, OHLCV_SLEEP_SEC - elapsed) # Faster refresh if needed
             await asyncio.sleep(sleep_left)
 
     async def fetch_orderbook_loop(self):
+        count = 0
         while True:
+            count += 1
+            if count % 5 == 0:
+                print(f"💓 [HEARTBEAT] fetch_orderbook_loop active (cycle {count})", flush=True)
             start = now_ms()
-            for sym in self.symbols:
-                try:
-                    ob = await self.orch._ccxt_call(
-                        f"fetch_orderbook {sym}",
-                        self.exchange.fetch_order_book,
-                        sym, limit=ORDERBOOK_DEPTH
-                    )
-                    bids = (ob.get("bids") or [])[:ORDERBOOK_DEPTH]
-                    asks = (ob.get("asks") or [])[:ORDERBOOK_DEPTH]
-                    ready = bool(bids) and bool(asks)
-                    self.orderbook[sym]["bids"] = bids
-                    self.orderbook[sym]["asks"] = asks
-                    self.orderbook[sym]["ready"] = ready
-                    self.orderbook[sym]["ts"] = now_ms()
-                    if ready:
-                        self.orch._log(f"[ORDERBOOK] {sym} | fetched successfully bids={len(bids)} asks={len(asks)}")
-                    else:
-                        self.orch._log_err(f"[ORDERBOOK] {sym} | fetched but empty bids={len(bids)} asks={len(asks)}")
-                except Exception as e_sym:
-                    self.orderbook[sym]["ready"] = False
-                    extra = ""
+            valid_syms = self._valid_symbols()
+            
+            # Use Semaphore to avoid overwhelming the exchange API
+            sem = asyncio.Semaphore(5) 
+            
+            async def _update_one_ob(sym: str):
+                async with sem:
                     try:
-                        status = getattr(e_sym, "status", None)
-                        body = getattr(e_sym, "body", None)
-                        exc_type = type(e_sym).__name__
-                        if status is not None: extra += f" status={status}"
-                        if body: extra += f" body={str(body)[:300]}"
-                        extra += f" type={exc_type}"
-                    except Exception: pass
-                    self.orch._log_err(f"[ERR] fetch_orderbook {sym}: {repr(e_sym)}{extra}")
-                await asyncio.sleep(ORDERBOOK_SYMBOL_INTERVAL_SEC)
+                        ob = await self.orch._ccxt_call(
+                            f"fetch_orderbook {sym}",
+                            self.exchange.fetch_order_book,
+                            sym, limit=ORDERBOOK_DEPTH
+                        )
+                        bids = (ob.get("bids") or [])[:ORDERBOOK_DEPTH]
+                        asks = (ob.get("asks") or [])[:ORDERBOOK_DEPTH]
+                        ready = bool(bids) and bool(asks)
+                        self.orderbook[sym]["bids"] = bids
+                        self.orderbook[sym]["asks"] = asks
+                        self.orderbook[sym]["ready"] = ready
+                        self.orderbook[sym]["ts"] = now_ms()
+                        prev_ready = self._orderbook_ready_prev.get(sym)
+                        if ready and prev_ready is not True:
+                            self.orch._log(f"[ORDERBOOK] {sym} ready bids={len(bids)} asks={len(asks)}")
+                        if (not ready) and prev_ready is True:
+                            self.orch._log_err(f"[ORDERBOOK] {sym} became empty bids={len(bids)} asks={len(asks)}")
+                        self._orderbook_ready_prev[sym] = bool(ready)
+                    except Exception as e_sym:
+                        self.orderbook[sym]["ready"] = False
+                        self._orderbook_ready_prev[sym] = False
+                        self.orch._log_err(f"[ERR] fetch_orderbook {sym}: {repr(e_sym)}")
+                    
+                    # Small delay between symbol batches to stay within rate limits if needed
+                    await asyncio.sleep(ORDERBOOK_SYMBOL_INTERVAL_SEC)
+
+            # Parallel fetch orderbooks
+            await asyncio.gather(*[_update_one_ob(sym) for sym in valid_syms])
 
             self.data_updated_event.set()
             elapsed = (now_ms() - start) / 1000.0
-            sleep_left = max(0.0, ORDERBOOK_SLEEP_SEC - elapsed)
+            sleep_left = max(0.1, ORDERBOOK_SLEEP_SEC - elapsed)
             await asyncio.sleep(sleep_left)
 
     def get_btc_corr(self, sym: str, window: int = 60) -> float:

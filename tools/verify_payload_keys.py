@@ -6,9 +6,11 @@ Payload 검증 스크립트: _row 메서드의 return 딕셔너리에 모든 검
 import sys
 import os
 import inspect
+from pathlib import Path
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add repo root to path
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
 
 from main_engine_mc_v2_final import LiveOrchestrator
 
@@ -103,4 +105,3 @@ def verify_payload_keys():
 if __name__ == "__main__":
     exit_code = verify_payload_keys()
     sys.exit(exit_code)
-
