@@ -1,0 +1,31 @@
+# --- Python 관련 ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv_jax/
+.venv/
+env/
+
+# --- 로그 및 임시 실행 결과 (핵심 원인) ---
+*.log
+*.txt
+*.out
+*.pid
+nohup.out
+engine_stdout_*
+engine_stderr_*
+
+# --- 데이터 및 상태 파일 (보안 및 용량) ---
+state/*.json
+state/*.pt
+state/*.env
+*.json
+!requirements.txt  # 패키지 목록은 제외(관리 필요)
+
+# --- IDE 설정 ---
+.vscode/
+.idea/
+.DS_Store
+
+# --- 아카이브 ---
+archive/

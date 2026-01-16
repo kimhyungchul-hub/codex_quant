@@ -1,0 +1,35 @@
+# Python version requirement
+# python>=3.11,<3.12
+
+# JAX with Metal GPU support (macOS Apple Silicon)
+jax==0.4.35
+jaxlib==0.4.35
+jax-metal==0.1.1
+
+# Scientific computing
+numpy>=2.0,<3.0
+scipy>=1.10
+ml-dtypes>=0.4.0
+opt-einsum
+
+# Crypto exchange API
+ccxt>=4.5.0
+
+# Async HTTP
+aiohttp>=3.13.0
+aiodns>=3.6.0
+aiohappyeyeballs>=2.5.0
+
+# Cryptography
+cryptography>=46.0.0
+coincurve==21.0.0
+
+# HTTP requests
+requests>=2.32.0
+certifi>=2026.1.0
+
+# Utilities
+typing-extensions>=4.4.0
+
+# Testing
+pytest>=8.0.0
